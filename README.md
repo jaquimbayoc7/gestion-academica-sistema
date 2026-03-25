@@ -25,6 +25,60 @@
 
 ---
 
+## 🎯 Estado Actual del Proyecto
+
+> **Última actualización:** 25 de Marzo de 2026 — Sprint 1 en curso (Mar 16 → Mar 29)
+
+### Progreso por Sprint
+
+| Sprint | Estado | HUs | Período |
+|---|---|---|---|
+| Sprint 1 — Infraestructura y entidades base | ✅ **Completado** | HU-01, HU-02, HU-03 | Mar 16 → Mar 29 |
+| Sprint 2 — Entidades académicas | ✅ **Completado (adelantado)** | HU-04, HU-05, HU-06 | Mar 30 → Abr 10 |
+| Sprint 3 — Matrícula, Calificaciones y Frontend base | 🔄 **En progreso (adelantado)** | HU-07 a HU-11 | Abr 13 → Abr 17 |
+| Sprint 4 — Frontend avanzado e integración | ⏳ Pendiente | HU-12, HU-13 | Abr 20 → May 8 |
+| Sprint 5 — Reportes, promedio y cierre | ⏳ Pendiente | HU-14, HU-15, HU-16 | May 11 → May 22 |
+
+### Hitos Completados ✅
+
+#### Backend (NestJS + Prisma + PostgreSQL)
+- [x] Docker Compose con servicios: PostgreSQL, backend NestJS, frontend Next.js
+- [x] Prisma schema con las 8 entidades y todas sus relaciones
+- [x] Migración inicial ejecutada (`20260325142014_init`)
+- [x] Módulo `estudiantes` — CRUD completo (Controller → Service → Repository)
+- [x] Módulo `docentes` — CRUD completo
+- [x] Módulo `programas` — CRUD completo
+- [x] Módulo `asignaturas` — CRUD completo
+- [x] Módulo `periodos` — CRUD completo con lógica de período activo único
+- [x] Módulo `asignaciones-docente` — CRUD con validación de unicidad compuesta
+- [x] Módulo `matriculas` — CRUD con validación de unicidad compuesta
+- [x] Módulo `calificaciones` — CRUD con cálculo automático de nota definitiva
+- [x] Common Module: `HttpExceptionFilter`, `ResponseInterceptor`
+- [x] Configuración global: `ValidationPipe`, prefix `api/v1`, CORS habilitado
+
+#### Frontend (Next.js 15 + React 19 + TypeScript + Tailwind CSS)
+- [x] Estructura de proyecto Next.js 15 con App Router
+- [x] Configuración de variables de entorno (`NEXT_PUBLIC_API_URL`)
+- [x] Capa HTTP genérica (`src/lib/api.ts`) con `apiGet`, `apiPost`, `apiPut`, `apiDelete`
+- [x] 8 interfaces TypeScript para todas las entidades del dominio
+- [x] 8 servicios de acceso a la API (con DTOs `CreateDto` y `UpdateDto`)
+- [x] Layout raíz + Dashboard layout con grupo de rutas `(dashboard)`
+- [x] Sidebar de navegación con `usePathname` y resaltado de ruta activa
+- [x] 8 páginas stub para todos los módulos: Estudiantes, Docentes, Programas, Asignaturas, Períodos, Asignaciones, Matrículas, Calificaciones
+
+#### Guías Pedagógicas
+- [x] `guia-backend.html` — Guía paso a paso de construcción del backend
+- [x] `guia-frontend.html` — Guía paso a paso de construcción del frontend
+
+### Pendiente 🔄
+
+- [ ] Implementar componentes CRUD completos en el frontend (tablas + formularios reales)
+- [ ] Integración frontend ↔ backend con datos reales
+- [ ] Selects dinámicos encadenados para matrícula y calificaciones
+- [ ] Historial académico, reportes y promedio acumulado (Sprint 5)
+
+---
+
 ## 📖 Descripción del Proyecto
 
 El **Sistema de Gestión Académica** es una aplicación web full-stack que permite administrar el proceso académico de una institución educativa: registro de estudiantes, docentes, programas, asignaturas, períodos académicos, matrículas, calificaciones, historial académico y reportes.
@@ -173,61 +227,61 @@ Matricula           1 ──── 1  Calificacion
 
 ## 📌 Sprints e Historias de Usuario
 
-### Sprint 1 — Infraestructura y entidades base
+### Sprint 1 — Infraestructura y entidades base ✅
 
 > 📅 **Mar 16 → Mar 29** · 🚫 Festivo: Mar 23 (San José) · [Ver Milestone](https://github.com/jaquimbayoc7/gestion-academica-sistema/milestone/1)
 
-| # | Historia de Usuario | Labels | Issue |
-|---|---|---|---|
-| HU-01 | Gestión de Estudiantes | `user-story` `backend` `frontend` | [#1](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/1) |
-| HU-02 | Gestión de Docentes | `user-story` `backend` `frontend` | [#2](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/2) |
-| HU-03 | Gestión de Programas Académicos | `user-story` `backend` `frontend` | [#3](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/3) |
+| # | Historia de Usuario | Labels | Issue | Estado |
+|---|---|---|---|---|
+| HU-01 | Gestión de Estudiantes | `user-story` `backend` `frontend` | [#1](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/1) | ✅ Backend completo |
+| HU-02 | Gestión de Docentes | `user-story` `backend` `frontend` | [#2](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/2) | ✅ Backend completo |
+| HU-03 | Gestión de Programas Académicos | `user-story` `backend` `frontend` | [#3](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/3) | ✅ Backend completo |
 
 **Entregables:**
-- Docker Compose con PostgreSQL, NestJS y Next.js
-- Prisma schema con entidades Estudiante, Docente y ProgramaAcademico
-- Migraciones ejecutadas
-- CRUD completo (Controller → Service → Repository) para las 3 entidades
-- Frontend: listados y formularios básicos
+- ✅ Docker Compose con PostgreSQL, NestJS y Next.js
+- ✅ Prisma schema con entidades Estudiante, Docente y ProgramaAcademico
+- ✅ Migraciones ejecutadas (`20260325142014_init`)
+- ✅ CRUD completo (Controller → Service → Repository) para las 3 entidades
+- 🔄 Frontend: páginas stub creadas, CRUD completo pendiente Sprint 4
 
 ---
 
-### Sprint 2 — Entidades académicas
+### Sprint 2 — Entidades académicas ✅
 
 > 📅 **Mar 30 → Abr 10** · 🚫 Festivos: Abr 2-3 (Semana Santa) · [Ver Milestone](https://github.com/jaquimbayoc7/gestion-academica-sistema/milestone/2)
 
-| # | Historia de Usuario | Labels | Issue |
-|---|---|---|---|
-| HU-04 | Gestión de Asignaturas | `user-story` `backend` `frontend` | [#4](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/4) |
-| HU-05 | Gestión de Períodos Académicos | `user-story` `backend` | [#5](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/5) |
-| HU-06 | Asignación Docente-Asignatura | `user-story` `backend` | [#6](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/6) |
+| # | Historia de Usuario | Labels | Issue | Estado |
+|---|---|---|---|---|
+| HU-04 | Gestión de Asignaturas | `user-story` `backend` `frontend` | [#4](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/4) | ✅ Backend completo |
+| HU-05 | Gestión de Períodos Académicos | `user-story` `backend` | [#5](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/5) | ✅ Backend completo |
+| HU-06 | Asignación Docente-Asignatura | `user-story` `backend` | [#6](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/6) | ✅ Backend completo |
 
 **Entregables:**
-- CRUD de Asignatura con relación a ProgramaAcademico
-- CRUD de PeriodoAcademico con lógica de período activo único
-- CRUD de AsignacionDocente con validación de unicidad compuesta
-- Common module: Filters, Interceptors, Pipes
+- ✅ CRUD de Asignatura con relación a ProgramaAcademico
+- ✅ CRUD de PeriodoAcademico con lógica de período activo único
+- ✅ CRUD de AsignacionDocente con validación de unicidad compuesta
+- ✅ Common module: `HttpExceptionFilter`, `ResponseInterceptor`
 
 ---
 
-### Sprint 3 — Matrícula, Calificaciones y Frontend base
+### Sprint 3 — Matrícula, Calificaciones y Frontend base 🔄
 
 > 📅 **Abr 13 → Abr 17** · 📝 Cierre Segundo Corte: Abr 17 · [Ver Milestone](https://github.com/jaquimbayoc7/gestion-academica-sistema/milestone/3)
 
-| # | Historia de Usuario | Labels | Issue |
-|---|---|---|---|
-| HU-07 | Matrícula de Estudiantes | `user-story` `backend` | [#7](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/7) |
-| HU-08 | Registro de Calificaciones | `user-story` `backend` | [#8](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/8) |
-| HU-09 | Listado Estudiantes por Asignatura | `user-story` `backend` | [#9](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/9) |
-| HU-10 | Listado Asignaturas del Docente | `user-story` `backend` | [#10](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/10) |
-| HU-11 | Common Module: Filters, Interceptors, Pipes | `user-story` `cross-cutting` | [#11](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/11) |
+| # | Historia de Usuario | Labels | Issue | Estado |
+|---|---|---|---|---|
+| HU-07 | Matrícula de Estudiantes | `user-story` `backend` | [#7](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/7) | ✅ Backend completo |
+| HU-08 | Registro de Calificaciones | `user-story` `backend` | [#8](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/8) | ✅ Backend completo |
+| HU-09 | Listado Estudiantes por Asignatura | `user-story` `backend` | [#9](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/9) | ✅ Backend completo |
+| HU-10 | Listado Asignaturas del Docente | `user-story` `backend` | [#10](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/10) | ✅ Backend completo |
+| HU-11 | Common Module: Filters, Interceptors, Pipes | `user-story` `cross-cutting` | [#11](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/11) | ✅ Completo |
 
 **Entregables:**
-- Módulo de Matrícula con validación de unicidad compuesta
-- Módulo de Calificación con cálculo automático de nota definitiva
-- Listados especializados (estudiantes por asignatura, asignaturas del docente)
-- Common Module global (filtros, interceptores, pipes)
-- Frontend: estructura Next.js, listados y formularios de entidades base
+- ✅ Módulo de Matrícula con validación de unicidad compuesta
+- ✅ Módulo de Calificación con cálculo automático de nota definitiva
+- ✅ Listados especializados (estudiantes por asignatura, asignaturas del docente)
+- ✅ Common Module global (filtros, interceptores)
+- ✅ Frontend: estructura Next.js 15, interfaces, servicios y páginas stub para los 8 módulos
 
 ---
 

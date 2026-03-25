@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Estudiante {
+  id                  Int               @id @default(autoincrement())
+  nombres             String
+  apellidos           String
+  codigoEstudiantil   String            @unique
+  documentoIdentidad  String            @unique
+  correoInstitucional String            @unique
+  fechaNacimiento     DateTime
+  programaAcademicoId Int
+  programaAcademico   ProgramaAcademico @relation(fields: [programaAcademicoId], references: [id])
+  matriculas          Matricula[]
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@map("estudiantes")
+}
+
+model Docente {
+  id                  Int                 @id @default(autoincrement())
+  nombres             String
+  apellidos           String
+  documentoIdentidad  String              @unique
+  tituloProfesional   String
+  especialidad        String
+  correoInstitucional String              @unique
+  telefono            String?
+  asignaciones        AsignacionDocente[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  @@map("docentes")
+}
+
+model ProgramaAcademico {
+  id                Int          @id @default(autoincrement())
+  nombre            String
+  codigo            String       @unique
+  facultad          String
+  duracionSemestres Int
+  estudiantes       Estudiante[]
+  asignaturas       Asignatura[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@map("programas_academicos")
+}
+
+model Asignatura {
+  id                  Int                 @id @default(autoincrement())
+  nombre              String
+  codigo              String              @unique
+  creditos            Int
+  programaAcademicoId Int
+  programaAcademico   ProgramaAcademico   @relation(fields: [programaAcademicoId], references: [id])
+  asignaciones        AsignacionDocente[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  @@map("asignaturas")
+}
+
+model PeriodoAcademico {
+  id           Int                 @id @default(autoincrement())
+  nombre       String              @unique
+  fechaInicio  DateTime
+  fechaFin     DateTime
+  activo       Boolean             @default(false)
+  asignaciones AsignacionDocente[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@map("periodos_academicos")
+}
+
+model AsignacionDocente {
+  id                 Int              @id @default(autoincrement())
+  docenteId          Int
+  asignaturaId       Int
+  periodoAcademicoId Int
+  docente            Docente          @relation(fields: [docenteId], references: [id])
+  asignatura         Asignatura       @relation(fields: [asignaturaId], references: [id])
+  periodoAcademico   PeriodoAcademico @relation(fields: [periodoAcademicoId], references: [id])
+  matriculas         Matricula[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  @@unique([docenteId, asignaturaId, periodoAcademicoId])
+  @@map("asignaciones_docente")
+}
+
+model Matricula {
+  id                  Int               @id @default(autoincrement())
+  estudianteId        Int
+  asignacionDocenteId Int
+  fechaInscripcion    DateTime          @default(now())
+  estudiante          Estudiante        @relation(fields: [estudianteId], references: [id])
+  asignacionDocente   AsignacionDocente @relation(fields: [asignacionDocenteId], references: [id])
+  calificacion        Calificacion?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@unique([estudianteId, asignacionDocenteId])
+  @@map("matriculas")
+}
+
+model Calificacion {
+  id             Int       @id @default(autoincrement())
+  matriculaId    Int       @unique
+  nota1          Float?
+  nota2          Float?
+  nota3          Float?
+  notaDefinitiva Float?
+  matricula      Matricula @relation(fields: [matriculaId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("calificaciones")
+}
