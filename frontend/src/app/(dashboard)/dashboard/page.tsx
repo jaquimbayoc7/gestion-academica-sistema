@@ -1,3 +1,11 @@
+/**
+ * @file dashboard/page.tsx
+ * @description Página principal del dashboard. Es un Server Component
+ * (no tiene 'use client') porque no necesita interactividad del lado
+ * del cliente. Muestra un mensaje de bienvenida estático.
+ *
+ * Ruta: /dashboard (ruta por defecto dentro del grupo (dashboard)).
+ */
 export default function DashboardPage() {
   return (
     <div>

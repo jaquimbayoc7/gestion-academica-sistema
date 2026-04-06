@@ -1,3 +1,7 @@
+/**
+ * SERVICIO FRONTEND DE DOCENTES
+ * Mismo patrón que estudiantes: objeto con métodos CRUD tipados.
+ */
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
 import type { Docente } from '@/interfaces/docente.interface';
 

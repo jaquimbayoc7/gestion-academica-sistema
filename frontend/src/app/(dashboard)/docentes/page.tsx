@@ -1,3 +1,23 @@
+/**
+ * @file docentes/page.tsx
+ * @description Página CRUD para gestión de docentes.
+ *
+ * Patrón idéntico a estudiantes/page.tsx:
+ *   1. Estado: lista de docentes, formulario (nombre, apellido, email, teléfono,
+ *      departamento, especialidad, fechaContratacion), editingId.
+ *   2. useEffect → carga inicial con docentesService.getAll().
+ *   3. handleSubmit → crea o actualiza según editingId sea null o no.
+ *   4. handleEdit → rellena el formulario con los datos del docente seleccionado.
+ *   5. handleDelete → elimina con confirmación (window.confirm).
+ *
+ * Campos del formulario:
+ *   - nombre, apellido, email         → inputs de texto
+ *   - telefono, departamento           → inputs de texto
+ *   - especialidad                     → input de texto
+ *   - fechaContratacion                → input date (se envía como ISO string)
+ *
+ * @see {@link docentesService} para las llamadas HTTP al backend.
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

@@ -1,3 +1,23 @@
+/**
+ * REPOSITORIO DE MATRÍCULAS
+ *
+ * CONSULTAS CON RELACIONES PROFUNDAS (nested includes):
+ *   La matrícula incluye:
+ *     - estudiante               → Datos del estudiante
+ *     - asignacionDocente         → La asignación docente, que a su vez incluye:
+ *       - docente                → Datos del docente
+ *       - asignatura             → Datos de la asignatura
+ *       - periodoAcademico       → Datos del período
+ *     - calificacion             → Las notas (si existen)
+ *
+ *   Esto equivale a un SQL con múltiples JOINs y retorna toda la
+ *   información necesaria para mostrar en el frontend en UNA sola consulta.
+ *
+ * findByCompound(): Busca por clave compuesta (estudianteId + asignacionDocenteId)
+ *   para verificar duplicados antes de crear.
+ *
+ * NOTA: No tiene método update() porque las matrículas no se editan.
+ */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateMatriculaDto } from '../dto/create-matricula.dto';

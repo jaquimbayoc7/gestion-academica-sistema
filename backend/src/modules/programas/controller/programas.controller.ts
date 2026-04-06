@@ -1,3 +1,13 @@
+/**
+ * CONTROLADOR DE PROGRAMAS ACADÉMICOS
+ *
+ * ENDPOINTS:
+ *   GET    /api/v1/programas      → Listar programas
+ *   GET    /api/v1/programas/:id   → Obtener programa por ID
+ *   POST   /api/v1/programas      → Crear programa
+ *   PUT    /api/v1/programas/:id   → Actualizar programa
+ *   DELETE /api/v1/programas/:id   → Eliminar programa (falla si tiene estudiantes o asignaturas)
+ */
 import {
   Controller,
   Get,

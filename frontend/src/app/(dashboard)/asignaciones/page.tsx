@@ -1,3 +1,18 @@
+/**
+ * @file asignaciones/page.tsx
+ * @description Página CRUD para asignaciones docente-asignatura-período.
+ *
+ * Diferencias clave:
+ *   - Tres <select> dinámicos: docente, asignatura y período académico.
+ *   - Carga paralela de las tres listas en useEffect.
+ *   - La tabla muestra nombres resueltos (no IDs) gracias a las
+ *     relaciones include del backend.
+ *   - Restricción de unicidad compuesta: un docente no puede tener
+ *     la misma asignatura en el mismo período dos veces.
+ *
+ * @see {@link asignacionesDocenteService}, {@link docentesService},
+ *      {@link asignaturasService}, {@link periodosService}
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

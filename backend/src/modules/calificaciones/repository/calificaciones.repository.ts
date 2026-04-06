@@ -1,3 +1,22 @@
+/**
+ * REPOSITORIO DE CALIFICACIONES
+ *
+ * CONSULTAS CON RELACIONES PROFUNDAS:
+ *   La calificación incluye:
+ *     - matricula → que incluye:
+ *       - estudiante           → Para mostrar nombre del estudiante
+ *       - asignacionDocente    → que incluye:
+ *         - asignatura         → Nombre de la materia
+ *         - docente            → Nombre del profesor
+ *
+ * findByMatricula(): Busca calificación por matriculaId (UNIQUE).
+ *   Se usa para verificar que no se creen duplicados.
+ *   Cada matrícula tiene máximo UNA calificación.
+ *
+ * NOTA: Los métodos create/update reciben un objeto plano con los
+ *   datos calculados (incluyendo notaDefinitiva), no un DTO.
+ *   Esto es porque el Service calcula la nota antes de guardar.
+ */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 

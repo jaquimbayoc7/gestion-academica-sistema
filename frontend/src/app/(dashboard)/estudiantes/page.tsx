@@ -1,3 +1,60 @@
+/**
+ * ============================================================
+ * PÁGINA CRUD DE ESTUDIANTES (/estudiantes)
+ * ============================================================
+ *
+ * Esta página es el ejemplo más completo del patrón CRUD en el frontend.
+ * TODAS las demás páginas (docentes, programas, etc.) siguen el mismo patrón.
+ *
+ * ¿QUÉ HACE?
+ *   Permite Crear, Leer, Actualizar y Eliminar estudiantes desde el navegador.
+ *   Se comunica con el backend via HTTP usando el servicio estudiantesService.
+ *
+ * ARQUITECTURA DEL COMPONENTE:
+ *   ┌─────────────────────────────────────────────────────┐
+ *   │  ESTADOS (useState)                                 │
+ *   │   estudiantes[]  → Lista de estudiantes del backend │
+ *   │   programas[]    → Lista de programas (para select) │
+ *   │   loading        → Indicador de carga               │
+ *   │   showForm       → Mostrar/ocultar formulario       │
+ *   │   editingId      → ID del estudiante en edición     │
+ *   │   form           → Datos del formulario             │
+ *   │   error          → Mensaje de error (si hay)        │
+ *   └─────────────────────────────────────────────────────┘
+ *
+ * FLUJO DE OPERACIONES:
+ *
+ *   CARGAR (al montar el componente):
+ *     useEffect → load() → estudiantesService.findAll() → setEstudiantes(data)
+ *
+ *   CREAR:
+ *     1. Click "Nuevo" → setShowForm(true) → muestra formulario vacío
+ *     2. Llenar campos → cambios van a `form` via onChange
+ *     3. Click "Crear" → handleSubmit() → estudiantesService.create(form)
+ *     4. Si OK → resetForm() + load() → recarga la tabla
+ *     5. Si error → setError(mensaje) → muestra alerta roja
+ *
+ *   EDITAR:
+ *     1. Click "Editar" → handleEdit(e) → carga datos en el form + setEditingId
+ *     2. Modificar campos → cambios en `form`
+ *     3. Click "Actualizar" → handleSubmit() detecta editingId → usa update()
+ *     4. Si OK → resetForm() + load()
+ *
+ *   ELIMINAR:
+ *     1. Click "Eliminar" → confirm() → si acepta, handleDelete(id)
+ *     2. estudiantesService.remove(id) → si OK, recarga tabla
+ *     3. Si tiene matrículas, el backend retorna error y se muestra en rojo
+ *
+ * DIRECTIVA 'use client':
+ *   Necesaria porque usamos useState, useEffect (hooks de React).
+ *   Next.js ejecuta este componente en el navegador, no en el servidor.
+ *
+ * PATRÓN DE FORMULARIO DUAL (crear/editar):
+ *   El mismo formulario se usa para crear Y editar.
+ *   La diferencia la determina `editingId`:
+ *     - editingId === null → Modo crear (POST)
+ *     - editingId === 5    → Modo editar (PUT /estudiantes/5)
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

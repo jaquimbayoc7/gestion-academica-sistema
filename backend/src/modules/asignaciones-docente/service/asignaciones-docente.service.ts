@@ -1,3 +1,20 @@
+/**
+ * SERVICIO DE ASIGNACIONES DOCENTE
+ *
+ * LÓGICA DE NEGOCIO ESPECÍFICA:
+ *
+ *   create():
+ *     1. Verifica duplicado con findByCompound() → si existe, ConflictException 409
+ *     2. Intenta crear → si FK no existe, captura P2003 → NotFoundException 404
+ *
+ *   Esto asegura que:
+ *     - No se duplique la asignación (docente+asignatura+periodo)
+ *     - El docente, asignatura y período referenciados EXISTAN
+ *
+ * DIFERENCIA con otros Services:
+ *   Aquí se captura P2003 (FK violation) además de P2002 (unique violation).
+ *   Esto es porque el DTO solo contiene IDs, y esos IDs podrían no existir.
+ */
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { AsignacionesDocenteRepository } from '../repository/asignaciones-docente.repository';
 import { CreateAsignacionDocenteDto } from '../dto/create-asignacion-docente.dto';

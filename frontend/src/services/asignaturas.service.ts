@@ -1,3 +1,7 @@
+/**
+ * SERVICIO FRONTEND DE ASIGNATURAS
+ * CRUD completo. Las asignaturas vienen con su programaAcademico incluido.
+ */
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
 import type { Asignatura } from '@/interfaces/asignatura.interface';
 

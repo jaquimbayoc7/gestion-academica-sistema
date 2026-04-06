@@ -1,3 +1,10 @@
+/**
+ * SERVICIO DE ASIGNATURAS
+ * Mismo patrón: NotFoundException + ConflictException.
+ * La validación de FK (programaAcademicoId) se delega a Prisma:
+ *   Si el programa no existe, Prisma lanza P2003, pero aquí solo capturamos P2002.
+ *   El error P2003 se propaga como error 500 (podría mejorarse).
+ */
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { AsignaturasRepository } from '../repository/asignaturas.repository';
 import { CreateAsignaturaDto } from '../dto/create-asignatura.dto';

@@ -1,5 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ============================================================
+// ESQUEMA DE BASE DE DATOS — PRISMA ORM
+// ============================================================
+//
+// Este archivo define TODA la estructura de la base de datos PostgreSQL.
+// Prisma lo usa para:
+//   1. Generar las migraciones SQL (npx prisma migrate dev)
+//   2. Generar el cliente TypeScript (npx prisma generate)
+//   3. Validar las consultas en tiempo de compilación
+//
+// DIAGRAMA DE RELACIONES (ER simplificado):
+//
+//   ProgramaAcademico ──1:N──> Estudiante
+//   ProgramaAcademico ──1:N──> Asignatura
+//   Docente ──1:N──> AsignacionDocente
+//   Asignatura ──1:N──> AsignacionDocente
+//   PeriodoAcademico ──1:N──> AsignacionDocente
+//   AsignacionDocente ──1:N──> Matricula
+//   Estudiante ──1:N──> Matricula
+//   Matricula ──1:1──> Calificacion
+//
+// CONVENCIONES:
+//   @id @default(autoincrement())  → Clave primaria autoincremental
+//   @unique                        → Restricción UNIQUE (no duplicados)
+//   @default(now())                → Valor por defecto: fecha actual
+//   @updatedAt                     → Se actualiza automáticamente en cada UPDATE
+//   @@map("nombre_tabla")          → Nombre real de la tabla en PostgreSQL
+//   @@unique([campo1, campo2])     → Restricción UNIQUE compuesta
 
 generator client {
   provider = "prisma-client-js"
@@ -9,73 +35,91 @@ datasource db {
   provider = "postgresql"
 }
 
+// ── ESTUDIANTE ──────────────────────────────────────────────
+// Representa un alumno de la institución.
+// Campos UNIQUE: codigoEstudiantil, documentoIdentidad, correoInstitucional
+// Relación: pertenece a UN programa académico (FK: programaAcademicoId)
+// Puede tener MUCHAS matrículas (1:N)
 model Estudiante {
   id                  Int               @id @default(autoincrement())
   nombres             String
   apellidos           String
-  codigoEstudiantil   String            @unique
-  documentoIdentidad  String            @unique
-  correoInstitucional String            @unique
+  codigoEstudiantil   String            @unique   // Ej: "EST-2026-001"
+  documentoIdentidad  String            @unique   // Ej: "1234567890"
+  correoInstitucional String            @unique   // Ej: "juan@corhuila.edu.co"
   fechaNacimiento     DateTime
-  programaAcademicoId Int
+  programaAcademicoId Int                         // FK → ProgramaAcademico.id
   programaAcademico   ProgramaAcademico @relation(fields: [programaAcademicoId], references: [id])
-  matriculas          Matricula[]
+  matriculas          Matricula[]                 // Un estudiante puede tener N matrículas
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
 
-  @@map("estudiantes")
+  @@map("estudiantes")                            // Tabla real: "estudiantes"
 }
 
+// ── DOCENTE ─────────────────────────────────────────────────
+// Representa un profesor de la institución.
+// Campos UNIQUE: documentoIdentidad, correoInstitucional
+// Puede tener MUCHAS asignaciones (1:N)
 model Docente {
   id                  Int                 @id @default(autoincrement())
   nombres             String
   apellidos           String
   documentoIdentidad  String              @unique
-  tituloProfesional   String
-  especialidad        String
+  tituloProfesional   String                      // Ej: "Magíster en Ing. Software"
+  especialidad        String                      // Ej: "Desarrollo Web"
   correoInstitucional String              @unique
-  telefono            String?
-  asignaciones        AsignacionDocente[]
+  telefono            String?                     // Nullable (String? = puede ser null)
+  asignaciones        AsignacionDocente[]          // Un docente puede dictar N materias
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 
   @@map("docentes")
 }
 
+// ── PROGRAMA ACADÉMICO ──────────────────────────────────────
+// Ej: "Ingeniería de Sistemas", "Contaduría Pública"
+// Es la entidad padre que agrupa estudiantes y asignaturas.
 model ProgramaAcademico {
   id                Int          @id @default(autoincrement())
-  nombre            String
-  codigo            String       @unique
-  facultad          String
-  duracionSemestres Int
-  estudiantes       Estudiante[]
-  asignaturas       Asignatura[]
+  nombre            String                        // Ej: "Ingeniería de Sistemas"
+  codigo            String       @unique          // Ej: "ING-SIS"
+  facultad          String                        // Ej: "Facultad de Ingeniería"
+  duracionSemestres Int                           // Ej: 10
+  estudiantes       Estudiante[]                  // Estudiantes de este programa
+  asignaturas       Asignatura[]                  // Materias de este programa
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
   @@map("programas_academicos")
 }
 
+// ── ASIGNATURA ──────────────────────────────────────────────
+// Representa una materia dentro de un programa.
+// FK: programaAcademicoId (a qué programa pertenece)
 model Asignatura {
   id                  Int                 @id @default(autoincrement())
-  nombre              String
-  codigo              String              @unique
-  creditos            Int
-  programaAcademicoId Int
+  nombre              String                      // Ej: "Cálculo I"
+  codigo              String              @unique  // Ej: "MAT-101"
+  creditos            Int                          // Ej: 4
+  programaAcademicoId Int                          // FK → ProgramaAcademico.id
   programaAcademico   ProgramaAcademico   @relation(fields: [programaAcademicoId], references: [id])
-  asignaciones        AsignacionDocente[]
+  asignaciones        AsignacionDocente[]           // Asignaciones de docentes a esta materia
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 
   @@map("asignaturas")
 }
 
+// ── PERÍODO ACADÉMICO ───────────────────────────────────────
+// Ej: "2026-A" (primer semestre), "2026-B" (segundo semestre)
+// REGLA: Solo UN período puede estar activo a la vez.
 model PeriodoAcademico {
   id           Int                 @id @default(autoincrement())
-  nombre       String              @unique
+  nombre       String              @unique        // Ej: "2026-A" (UNIQUE)
   fechaInicio  DateTime
   fechaFin     DateTime
-  activo       Boolean             @default(false)
+  activo       Boolean             @default(false) // Solo uno puede ser true
   asignaciones AsignacionDocente[]
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
@@ -83,44 +127,66 @@ model PeriodoAcademico {
   @@map("periodos_academicos")
 }
 
+// ── ASIGNACIÓN DOCENTE ──────────────────────────────────────
+// Tabla intermedia que vincula: Docente + Asignatura + Período
+// "El profesor X dicta la materia Y en el período Z"
+//
+// @@unique compuesta: evita que el mismo docente sea asignado
+// dos veces a la misma materia en el mismo período.
 model AsignacionDocente {
   id                 Int              @id @default(autoincrement())
-  docenteId          Int
-  asignaturaId       Int
-  periodoAcademicoId Int
+  docenteId          Int                           // FK → Docente.id
+  asignaturaId       Int                           // FK → Asignatura.id
+  periodoAcademicoId Int                           // FK → PeriodoAcademico.id
   docente            Docente          @relation(fields: [docenteId], references: [id])
   asignatura         Asignatura       @relation(fields: [asignaturaId], references: [id])
   periodoAcademico   PeriodoAcademico @relation(fields: [periodoAcademicoId], references: [id])
-  matriculas         Matricula[]
+  matriculas         Matricula[]                   // Estudiantes matriculados en esta asignación
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
-  @@unique([docenteId, asignaturaId, periodoAcademicoId])
+  @@unique([docenteId, asignaturaId, periodoAcademicoId])  // Restricción compuesta
   @@map("asignaciones_docente")
 }
 
+// ── MATRÍCULA ───────────────────────────────────────────────
+// Vincula un Estudiante con una AsignacionDocente.
+// "El estudiante X se inscribe en la materia Y (dictada por Z en período W)"
+//
+// @@unique compuesta: un estudiante no puede matricularse dos veces
+// en la misma asignación del mismo período.
+//
+// calificacion es opcional (Calificacion?) porque las notas se registran después.
 model Matricula {
   id                  Int               @id @default(autoincrement())
-  estudianteId        Int
-  asignacionDocenteId Int
-  fechaInscripcion    DateTime          @default(now())
+  estudianteId        Int                          // FK → Estudiante.id
+  asignacionDocenteId Int                          // FK → AsignacionDocente.id
+  fechaInscripcion    DateTime          @default(now())  // Se asigna automáticamente
   estudiante          Estudiante        @relation(fields: [estudianteId], references: [id])
   asignacionDocente   AsignacionDocente @relation(fields: [asignacionDocenteId], references: [id])
-  calificacion        Calificacion?
+  calificacion        Calificacion?                // Relación 1:1 opcional
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
 
-  @@unique([estudianteId, asignacionDocenteId])
+  @@unique([estudianteId, asignacionDocenteId])    // Restricción compuesta
   @@map("matriculas")
 }
 
+// ── CALIFICACIÓN ────────────────────────────────────────────
+// Registra las 3 notas parciales y la nota definitiva de una matrícula.
+// Relación 1:1 con Matrícula (matriculaId es @unique).
+//
+// FÓRMULA: notaDefinitiva = nota1×0.30 + nota2×0.30 + nota3×0.40
+//          (calculada automáticamente en el Service)
+//
+// Las notas son Float? (nullable) porque se registran progresivamente.
 model Calificacion {
   id             Int       @id @default(autoincrement())
-  matriculaId    Int       @unique
-  nota1          Float?
-  nota2          Float?
-  nota3          Float?
-  notaDefinitiva Float?
+  matriculaId    Int       @unique                 // 1:1 con Matrícula (UNIQUE)
+  nota1          Float?                         // Nota del primer corte (0.0 - 5.0)
+  nota2          Float?                         // Nota del segundo corte (0.0 - 5.0)
+  nota3          Float?                         // Nota del tercer corte (0.0 - 5.0)
+  notaDefinitiva Float?                         // Calculada: n1×0.30 + n2×0.30 + n3×0.40
   matricula      Matricula @relation(fields: [matriculaId], references: [id])
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt

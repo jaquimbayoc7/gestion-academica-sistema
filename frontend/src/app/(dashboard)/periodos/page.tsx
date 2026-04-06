@@ -1,3 +1,16 @@
+/**
+ * @file periodos/page.tsx
+ * @description Página CRUD para gestión de períodos académicos.
+ *
+ * Diferencias clave:
+ *   - Campos de fecha: fechaInicio y fechaFin (input type="date").
+ *   - Checkbox "activo": al activar un período, el backend desactiva
+ *     automáticamente todos los demás (solo uno activo a la vez).
+ *   - Badge visual: muestra "Activo" (verde) o "Inactivo" (rojo) en la tabla.
+ *
+ * Campos: nombre, fechaInicio, fechaFin, activo (boolean).
+ * @see {@link periodosService}
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

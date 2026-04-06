@@ -1,3 +1,16 @@
+/**
+ * SERVICIO DE PERÍODOS ACADÉMICOS
+ *
+ * REGLA DE NEGOCIO PRINCIPAL: Solo puede haber UN período activo.
+ *
+ * FLUJO al crear/actualizar con activo=true:
+ *   1. Se llama a deactivateAll() → UPDATE SET activo=false WHERE activo=true
+ *   2. Se crea/actualiza el período con activo=true
+ *   3. Resultado: solo el nuevo período queda activo
+ *
+ * Esto es crítico porque las matrículas y asignaciones dependen
+ * del período activo para funcionar correctamente.
+ */
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PeriodosRepository } from '../repository/periodos.repository';
 import { CreatePeriodoDto } from '../dto/create-periodo.dto';

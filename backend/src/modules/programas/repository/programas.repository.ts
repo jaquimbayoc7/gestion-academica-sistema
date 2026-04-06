@@ -1,3 +1,8 @@
+/**
+ * REPOSITORIO DE PROGRAMAS ACADÉMICOS
+ * CRUD básico sin includes (la entidad no tiene relaciones que mostrar en listado).
+ * Los programas son referenciados por Estudiantes y Asignaturas via FK.
+ */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateProgramaDto } from '../dto/create-programa.dto';

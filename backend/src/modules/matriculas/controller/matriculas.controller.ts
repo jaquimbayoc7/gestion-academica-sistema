@@ -1,3 +1,12 @@
+/**
+ * CONTROLADOR DE MATRÍCULAS
+ *
+ * ENDPOINTS (sin PUT — las matrículas no se editan):
+ *   GET    /api/v1/matriculas      → Listar todas (con estudiante + asignación + calificación)
+ *   GET    /api/v1/matriculas/:id   → Obtener una matrícula
+ *   POST   /api/v1/matriculas      → Matricular estudiante (requiere estudianteId + asignacionDocenteId)
+ *   DELETE /api/v1/matriculas/:id   → Cancelar matrícula (falla si tiene calificaciones)
+ */
 import {
   Controller,
   Get,

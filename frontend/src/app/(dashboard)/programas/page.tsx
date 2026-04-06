@@ -1,3 +1,16 @@
+/**
+ * @file programas/page.tsx
+ * @description Página CRUD para gestión de programas académicos.
+ *
+ * Campos del formulario:
+ *   - nombre             → nombre del programa (ej. "Ingeniería de Sistemas")
+ *   - codigo             → código único del programa (ej. "ISI-001")
+ *   - facultad           → facultad a la que pertenece
+ *   - duracionSemestres  → número entero de semestres
+ *
+ * Sigue el mismo patrón CRUD que estudiantes/page.tsx.
+ * @see {@link programasService} para las llamadas HTTP.
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

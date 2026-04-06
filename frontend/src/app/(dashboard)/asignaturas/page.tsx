@@ -1,3 +1,15 @@
+/**
+ * @file asignaturas/page.tsx
+ * @description Página CRUD para gestión de asignaturas.
+ *
+ * Diferencia clave con otras páginas:
+ *   - Tiene un <select> dinámico que lista los programas académicos
+ *     cargados desde programasService.getAll().
+ *   - El campo programaAcademicoId vincula la asignatura a un programa.
+ *
+ * Campos: nombre, codigo, creditos, semestre, programaAcademicoId (select).
+ * @see {@link asignaturasService} y {@link programasService}
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

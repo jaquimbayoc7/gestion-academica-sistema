@@ -1,3 +1,10 @@
+/**
+ * DTO para CREAR una Asignatura.
+ *
+ * Campos: nombre, codigo (UNIQUE), creditos (mínimo 1), programaAcademicoId (FK).
+ * El programaAcademicoId debe referenciar un programa existente.
+ * Si no existe, Prisma lanza error P2003 (FK violation).
+ */
 import { IsString, IsInt, Min } from 'class-validator';
 
 export class CreateAsignaturaDto {

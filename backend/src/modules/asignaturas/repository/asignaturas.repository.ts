@@ -1,3 +1,17 @@
+/**
+ * REPOSITORIO DE ASIGNATURAS
+ * Incluye { programaAcademico: true } en todas las consultas
+ * para retornar el nombre del programa junto con la asignatura.
+ *
+ * Ejemplo de respuesta:
+ *   {
+ *     "id": 1,
+ *     "nombre": "Cálculo I",
+ *     "codigo": "MAT-101",
+ *     "creditos": 4,
+ *     "programaAcademico": { "id": 1, "nombre": "Ing. Sistemas" }
+ *   }
+ */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateAsignaturaDto } from '../dto/create-asignatura.dto';

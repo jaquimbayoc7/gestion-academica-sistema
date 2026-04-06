@@ -1,3 +1,12 @@
+/**
+ * CONTROLADOR DE CALIFICACIONES
+ *
+ * ENDPOINTS (sin DELETE — las notas no se eliminan):
+ *   GET    /api/v1/calificaciones      → Listar todas (con matrícula, estudiante, asignatura)
+ *   GET    /api/v1/calificaciones/:id   → Obtener calificación por ID
+ *   POST   /api/v1/calificaciones      → Crear calificación para una matrícula
+ *   PUT    /api/v1/calificaciones/:id   → Actualizar notas (recalcula definitiva)
+ */
 import {
   Controller,
   Get,

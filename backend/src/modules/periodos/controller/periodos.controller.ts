@@ -1,3 +1,13 @@
+/**
+ * CONTROLADOR DE PERÍODOS ACADÉMICOS
+ *
+ * ENDPOINTS:
+ *   GET    /api/v1/periodos      → Listar todos (ordenados por ID desc)
+ *   GET    /api/v1/periodos/:id   → Obtener período por ID
+ *   POST   /api/v1/periodos      → Crear período (si activo=true, desactiva los demás)
+ *   PUT    /api/v1/periodos/:id   → Actualizar período
+ *   DELETE /api/v1/periodos/:id   → Eliminar período
+ */
 import {
   Controller,
   Get,

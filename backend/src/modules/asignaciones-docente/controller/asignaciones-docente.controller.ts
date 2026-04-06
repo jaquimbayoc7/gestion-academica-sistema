@@ -1,3 +1,13 @@
+/**
+ * CONTROLADOR DE ASIGNACIONES DOCENTE
+ *
+ * ENDPOINTS:
+ *   GET    /api/v1/asignaciones-docente      → Listar todas (con relaciones)
+ *   GET    /api/v1/asignaciones-docente/:id   → Obtener una asignación
+ *   POST   /api/v1/asignaciones-docente      → Crear asignación (3 FKs)
+ *   PUT    /api/v1/asignaciones-docente/:id   → Actualizar asignación
+ *   DELETE /api/v1/asignaciones-docente/:id   → Eliminar (falla si tiene matrículas)
+ */
 import {
   Controller,
   Get,

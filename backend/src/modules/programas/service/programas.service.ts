@@ -1,3 +1,8 @@
+/**
+ * SERVICIO DE PROGRAMAS ACADÉMICOS
+ * Mismo patrón: NotFoundException + ConflictException (P2002 = código duplicado).
+ * Al eliminar: si el programa tiene estudiantes o asignaturas, Prisma lanza P2003.
+ */
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { ProgramasRepository } from '../repository/programas.repository';
 import { CreateProgramaDto } from '../dto/create-programa.dto';

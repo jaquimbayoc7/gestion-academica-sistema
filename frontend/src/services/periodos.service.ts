@@ -1,3 +1,8 @@
+/**
+ * SERVICIO FRONTEND DE PERÍODOS ACADÉMICOS
+ * CRUD completo. Al crear/actualizar con activo=true, el backend
+ * desactiva automáticamente los demás períodos.
+ */
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
 import type { PeriodoAcademico } from '@/interfaces/periodo-academico.interface';
 

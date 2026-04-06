@@ -1,3 +1,19 @@
+/**
+ * REPOSITORIO DE ASIGNACIONES DOCENTE
+ *
+ * PARTICULARIDADES:
+ *   - Incluye 3 relaciones en cada consulta:
+ *     { docente: true, asignatura: true, periodoAcademico: true }
+ *     Esto equivale a un triple JOIN.
+ *
+ *   - findByCompound(): Busca por la UNIQUE compuesta
+ *     (docenteId + asignaturaId + periodoAcademicoId).
+ *     Se usa en el Service para verificar duplicados ANTES de insertar.
+ *
+ *     En Prisma, la clave compuesta se accede como:
+ *       where: { docenteId_asignaturaId_periodoAcademicoId: { ... } }
+ *     El nombre es la concatenación de los campos con underscore.
+ */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateAsignacionDocenteDto } from '../dto/create-asignacion-docente.dto';

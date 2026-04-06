@@ -1,3 +1,13 @@
+/**
+ * CONTROLADOR DE ASIGNATURAS
+ *
+ * ENDPOINTS:
+ *   GET    /api/v1/asignaturas      → Listar todas (incluye programa asociado)
+ *   GET    /api/v1/asignaturas/:id   → Obtener una asignatura
+ *   POST   /api/v1/asignaturas      → Crear asignatura (requiere programaAcademicoId válido)
+ *   PUT    /api/v1/asignaturas/:id   → Actualizar asignatura
+ *   DELETE /api/v1/asignaturas/:id   → Eliminar (falla si tiene asignaciones docente)
+ */
 import {
   Controller,
   Get,

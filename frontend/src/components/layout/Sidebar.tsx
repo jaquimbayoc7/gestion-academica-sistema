@@ -1,3 +1,35 @@
+/**
+ * ============================================================
+ * COMPONENTE SIDEBAR (Barra de Navegación Lateral)
+ * ============================================================
+ *
+ * Muestra el menú de navegación lateral con enlaces a cada sección.
+ *
+ * FUNCIONAMIENTO:
+ *   1. Define un array `navItems` con las rutas y etiquetas del menú
+ *   2. Usa `usePathname()` de Next.js para saber la ruta actual
+ *   3. Compara cada ruta del menú con la ruta actual para resaltar la activa
+ *   4. Aplica clases de Tailwind CSS diferentes según si está activa o no:
+ *      - Activa: fondo azul claro + texto azul (bg-blue-50 text-blue-700)
+ *      - Inactiva: texto gris + hover gris (text-gray-600 hover:bg-gray-100)
+ *
+ * DIRECTIVA 'use client':
+ *   Es obligatoria porque usePathname() usa APIs del navegador (hooks de React).
+ *   Sin 'use client', Next.js intentaría ejecutar esto en el servidor y fallaría.
+ *
+ * ESTRUCTURA VISUAL:
+ *   ┌──────────────────┐
+ *   │ Gestión Académica │  ← Título
+ *   ├──────────────────┤
+ *   │  Dashboard        │
+ *   │ ► Estudiantes     │  ← Sección activa (resaltada)
+ *   │  Docentes         │
+ *   │  Programas        │
+ *   │  ...              │
+ *   ├──────────────────┤
+ *   │ CORHUILA 2026A    │  ← Pie de página
+ *   └──────────────────┘
+ */
 'use client';
 
 import Link from 'next/link';

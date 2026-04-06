@@ -1,3 +1,8 @@
+/**
+ * SERVICIO FRONTEND DE ASIGNACIONES DOCENTE
+ * CRUD completo. Cada asignación vincula 3 entidades:
+ * docente + asignatura + período académico.
+ */
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
 import type { AsignacionDocente } from '@/interfaces/asignacion-docente.interface';
 

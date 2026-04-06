@@ -1,3 +1,7 @@
+/**
+ * SERVICIO FRONTEND DE PROGRAMAS ACADÉMICOS
+ * CRUD completo: findAll, findOne, create, update, remove.
+ */
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
 import type { ProgramaAcademico } from '@/interfaces/programa-academico.interface';
 

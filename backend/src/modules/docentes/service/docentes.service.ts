@@ -1,3 +1,10 @@
+/**
+ * SERVICIO DE DOCENTES
+ * Lógica de negocio idéntica al patrón de Estudiantes:
+ * - findOne verifica existencia → NotFoundException si no existe
+ * - create/update capturan P2002 → ConflictException si duplicado
+ * - remove verifica existencia antes de eliminar
+ */
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { DocentesRepository } from '../repository/docentes.repository';
 import { CreateDocenteDto } from '../dto/create-docente.dto';

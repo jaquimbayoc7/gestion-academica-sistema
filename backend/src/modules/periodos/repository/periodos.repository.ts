@@ -1,3 +1,13 @@
+/**
+ * REPOSITORIO DE PERÍODOS ACADÉMICOS
+ *
+ * PARTICULARIDADES:
+ *   - orderBy: { id: 'desc' } → Muestra primero los más recientes.
+ *   - Convierte fechas string → Date en create() y update().
+ *   - deactivateAll() → Método especial que desactiva TODOS los períodos.
+ *     Se usa antes de activar uno nuevo para garantizar que solo uno esté activo.
+ *     Usa updateMany() que es como: UPDATE periodos SET activo=false WHERE activo=true
+ */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreatePeriodoDto } from '../dto/create-periodo.dto';

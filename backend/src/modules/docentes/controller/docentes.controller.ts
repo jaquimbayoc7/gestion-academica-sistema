@@ -1,3 +1,13 @@
+/**
+ * CONTROLADOR DE DOCENTES
+ *
+ * ENDPOINTS:
+ *   GET    /api/v1/docentes      → Listar todos los docentes
+ *   GET    /api/v1/docentes/:id   → Obtener docente por ID
+ *   POST   /api/v1/docentes      → Crear docente
+ *   PUT    /api/v1/docentes/:id   → Actualizar docente
+ *   DELETE /api/v1/docentes/:id   → Eliminar docente (falla si tiene asignaciones)
+ */
 import {
   Controller,
   Get,

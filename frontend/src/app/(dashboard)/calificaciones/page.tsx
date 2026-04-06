@@ -1,3 +1,18 @@
+/**
+ * @file calificaciones/page.tsx
+ * @description Página CRUD para gestión de calificaciones.
+ *
+ * Diferencias clave:
+ *   - Select dinámico de matrículas (muestra "Estudiante – Asignatura").
+ *   - Tres campos numéricos: nota1, nota2, nota3 (rango 0.0 – 5.0).
+ *   - El backend calcula automáticamente:
+ *       notaFinal = nota1 × 0.30 + nota2 × 0.30 + nota3 × 0.40
+ *   - La tabla muestra la nota final con color:
+ *       verde (≥ 3.0 = aprobado) o rojo (< 3.0 = reprobado).
+ *   - Incluye badge "Aprobado" / "Reprobado".
+ *
+ * @see {@link calificacionesService}, {@link matriculasService}
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

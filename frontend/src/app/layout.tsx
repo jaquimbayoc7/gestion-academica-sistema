@@ -1,3 +1,20 @@
+/**
+ * ============================================================
+ * LAYOUT RAÍZ DE LA APLICACIÓN (Root Layout)
+ * ============================================================
+ *
+ * Este es el layout principal de Next.js. TODAS las páginas se
+ * renderizan dentro de este componente.
+ *
+ * ESTRUCTURA HTML:
+ *   <html lang="es">     → Idioma español para accesibilidad
+ *   <body>               → Estilos globales (fondo gris, texto oscuro)
+ *     {children}         → Aquí se insertan las páginas
+ *   </body>
+ *   </html>
+ *
+ * metadata: Define el título y descripción que aparecen en la pestaña del navegador.
+ */
 import type { Metadata } from 'next';
 import './globals.css';
 

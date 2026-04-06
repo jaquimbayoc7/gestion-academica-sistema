@@ -1,3 +1,17 @@
+/**
+ * @file matriculas/page.tsx
+ * @description Página CRUD para gestión de matrículas.
+ *
+ * Diferencias clave con otras páginas:
+ *   - NO tiene actualización (PUT): las matrículas solo se crean o eliminan.
+ *   - Selects dinámicos: estudiante, asignatura y período académico.
+ *   - El botón "Editar" no existe; solo "Eliminar".
+ *   - La tabla muestra los nombres del estudiante, asignatura y período
+ *     gracias a las relaciones include del backend.
+ *
+ * @see {@link matriculasService}, {@link estudiantesService},
+ *      {@link asignaturasService}, {@link periodosService}
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

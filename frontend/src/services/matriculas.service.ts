@@ -1,3 +1,8 @@
+/**
+ * SERVICIO FRONTEND DE MATRÍCULAS
+ * Solo tiene findAll, findOne, create y remove (no tiene update).
+ * Las matrículas no se editan, solo se crean o cancelan.
+ */
 import { apiGet, apiPost, apiDelete } from '@/lib/api';
 import type { Matricula } from '@/interfaces/matricula.interface';
 
