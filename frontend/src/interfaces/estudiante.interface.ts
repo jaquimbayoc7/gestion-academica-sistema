@@ -1,4 +1,5 @@
-// TODO: HU-01
+import type { ProgramaAcademico } from './programa-academico.interface';
+
 export interface Estudiante {
   id: number;
   nombres: string;
@@ -8,6 +9,7 @@ export interface Estudiante {
   correoInstitucional: string;
   fechaNacimiento: string;
   programaAcademicoId: number;
+  programaAcademico?: ProgramaAcademico;
   createdAt: string;
   updatedAt: string;
 }

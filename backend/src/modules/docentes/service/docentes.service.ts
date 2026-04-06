@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { DocentesRepository } from '../repository/docentes.repository';
 import { CreateDocenteDto } from '../dto/create-docente.dto';
 import { UpdateDocenteDto } from '../dto/update-docente.dto';
@@ -8,27 +8,36 @@ export class DocentesService {
   constructor(private readonly docentesRepository: DocentesRepository) {}
 
   findAll() {
-    // TODO: HU-02
     return this.docentesRepository.findAll();
   }
 
-  findOne(id: number) {
-    // TODO: HU-02
-    return this.docentesRepository.findOne(id);
+  async findOne(id: number) {
+    const docente = await this.docentesRepository.findOne(id);
+    if (!docente) throw new NotFoundException(`Docente con ID ${id} no encontrado`);
+    return docente;
   }
 
-  create(dto: CreateDocenteDto) {
-    // TODO: HU-02
-    return this.docentesRepository.create(dto);
+  async create(dto: CreateDocenteDto) {
+    try {
+      return await this.docentesRepository.create(dto);
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictException('Ya existe un docente con ese documento o correo');
+      throw error;
+    }
   }
 
-  update(id: number, dto: UpdateDocenteDto) {
-    // TODO: HU-02
-    return this.docentesRepository.update(id, dto);
+  async update(id: number, dto: UpdateDocenteDto) {
+    await this.findOne(id);
+    try {
+      return await this.docentesRepository.update(id, dto);
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictException('Ya existe un docente con ese documento o correo');
+      throw error;
+    }
   }
 
-  remove(id: number) {
-    // TODO: HU-02
+  async remove(id: number) {
+    await this.findOne(id);
     return this.docentesRepository.remove(id);
   }
 }

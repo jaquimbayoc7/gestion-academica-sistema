@@ -8,27 +8,22 @@ export class ProgramasRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    // TODO: HU-03
-    return [];
+    return this.prisma.programaAcademico.findMany({ orderBy: { id: 'asc' } });
   }
 
   findOne(id: number) {
-    // TODO: HU-03
-    return null;
+    return this.prisma.programaAcademico.findUnique({ where: { id } });
   }
 
   create(dto: CreateProgramaDto) {
-    // TODO: HU-03
-    return null;
+    return this.prisma.programaAcademico.create({ data: dto });
   }
 
   update(id: number, dto: UpdateProgramaDto) {
-    // TODO: HU-03
-    return null;
+    return this.prisma.programaAcademico.update({ where: { id }, data: dto });
   }
 
   remove(id: number) {
-    // TODO: HU-03
-    return null;
+    return this.prisma.programaAcademico.delete({ where: { id } });
   }
 }

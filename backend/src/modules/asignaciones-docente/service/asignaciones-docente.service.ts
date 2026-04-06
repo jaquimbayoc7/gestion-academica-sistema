@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { AsignacionesDocenteRepository } from '../repository/asignaciones-docente.repository';
 import { CreateAsignacionDocenteDto } from '../dto/create-asignacion-docente.dto';
 import { UpdateAsignacionDocenteDto } from '../dto/update-asignacion-docente.dto';
@@ -10,27 +10,41 @@ export class AsignacionesDocenteService {
   ) {}
 
   findAll() {
-    // TODO: HU-06
     return this.asignacionesDocenteRepository.findAll();
   }
 
-  findOne(id: number) {
-    // TODO: HU-06
-    return this.asignacionesDocenteRepository.findOne(id);
+  async findOne(id: number) {
+    const asignacion = await this.asignacionesDocenteRepository.findOne(id);
+    if (!asignacion) throw new NotFoundException(`Asignación con ID ${id} no encontrada`);
+    return asignacion;
   }
 
-  create(dto: CreateAsignacionDocenteDto) {
-    // TODO: HU-06 — validar unicidad compuesta
-    return this.asignacionesDocenteRepository.create(dto);
+  async create(dto: CreateAsignacionDocenteDto) {
+    const existing = await this.asignacionesDocenteRepository.findByCompound(
+      dto.docenteId, dto.asignaturaId, dto.periodoAcademicoId,
+    );
+    if (existing) throw new ConflictException('Esta asignación ya existe para este docente, asignatura y período');
+    try {
+      return await this.asignacionesDocenteRepository.create(dto);
+    } catch (error: any) {
+      if (error.code === 'P2003') throw new NotFoundException('El docente, asignatura o período referenciado no existe');
+      throw error;
+    }
   }
 
-  update(id: number, dto: UpdateAsignacionDocenteDto) {
-    // TODO: HU-06
-    return this.asignacionesDocenteRepository.update(id, dto);
+  async update(id: number, dto: UpdateAsignacionDocenteDto) {
+    await this.findOne(id);
+    try {
+      return await this.asignacionesDocenteRepository.update(id, dto);
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictException('Esta asignación ya existe');
+      throw error;
+    }
   }
 
-  remove(id: number) {
-    // TODO: HU-06
+  async remove(id: number) {
+    await this.findOne(id);
     return this.asignacionesDocenteRepository.remove(id);
   }
+}
 }

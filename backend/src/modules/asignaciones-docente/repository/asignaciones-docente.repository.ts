@@ -8,27 +8,43 @@ export class AsignacionesDocenteRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    // TODO: HU-06
-    return [];
+    return this.prisma.asignacionDocente.findMany({
+      include: { docente: true, asignatura: true, periodoAcademico: true },
+      orderBy: { id: 'asc' },
+    });
   }
 
   findOne(id: number) {
-    // TODO: HU-06
-    return null;
+    return this.prisma.asignacionDocente.findUnique({
+      where: { id },
+      include: { docente: true, asignatura: true, periodoAcademico: true },
+    });
+  }
+
+  findByCompound(docenteId: number, asignaturaId: number, periodoAcademicoId: number) {
+    return this.prisma.asignacionDocente.findUnique({
+      where: {
+        docenteId_asignaturaId_periodoAcademicoId: { docenteId, asignaturaId, periodoAcademicoId },
+      },
+    });
   }
 
   create(dto: CreateAsignacionDocenteDto) {
-    // TODO: HU-06
-    return null;
+    return this.prisma.asignacionDocente.create({
+      data: dto,
+      include: { docente: true, asignatura: true, periodoAcademico: true },
+    });
   }
 
   update(id: number, dto: UpdateAsignacionDocenteDto) {
-    // TODO: HU-06
-    return null;
+    return this.prisma.asignacionDocente.update({
+      where: { id },
+      data: dto,
+      include: { docente: true, asignatura: true, periodoAcademico: true },
+    });
   }
 
   remove(id: number) {
-    // TODO: HU-06
-    return null;
+    return this.prisma.asignacionDocente.delete({ where: { id } });
   }
 }

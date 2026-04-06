@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { CalificacionesRepository } from '../repository/calificaciones.repository';
 import { CreateCalificacionDto } from '../dto/create-calificacion.dto';
 import { UpdateCalificacionDto } from '../dto/update-calificacion.dto';
@@ -10,22 +10,43 @@ export class CalificacionesService {
   ) {}
 
   findAll() {
-    // TODO: HU-08
     return this.calificacionesRepository.findAll();
   }
 
-  findOne(id: number) {
-    // TODO: HU-08
-    return this.calificacionesRepository.findOne(id);
+  async findOne(id: number) {
+    const calificacion = await this.calificacionesRepository.findOne(id);
+    if (!calificacion) throw new NotFoundException(`Calificación con ID ${id} no encontrada`);
+    return calificacion;
   }
 
-  create(dto: CreateCalificacionDto) {
-    // TODO: HU-08 — calcular notaDefinitiva = (nota1*0.3)+(nota2*0.3)+(nota3*0.4)
-    return this.calificacionesRepository.create(dto);
+  async create(dto: CreateCalificacionDto) {
+    const existing = await this.calificacionesRepository.findByMatricula(dto.matriculaId);
+    if (existing) throw new ConflictException('Ya existe una calificación para esta matrícula');
+    const notaDefinitiva = this.calcularDefinitiva(dto.nota1, dto.nota2, dto.nota3);
+    return this.calificacionesRepository.create({
+      matriculaId: dto.matriculaId,
+      nota1: dto.nota1,
+      nota2: dto.nota2,
+      nota3: dto.nota3,
+      notaDefinitiva,
+    });
   }
 
-  update(id: number, dto: UpdateCalificacionDto) {
-    // TODO: HU-08 — recalcular notaDefinitiva al actualizar
-    return this.calificacionesRepository.update(id, dto);
+  async update(id: number, dto: UpdateCalificacionDto) {
+    const current = await this.findOne(id);
+    const nota1 = dto.nota1 ?? current.nota1;
+    const nota2 = dto.nota2 ?? current.nota2;
+    const nota3 = dto.nota3 ?? current.nota3;
+    const notaDefinitiva = this.calcularDefinitiva(nota1, nota2, nota3);
+    return this.calificacionesRepository.update(id, {
+      nota1, nota2, nota3, notaDefinitiva,
+    });
+  }
+
+  private calcularDefinitiva(nota1?: number | null, nota2?: number | null, nota3?: number | null): number | undefined {
+    if (nota1 != null && nota2 != null && nota3 != null) {
+      return Math.round((nota1 * 0.3 + nota2 * 0.3 + nota3 * 0.4) * 100) / 100;
+    }
+    return undefined;
   }
 }

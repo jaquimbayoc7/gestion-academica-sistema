@@ -8,27 +8,37 @@ export class EstudiantesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    // TODO: HU-01 — implementar consulta Prisma
-    return [];
+    return this.prisma.estudiante.findMany({
+      include: { programaAcademico: true },
+      orderBy: { id: 'asc' },
+    });
   }
 
   findOne(id: number) {
-    // TODO: HU-01 — implementar consulta Prisma
-    return null;
+    return this.prisma.estudiante.findUnique({
+      where: { id },
+      include: { programaAcademico: true },
+    });
   }
 
   create(dto: CreateEstudianteDto) {
-    // TODO: HU-01 — implementar creación Prisma
-    return null;
+    return this.prisma.estudiante.create({
+      data: { ...dto, fechaNacimiento: new Date(dto.fechaNacimiento) },
+      include: { programaAcademico: true },
+    });
   }
 
   update(id: number, dto: UpdateEstudianteDto) {
-    // TODO: HU-01 — implementar actualización Prisma
-    return null;
+    const data: Record<string, unknown> = { ...dto };
+    if (dto.fechaNacimiento) data.fechaNacimiento = new Date(dto.fechaNacimiento);
+    return this.prisma.estudiante.update({
+      where: { id },
+      data,
+      include: { programaAcademico: true },
+    });
   }
 
   remove(id: number) {
-    // TODO: HU-01 — implementar eliminación Prisma
-    return null;
+    return this.prisma.estudiante.delete({ where: { id } });
   }
 }

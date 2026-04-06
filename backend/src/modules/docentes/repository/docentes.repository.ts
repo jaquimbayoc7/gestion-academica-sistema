@@ -8,27 +8,22 @@ export class DocentesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    // TODO: HU-02
-    return [];
+    return this.prisma.docente.findMany({ orderBy: { id: 'asc' } });
   }
 
   findOne(id: number) {
-    // TODO: HU-02
-    return null;
+    return this.prisma.docente.findUnique({ where: { id } });
   }
 
   create(dto: CreateDocenteDto) {
-    // TODO: HU-02
-    return null;
+    return this.prisma.docente.create({ data: dto });
   }
 
   update(id: number, dto: UpdateDocenteDto) {
-    // TODO: HU-02
-    return null;
+    return this.prisma.docente.update({ where: { id }, data: dto });
   }
 
   remove(id: number) {
-    // TODO: HU-02
-    return null;
+    return this.prisma.docente.delete({ where: { id } });
   }
 }

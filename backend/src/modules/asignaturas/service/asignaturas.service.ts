@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { AsignaturasRepository } from '../repository/asignaturas.repository';
 import { CreateAsignaturaDto } from '../dto/create-asignatura.dto';
 import { UpdateAsignaturaDto } from '../dto/update-asignatura.dto';
@@ -8,27 +8,36 @@ export class AsignaturasService {
   constructor(private readonly asignaturasRepository: AsignaturasRepository) {}
 
   findAll() {
-    // TODO: HU-04
     return this.asignaturasRepository.findAll();
   }
 
-  findOne(id: number) {
-    // TODO: HU-04
-    return this.asignaturasRepository.findOne(id);
+  async findOne(id: number) {
+    const asignatura = await this.asignaturasRepository.findOne(id);
+    if (!asignatura) throw new NotFoundException(`Asignatura con ID ${id} no encontrada`);
+    return asignatura;
   }
 
-  create(dto: CreateAsignaturaDto) {
-    // TODO: HU-04
-    return this.asignaturasRepository.create(dto);
+  async create(dto: CreateAsignaturaDto) {
+    try {
+      return await this.asignaturasRepository.create(dto);
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictException('Ya existe una asignatura con ese código');
+      throw error;
+    }
   }
 
-  update(id: number, dto: UpdateAsignaturaDto) {
-    // TODO: HU-04
-    return this.asignaturasRepository.update(id, dto);
+  async update(id: number, dto: UpdateAsignaturaDto) {
+    await this.findOne(id);
+    try {
+      return await this.asignaturasRepository.update(id, dto);
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictException('Ya existe una asignatura con ese código');
+      throw error;
+    }
   }
 
-  remove(id: number) {
-    // TODO: HU-04
+  async remove(id: number) {
+    await this.findOne(id);
     return this.asignaturasRepository.remove(id);
   }
 }

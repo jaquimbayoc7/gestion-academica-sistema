@@ -1,4 +1,3 @@
-// TODO: HU-02
 export interface Docente {
   id: number;
   nombres: string;

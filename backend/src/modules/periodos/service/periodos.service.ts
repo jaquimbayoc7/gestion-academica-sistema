@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PeriodosRepository } from '../repository/periodos.repository';
 import { CreatePeriodoDto } from '../dto/create-periodo.dto';
 import { UpdatePeriodoDto } from '../dto/update-periodo.dto';
@@ -8,27 +8,42 @@ export class PeriodosService {
   constructor(private readonly periodosRepository: PeriodosRepository) {}
 
   findAll() {
-    // TODO: HU-05
     return this.periodosRepository.findAll();
   }
 
-  findOne(id: number) {
-    // TODO: HU-05
-    return this.periodosRepository.findOne(id);
+  async findOne(id: number) {
+    const periodo = await this.periodosRepository.findOne(id);
+    if (!periodo) throw new NotFoundException(`Período con ID ${id} no encontrado`);
+    return periodo;
   }
 
-  create(dto: CreatePeriodoDto) {
-    // TODO: HU-05 — lógica: solo un período activo a la vez
-    return this.periodosRepository.create(dto);
+  async create(dto: CreatePeriodoDto) {
+    if (dto.activo) {
+      await this.periodosRepository.deactivateAll();
+    }
+    try {
+      return await this.periodosRepository.create(dto);
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictException('Ya existe un período con ese nombre');
+      throw error;
+    }
   }
 
-  update(id: number, dto: UpdatePeriodoDto) {
-    // TODO: HU-05 — lógica: solo un período activo a la vez
-    return this.periodosRepository.update(id, dto);
+  async update(id: number, dto: UpdatePeriodoDto) {
+    await this.findOne(id);
+    if (dto.activo) {
+      await this.periodosRepository.deactivateAll();
+    }
+    try {
+      return await this.periodosRepository.update(id, dto);
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictException('Ya existe un período con ese nombre');
+      throw error;
+    }
   }
 
-  remove(id: number) {
-    // TODO: HU-05
+  async remove(id: number) {
+    await this.findOne(id);
     return this.periodosRepository.remove(id);
   }
 }

@@ -8,27 +8,39 @@ export class PeriodosRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    // TODO: HU-05
-    return [];
+    return this.prisma.periodoAcademico.findMany({ orderBy: { id: 'desc' } });
   }
 
   findOne(id: number) {
-    // TODO: HU-05
-    return null;
+    return this.prisma.periodoAcademico.findUnique({ where: { id } });
   }
 
-  create(dto: CreatePeriodoDto) {
-    // TODO: HU-05
-    return null;
+  create(data: CreatePeriodoDto) {
+    return this.prisma.periodoAcademico.create({
+      data: {
+        nombre: data.nombre,
+        fechaInicio: new Date(data.fechaInicio),
+        fechaFin: new Date(data.fechaFin),
+        activo: data.activo ?? false,
+      },
+    });
   }
 
-  update(id: number, dto: UpdatePeriodoDto) {
-    // TODO: HU-05
-    return null;
+  update(id: number, data: UpdatePeriodoDto) {
+    const updateData: Record<string, unknown> = { ...data };
+    if (data.fechaInicio) updateData.fechaInicio = new Date(data.fechaInicio);
+    if (data.fechaFin) updateData.fechaFin = new Date(data.fechaFin);
+    return this.prisma.periodoAcademico.update({ where: { id }, data: updateData });
   }
 
   remove(id: number) {
-    // TODO: HU-05
-    return null;
+    return this.prisma.periodoAcademico.delete({ where: { id } });
+  }
+
+  deactivateAll() {
+    return this.prisma.periodoAcademico.updateMany({
+      where: { activo: true },
+      data: { activo: false },
+    });
   }
 }

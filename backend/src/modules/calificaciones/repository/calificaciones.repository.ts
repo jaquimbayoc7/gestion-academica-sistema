@@ -1,29 +1,68 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { CreateCalificacionDto } from '../dto/create-calificacion.dto';
-import { UpdateCalificacionDto } from '../dto/update-calificacion.dto';
 
 @Injectable()
 export class CalificacionesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    // TODO: HU-08
-    return [];
+    return this.prisma.calificacion.findMany({
+      include: {
+        matricula: {
+          include: {
+            estudiante: true,
+            asignacionDocente: { include: { asignatura: true, docente: true } },
+          },
+        },
+      },
+      orderBy: { id: 'asc' },
+    });
   }
 
   findOne(id: number) {
-    // TODO: HU-08
-    return null;
+    return this.prisma.calificacion.findUnique({
+      where: { id },
+      include: {
+        matricula: {
+          include: {
+            estudiante: true,
+            asignacionDocente: { include: { asignatura: true, docente: true } },
+          },
+        },
+      },
+    });
   }
 
-  create(dto: CreateCalificacionDto) {
-    // TODO: HU-08
-    return null;
+  findByMatricula(matriculaId: number) {
+    return this.prisma.calificacion.findUnique({ where: { matriculaId } });
   }
 
-  update(id: number, dto: UpdateCalificacionDto) {
-    // TODO: HU-08
-    return null;
+  create(data: { matriculaId: number; nota1?: number; nota2?: number; nota3?: number; notaDefinitiva?: number }) {
+    return this.prisma.calificacion.create({
+      data,
+      include: {
+        matricula: {
+          include: {
+            estudiante: true,
+            asignacionDocente: { include: { asignatura: true, docente: true } },
+          },
+        },
+      },
+    });
+  }
+
+  update(id: number, data: { nota1?: number; nota2?: number; nota3?: number; notaDefinitiva?: number }) {
+    return this.prisma.calificacion.update({
+      where: { id },
+      data,
+      include: {
+        matricula: {
+          include: {
+            estudiante: true,
+            asignacionDocente: { include: { asignatura: true, docente: true } },
+          },
+        },
+      },
+    });
   }
 }
