@@ -960,6 +960,7 @@ HTTP/1.1 <span class="hl-num">201</span> Created
         <button class="tab-btn" onclick="openTab(event, 'tab-entity')">📦 Entity & DTO</button>
         <button class="tab-btn" onclick="openTab(event, 'tab-service-be')">🧠 Service</button>
         <button class="tab-btn" onclick="openTab(event, 'tab-repo-be')">💾 Repository</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-prisma')">🔮 Prisma ORM</button>
     </div>
 
     <!-- TAB: lib/api.ts -->
@@ -1342,6 +1343,14 @@ HTTP/1.1 <span class="hl-num">201</span> Created
             <p>En el backend hay dos tipos de clases que describen la forma de los datos. Son como fichas técnicas: una describe <em>cómo luce un objeto en la base de datos</em> (Entity) y otra describe <em>qué datos debe traer el cliente al crear o actualizar algo</em> (DTO). Son distintas a propósito.</p>
         </div>
 
+        <div class="story-box">
+            <h4>🎯 ¿Para qué sirve realmente la Entity?</h4>
+            <p>La <strong>Entity</strong> tiene <strong>tres roles</strong> al mismo tiempo:</p>
+            <div class="bubble"><strong>1️⃣ Contrato de tipado:</strong> le dice a TypeScript qué campos tiene un estudiante. Sin ella, el editor no autocompletaría y los errores se verían solo en producción.</div>
+            <div class="bubble"><strong>2️⃣ Forma de la respuesta del Repository:</strong> cuando Prisma devuelve datos de la BD, el tipo que retorna coincide exactamente con la Entity. El Service puede leer <code>est.nombres</code> con seguridad.</div>
+            <div class="bubble"><strong>3️⃣ Espejo del frontend:</strong> la interface TypeScript del frontend (<code>interfaces/estudiante.interface.ts</code>) debe tener los mismos campos que la Entity, para que los datos que llegan del backend tengan el tipo correcto en React.</div>
+        </div>
+
         <div class="compare-panels">
             <div class="compare-panel">
                 <div class="compare-panel-header" style="background: linear-gradient(135deg, #7b1fa2, #9b5de5);">📦 Entity — el «carné» del objeto</div>
@@ -1398,9 +1407,109 @@ HTTP/1.1 <span class="hl-num">201</span> Created
         </div>
 
         <div class="info-box info">
-            <h4>🔄 ¿Cómo fluyen Entity y DTO?</h4>
-            <p>El <strong>DTO</strong> entra por el Controller (validado por el <code>ValidationPipe</code>), el Service lo procesa y el Repository lo usa para crear el registro. La base de datos devuelve el objeto completo, que Prisma mapea a un objeto que <em>coincide</em> con la <strong>Entity</strong>. Ese es el dato que viaja de vuelta al frontend.</p>
+            <h4>🔄 ¿Cómo fluyen Entity y DTO en cada petición?</h4>
+            <p>El <strong>DTO</strong> entra por el Controller (validado por el <code>ValidationPipe</code>), el Service lo procesa y el Repository lo usa para crear el registro en la BD. Prisma devuelve el objeto completo y lo tipifica como si fuera la <strong>Entity</strong>. Ese objeto sube por Service → Controller → ResponseInterceptor → HTTP → frontend.</p>
         </div>
+
+        <div class="svg-diagram">
+            <svg viewBox="0 0 860 180" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="860" height="180" rx="14" fill="#f8f0ff" stroke="#d8b4fe" stroke-width="2"/>
+                <text x="430" y="22" font-size="13" font-weight="900" fill="#6b21a8" text-anchor="middle">Flujo de datos: DTO entra → Entity sale</text>
+                <!-- Frontend -->
+                <rect x="10" y="40" width="110" height="50" rx="10" fill="#fff0f8" stroke="#ff6eb4" stroke-width="2"/>
+                <text x="65" y="62" font-size="11" font-weight="800" fill="#c2185b" text-anchor="middle">🖥️ Frontend</text>
+                <text x="65" y="78" font-size="10" fill="#888" text-anchor="middle">JSON plano</text>
+                <!-- Flecha -->
+                <line x1="120" y1="65" x2="155" y2="65" stroke="#e91e63" stroke-width="2" marker-end="url(#arrowEnt1)"/>
+                <text x="137" y="57" font-size="9" fill="#e91e63" text-anchor="middle" font-weight="700">POST</text>
+                <!-- ValidationPipe -->
+                <rect x="155" y="40" width="120" height="50" rx="10" fill="#fff9e0" stroke="#ffc107" stroke-width="2"/>
+                <text x="215" y="62" font-size="11" font-weight="800" fill="#e65100" text-anchor="middle">🛡️ Validation</text>
+                <text x="215" y="78" font-size="9" fill="#888" text-anchor="middle">DTO válido ✅</text>
+                <!-- Flecha -->
+                <line x1="275" y1="65" x2="310" y2="65" stroke="#ffc107" stroke-width="2" marker-end="url(#arrowEnt2)"/>
+                <text x="292" y="57" font-size="9" fill="#e65100" text-anchor="middle" font-weight="700">DTO</text>
+                <!-- Controller -->
+                <rect x="310" y="40" width="110" height="50" rx="10" fill="#fce4ec" stroke="#e91e63" stroke-width="2"/>
+                <text x="365" y="62" font-size="11" font-weight="800" fill="#ad1457" text-anchor="middle">🎯 Controller</text>
+                <text x="365" y="78" font-size="9" fill="#888" text-anchor="middle">pasa el DTO</text>
+                <!-- Flecha -->
+                <line x1="420" y1="65" x2="455" y2="65" stroke="#e91e63" stroke-width="2" marker-end="url(#arrowEnt3)"/>
+                <text x="437" y="57" font-size="9" fill="#e91e63" text-anchor="middle" font-weight="700">DTO</text>
+                <!-- Service -->
+                <rect x="455" y="40" width="110" height="50" rx="10" fill="#fff8e1" stroke="#ff8c42" stroke-width="2"/>
+                <text x="510" y="62" font-size="11" font-weight="800" fill="#bf360c" text-anchor="middle">🧠 Service</text>
+                <text x="510" y="78" font-size="9" fill="#888" text-anchor="middle">valida reglas</text>
+                <!-- Flecha -->
+                <line x1="565" y1="65" x2="600" y2="65" stroke="#ff8c42" stroke-width="2" marker-end="url(#arrowEnt4)"/>
+                <text x="582" y="57" font-size="9" fill="#ff8c42" text-anchor="middle" font-weight="700">DTO</text>
+                <!-- Repository -->
+                <rect x="600" y="40" width="120" height="50" rx="10" fill="#e3f2fd" stroke="#4d96ff" stroke-width="2"/>
+                <text x="660" y="62" font-size="11" font-weight="800" fill="#0d47a1" text-anchor="middle">💾 Repository</text>
+                <text x="660" y="78" font-size="9" fill="#888" text-anchor="middle">Prisma → SQL</text>
+                <!-- Flecha -->
+                <line x1="720" y1="65" x2="755" y2="65" stroke="#4d96ff" stroke-width="2" marker-end="url(#arrowEnt5)"/>
+                <text x="737" y="57" font-size="9" fill="#4d96ff" text-anchor="middle" font-weight="700">SQL</text>
+                <!-- BD -->
+                <rect x="755" y="40" width="95" height="50" rx="10" fill="#f3e8ff" stroke="#9b5de5" stroke-width="2"/>
+                <text x="803" y="62" font-size="11" font-weight="800" fill="#6b21a8" text-anchor="middle">🗄️ PostgreSQL</text>
+                <text x="803" y="78" font-size="9" fill="#888" text-anchor="middle">guarda y retorna</text>
+                <!-- Flecha de retorno -->
+                <path d="M 800 90 Q 430 160 65 90" fill="none" stroke="#6bcb77" stroke-width="2.5" stroke-dasharray="7,4" marker-end="url(#arrowEntG)"/>
+                <text x="430" y="168" font-size="11" fill="#166534" font-weight="800" text-anchor="middle">← Entity (objeto completo tipado) viaja de vuelta al frontend</text>
+                <defs>
+                    <marker id="arrowEnt1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e91e63"/></marker>
+                    <marker id="arrowEnt2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffc107"/></marker>
+                    <marker id="arrowEnt3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e91e63"/></marker>
+                    <marker id="arrowEnt4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ff8c42"/></marker>
+                    <marker id="arrowEnt5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4d96ff"/></marker>
+                    <marker id="arrowEntG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6bcb77"/></marker>
+                </defs>
+            </svg>
+        </div>
+
+        <h3 class="subsection-title">🔗 La Entity como puente con el frontend</h3>
+        <div class="compare-panels">
+            <div class="compare-panel">
+                <div class="compare-panel-header" style="background: linear-gradient(135deg, #b71c1c, #e53935);">🔧 Backend — Entity</div>
+                <div class="compare-panel-body">
+                    <div class="code-block">
+                        <span class="file-label">estudiante.entity.ts (backend)</span>
+                        <code><span class="hl-kw">export class</span> <span class="hl-type">EstudianteEntity</span> {
+  id: <span class="hl-type">number</span>;
+  nombres: <span class="hl-type">string</span>;
+  apellidos: <span class="hl-type">string</span>;
+  codigoEstudiantil: <span class="hl-type">string</span>;
+  correoInstitucional: <span class="hl-type">string</span>;
+  fechaNacimiento: <span class="hl-type">Date</span>;
+  programaAcademicoId: <span class="hl-type">number</span>;
+  createdAt: <span class="hl-type">Date</span>;
+  updatedAt: <span class="hl-type">Date</span>;
+}</code>
+                    </div>
+                </div>
+            </div>
+            <div class="compare-panel">
+                <div class="compare-panel-header" style="background: linear-gradient(135deg, #1565c0, #1e88e5);">⚛️ Frontend — Interface</div>
+                <div class="compare-panel-body">
+                    <div class="code-block">
+                        <span class="file-label">interfaces/estudiante.interface.ts (frontend)</span>
+                        <code><span class="hl-kw">export interface</span> <span class="hl-type">Estudiante</span> {
+  id: <span class="hl-type">number</span>;
+  nombres: <span class="hl-type">string</span>;
+  apellidos: <span class="hl-type">string</span>;
+  codigoEstudiantil: <span class="hl-type">string</span>;
+  correoInstitucional: <span class="hl-type">string</span>;
+  fechaNacimiento: <span class="hl-type">string</span>; <span class="hl-comment">// Date→string en JSON</span>
+  programaAcademicoId: <span class="hl-type">number</span>;
+  createdAt: <span class="hl-type">string</span>;
+  updatedAt: <span class="hl-type">string</span>;
+}</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p style="margin-top:10px; font-size:14px; color:#555;">⚠️ La única diferencia: el backend usa <code>Date</code> y el frontend usa <code>string</code> porque cuando los datos viajan por HTTP como JSON, las fechas se convierten automáticamente a texto ISO (<code>"2026-04-27T00:00:00.000Z"</code>).</p>
 
         <h3 class="subsection-title">🖼️ La analogía del pedido de pizza</h3>
         <div class="analogy-row">
@@ -1518,6 +1627,291 @@ HTTP/1.1 <span class="hl-num">201</span> Created
         <div class="story-box">
             <h4>¿Qué es <code>include</code>?</h4>
             <p>En SQL se llama <strong>JOIN</strong>: unir dos tablas. <code>include: { programaAcademico: true }</code> le dice a Prisma: <em>"además del estudiante, tráeme también los datos del programa al que pertenece"</em>. Así en la respuesta viene todo junto, sin hacer dos consultas.</p>
+        </div>
+    </div>
+
+    <!-- TAB: PRISMA ORM -->
+    <div id="tab-prisma" class="tab-content">
+        <div class="info-box fun">
+            <h4>🔮 Prisma: el traductor universal</h4>
+            <p>Prisma es un <strong>ORM</strong> (Object-Relational Mapper). Eso significa que te permite hablar con la base de datos usando <strong>TypeScript</strong>, sin escribir SQL. Es como tener un intérprete que traduce tu español a chino mandarín automáticamente. Sin Prisma tendrías que escribir <code>SELECT * FROM estudiantes WHERE id = $1</code> manualmente.</p>
+        </div>
+
+        <h3 class="subsection-title">🗺️ Las 3 piezas de Prisma</h3>
+        <div class="fun-cards">
+            <div class="fun-card purple">
+                <span class="big-emoji">📋</span>
+                <h3 style="color:#6b21a8;">schema.prisma</h3>
+                <p>El <strong>plano de la BD</strong>. Define qué tablas existen, qué columnas tienen y cómo se relacionan. Es el único archivo que editas para cambiar la estructura.</p>
+            </div>
+            <div class="fun-card blue">
+                <span class="big-emoji">⚡</span>
+                <h3 style="color:#0d47a1;">Prisma Client</h3>
+                <p>El <strong>código generado automáticamente</strong>. Cada vez que cambias el schema, ejecutas <code>prisma generate</code> y Prisma genera funciones TypeScript listas para usar.</p>
+            </div>
+            <div class="fun-card green">
+                <span class="big-emoji">🗂️</span>
+                <h3 style="color:#1b5e20;">Migraciones</h3>
+                <p>Los <strong>archivos SQL históricos</strong>. Con <code>prisma migrate dev</code> Prisma compara el schema con la BD real y genera el SQL de los cambios necesarios.</p>
+            </div>
+        </div>
+
+        <h3 class="subsection-title">📋 El schema.prisma — el corazón</h3>
+        <div class="code-block">
+            <span class="file-label">backend/prisma/schema.prisma (fragmento real)</span>
+            <code><span class="hl-comment">// 1️⃣ Decirle a Prisma que use PostgreSQL</span>
+<span class="hl-fn">datasource</span> db {
+  provider = <span class="hl-str">"postgresql"</span>
+  <span class="hl-comment">// La URL viene de la variable de entorno DATABASE_URL</span>
+}
+
+<span class="hl-comment">// 2️⃣ Pedirle que genere el cliente TypeScript</span>
+<span class="hl-fn">generator</span> client {
+  provider = <span class="hl-str">"prisma-client-js"</span>
+}
+
+<span class="hl-comment">// 3️⃣ Definir el modelo (= una tabla en la BD)</span>
+<span class="hl-kw">model</span> <span class="hl-type">Estudiante</span> {
+  id                  <span class="hl-type">Int</span>      <span class="hl-deco">@id @default(autoincrement())</span>  <span class="hl-comment">// PK autoincrementable</span>
+  nombres             <span class="hl-type">String</span>
+  apellidos           <span class="hl-type">String</span>
+  codigoEstudiantil   <span class="hl-type">String</span>   <span class="hl-deco">@unique</span>                        <span class="hl-comment">// No puede repetirse</span>
+  documentoIdentidad  <span class="hl-type">String</span>   <span class="hl-deco">@unique</span>
+  correoInstitucional <span class="hl-type">String</span>   <span class="hl-deco">@unique</span>
+  fechaNacimiento     <span class="hl-type">DateTime</span>
+  programaAcademicoId <span class="hl-type">Int</span>                                          <span class="hl-comment">// Clave foránea (FK)</span>
+
+  <span class="hl-comment">// 🔗 Relación: un estudiante pertenece a UN programa</span>
+  programaAcademico   <span class="hl-type">ProgramaAcademico</span> <span class="hl-deco">@relation</span>(fields: [programaAcademicoId], references: [id])
+
+  <span class="hl-comment">// 🔗 Relación inversa: un estudiante puede tener MUCHAS matrículas</span>
+  matriculas          <span class="hl-type">Matricula</span>[]
+
+  createdAt           <span class="hl-type">DateTime</span> <span class="hl-deco">@default(now())</span>                <span class="hl-comment">// Fecha de creación automática</span>
+  updatedAt           <span class="hl-type">DateTime</span> <span class="hl-deco">@updatedAt</span>                     <span class="hl-comment">// Se actualiza solo</span>
+
+  <span class="hl-deco">@@map(</span><span class="hl-str">"estudiantes"</span><span class="hl-deco">)</span>                                          <span class="hl-comment">// Tabla real en PostgreSQL</span>
+}</code>
+        </div>
+        <div class="story-box">
+            <h4>Los decoradores de Prisma son como reglas del colegio</h4>
+            <p>
+                <code>@id</code> → <em>"este campo es el jefe, identifica cada fila"</em> 👑<br>
+                <code>@default(autoincrement())</code> → <em>"PostgreSQL le asigna el número solo, empezando en 1"</em> 🔢<br>
+                <code>@unique</code> → <em>"no puede haber dos con el mismo valor, como el documento de identidad"</em> 🚫<br>
+                <code>@default(now())</code> → <em>"pone la fecha/hora actual cuando se crea el registro"</em> 📅<br>
+                <code>@updatedAt</code> → <em>"Prisma actualiza esta columna sola cada vez que cambia algo"</em> 🔄<br>
+                <code>@@map()</code> → <em>"el modelo se llama Estudiante en TypeScript pero la tabla es 'estudiantes' en SQL"</em>
+            </p>
+        </div>
+
+        <h3 class="subsection-title">🔄 TypeScript → SQL: la traducción automática</h3>
+        <div class="info-box info">
+            <h4>Prisma traduce tu código TypeScript a SQL sin que lo veas</h4>
+        </div>
+
+        <div class="step">
+            <div class="step-number" style="background: linear-gradient(135deg, #6bcb77, #27ae60);">GET</div>
+            <div class="step-content">
+                <h3>findMany → SELECT</h3>
+                <div class="compare-panels">
+                    <div class="compare-panel">
+                        <div class="compare-panel-header" style="background:#1e3c72;">TypeScript (lo que escribes)</div>
+                        <div class="compare-panel-body">
+                            <div class="code-block" style="margin:0">
+                                <code>prisma.estudiante.<span class="hl-fn">findMany</span>({
+  include: { programaAcademico: <span class="hl-kw">true</span> },
+  orderBy: { id: <span class="hl-str">'asc'</span> },
+  where: { nombres: { contains: <span class="hl-str">'Juan'</span> } }
+})</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="compare-panel">
+                        <div class="compare-panel-header" style="background:#336791;">SQL (lo que Prisma genera)</div>
+                        <div class="compare-panel-body">
+                            <div class="code-block" style="margin:0">
+                                <code><span class="hl-kw">SELECT</span> e.*, p.*
+<span class="hl-kw">FROM</span> estudiantes e
+<span class="hl-kw">LEFT JOIN</span> programas_academicos p
+  <span class="hl-kw">ON</span> e.programa_academico_id = p.id
+<span class="hl-kw">WHERE</span> e.nombres <span class="hl-kw">ILIKE</span> <span class="hl-str">'%Juan%'</span>
+<span class="hl-kw">ORDER BY</span> e.id <span class="hl-kw">ASC</span></code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" style="border-left-color: var(--fun-blue);">
+            <div class="step-number" style="background: linear-gradient(135deg, #4d96ff, #1565c0);">POST</div>
+            <div class="step-content">
+                <h3>create → INSERT</h3>
+                <div class="compare-panels">
+                    <div class="compare-panel">
+                        <div class="compare-panel-header" style="background:#1e3c72;">TypeScript</div>
+                        <div class="compare-panel-body">
+                            <div class="code-block" style="margin:0">
+                                <code>prisma.estudiante.<span class="hl-fn">create</span>({
+  data: {
+    nombres: <span class="hl-str">'Juan'</span>,
+    codigoEstudiantil: <span class="hl-str">'EST-001'</span>,
+    programaAcademicoId: <span class="hl-num">1</span>,
+    <span class="hl-comment">// ...más campos</span>
+  },
+  include: { programaAcademico: <span class="hl-kw">true</span> }
+})</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="compare-panel">
+                        <div class="compare-panel-header" style="background:#336791;">SQL generado</div>
+                        <div class="compare-panel-body">
+                            <div class="code-block" style="margin:0">
+                                <code><span class="hl-kw">INSERT INTO</span> estudiantes
+  (nombres, codigo_estudiantil,
+   programa_academico_id, ...)
+<span class="hl-kw">VALUES</span>
+  (<span class="hl-str">'Juan'</span>, <span class="hl-str">'EST-001'</span>, <span class="hl-num">1</span>, ...)
+<span class="hl-kw">RETURNING</span> *
+<span class="hl-comment">-- + JOIN para incluir el programa</span></code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" style="border-left-color: var(--fun-yellow);">
+            <div class="step-number" style="background: linear-gradient(135deg, #ffc107, #ff8c42);">PUT</div>
+            <div class="step-content">
+                <h3>update → UPDATE</h3>
+                <div class="compare-panels">
+                    <div class="compare-panel">
+                        <div class="compare-panel-header" style="background:#1e3c72;">TypeScript</div>
+                        <div class="compare-panel-body">
+                            <div class="code-block" style="margin:0">
+                                <code>prisma.estudiante.<span class="hl-fn">update</span>({
+  where: { id: <span class="hl-num">1</span> },
+  data: { nombres: <span class="hl-str">'Carlos'</span> },
+})</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="compare-panel">
+                        <div class="compare-panel-header" style="background:#336791;">SQL generado</div>
+                        <div class="compare-panel-body">
+                            <div class="code-block" style="margin:0">
+                                <code><span class="hl-kw">UPDATE</span> estudiantes
+<span class="hl-kw">SET</span>
+  nombres = <span class="hl-str">'Carlos'</span>,
+  updated_at = <span class="hl-kw">NOW</span>()
+<span class="hl-kw">WHERE</span> id = <span class="hl-num">1</span>
+<span class="hl-kw">RETURNING</span> *</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" style="border-left-color: var(--fun-pink);">
+            <div class="step-number" style="background: linear-gradient(135deg, #e91e63, #ff6eb4);">DEL</div>
+            <div class="step-content">
+                <h3>delete → DELETE</h3>
+                <div class="compare-panels">
+                    <div class="compare-panel">
+                        <div class="compare-panel-header" style="background:#1e3c72;">TypeScript</div>
+                        <div class="compare-panel-body">
+                            <div class="code-block" style="margin:0">
+                                <code>prisma.estudiante.<span class="hl-fn">delete</span>({
+  where: { id: <span class="hl-num">1</span> },
+})</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="compare-panel">
+                        <div class="compare-panel-header" style="background:#336791;">SQL generado</div>
+                        <div class="compare-panel-body">
+                            <div class="code-block" style="margin:0">
+                                <code><span class="hl-kw">DELETE FROM</span> estudiantes
+<span class="hl-kw">WHERE</span> id = <span class="hl-num">1</span>
+<span class="hl-kw">RETURNING</span> *</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="subsection-title">⚙️ PrismaService — la conexión con la BD</h3>
+        <div class="code-block">
+            <span class="file-label">backend/src/prisma/prisma.service.ts</span>
+            <code><span class="hl-deco">@Injectable</span>()
+<span class="hl-kw">export class</span> <span class="hl-type">PrismaService</span>
+  <span class="hl-kw">extends</span> <span class="hl-type">PrismaClient</span>  <span class="hl-comment">// ← hereda todos los métodos de Prisma</span>
+  <span class="hl-kw">implements</span> <span class="hl-type">OnModuleInit</span>, <span class="hl-type">OnModuleDestroy</span>
+{
+  <span class="hl-kw">constructor</span>() {
+    <span class="hl-comment">// Adaptador específico para PostgreSQL</span>
+    <span class="hl-kw">const</span> adapter = <span class="hl-kw">new</span> <span class="hl-type">PrismaPg</span>({
+      connectionString: process.env.<span class="hl-type">DATABASE_URL</span>,
+      <span class="hl-comment">// = "postgresql://admin:admin123@db:5432/gestion_academica"</span>
+    });
+    <span class="hl-kw">super</span>({ adapter });
+  }
+
+  <span class="hl-comment">// 🔌 Se conecta cuando arranca NestJS</span>
+  <span class="hl-kw">async</span> <span class="hl-fn">onModuleInit</span>() {
+    <span class="hl-kw">await</span> <span class="hl-kw">this</span>.<span class="hl-fn">$connect</span>();
+  }
+
+  <span class="hl-comment">// 🔌 Se desconecta cuando para NestJS</span>
+  <span class="hl-kw">async</span> <span class="hl-fn">onModuleDestroy</span>() {
+    <span class="hl-kw">await</span> <span class="hl-kw">this</span>.<span class="hl-fn">$disconnect</span>();
+  }
+}</code>
+        </div>
+        <div class="info-box success">
+            <h4>🔗 ¿Por qué todos los Repositories pueden usar PrismaService sin importar nada?</h4>
+            <p>Porque <code>PrismaModule</code> está marcado como <code>@Global()</code>. Es como una llave maestra: se registra una sola vez y NestJS la inyecta automáticamente donde la pidas en el constructor. Sin eso, cada módulo tendría que importar <code>PrismaModule</code> uno a uno.</p>
+        </div>
+
+        <h3 class="subsection-title">🗂️ Migraciones — el historial de la BD</h3>
+        <div class="info-box warning">
+            <h4>📂 prisma/migrations/20260325142014_init/migration.sql</h4>
+            <p>Las migraciones son archivos SQL que Prisma <strong>genera automáticamente</strong> cuando cambias el schema. Son el historial de cómo fue cambiando la BD. Si en el futuro agregas una columna al schema, Prisma genera un nuevo archivo <code>migration.sql</code> con solo el <code>ALTER TABLE</code> necesario, sin tocar lo que ya existe.</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">prisma/migrations/20260325142014_init/migration.sql (fragmento)</span>
+            <code><span class="hl-comment">-- Este archivo lo generó Prisma automáticamente</span>
+<span class="hl-comment">-- con: npx prisma migrate dev --name init</span>
+
+<span class="hl-kw">CREATE TABLE</span> <span class="hl-str">"estudiantes"</span> (
+    <span class="hl-str">"id"</span>                  <span class="hl-type">SERIAL</span>    <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-str">"nombres"</span>             <span class="hl-type">TEXT</span>      <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-str">"apellidos"</span>           <span class="hl-type">TEXT</span>      <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-str">"codigoEstudiantil"</span>   <span class="hl-type">TEXT</span>      <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-str">"documentoIdentidad"</span>  <span class="hl-type">TEXT</span>      <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-str">"correoInstitucional"</span> <span class="hl-type">TEXT</span>      <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-str">"fechaNacimiento"</span>     <span class="hl-type">TIMESTAMP</span> <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-str">"programaAcademicoId"</span> <span class="hl-type">INTEGER</span>   <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-str">"createdAt"</span>           <span class="hl-type">TIMESTAMP</span> <span class="hl-kw">NOT NULL DEFAULT</span> <span class="hl-fn">CURRENT_TIMESTAMP</span>,
+    <span class="hl-str">"updatedAt"</span>           <span class="hl-type">TIMESTAMP</span> <span class="hl-kw">NOT NULL</span>,
+    <span class="hl-kw">CONSTRAINT</span> <span class="hl-str">"estudiantes_pkey"</span> <span class="hl-kw">PRIMARY KEY</span> (<span class="hl-str">"id"</span>)
+);
+<span class="hl-kw">CREATE UNIQUE INDEX</span> <span class="hl-kw">ON</span> <span class="hl-str">"estudiantes"</span>(<span class="hl-str">"codigoEstudiantil"</span>);
+<span class="hl-kw">CREATE UNIQUE INDEX</span> <span class="hl-kw">ON</span> <span class="hl-str">"estudiantes"</span>(<span class="hl-str">"correoInstitucional"</span>);</code>
+        </div>
+        <div class="story-box">
+            <h4>El flujo completo de Prisma en el proyecto</h4>
+            <div class="bubble">1️⃣ Editas <code>schema.prisma</code> (agregas un campo, un modelo…)</div>
+            <div class="bubble">2️⃣ Ejecutas <code>npx prisma migrate dev --name nombre_cambio</code></div>
+            <div class="bubble">3️⃣ Prisma compara el schema con la BD y genera el archivo <code>migration.sql</code></div>
+            <div class="bubble">4️⃣ Prisma ejecuta el SQL en PostgreSQL automáticamente</div>
+            <div class="bubble">5️⃣ Ejecutas <code>npx prisma generate</code> (o lo hace solo) para actualizar el cliente TypeScript</div>
+            <div class="bubble">6️⃣ En el código, <code>this.prisma.tuNuevoModelo.findMany()</code> ya aparece con autocompletado ✨</div>
         </div>
     </div>
 </section>
