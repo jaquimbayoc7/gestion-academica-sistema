@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 ¿Cómo hablan el Frontend y el Backend? — Para niños de 5 años</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+    --primary-color: #1e3c72;
+    --secondary-color: #2a5298;
+    --accent-color: #ff6b6b;
+    --light-bg: #f8f9fa;
+    --dark-text: #2c3e50;
+    --border-color: #e0e0e0;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --info-color: #3498db;
+
+    /* Colores juguetones */
+    --fun-pink: #ff6eb4;
+    --fun-yellow: #ffd93d;
+    --fun-green: #6bcb77;
+    --fun-blue: #4d96ff;
+    --fun-orange: #ff8c42;
+    --fun-purple: #9b5de5;
+    --fun-red: #f15bb5;
+    --fun-teal: #00bbf9;
+}
+body {
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.6;
+    color: var(--dark-text);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+/* ═══ HEADER ═══ */
+.main-header { background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white; }
+.top-bar { background-color: rgba(0,0,0,0.1); padding: 20px 0; text-align: center; }
+.brand-container { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.brand-name { font-size: 26px; font-weight: 900; letter-spacing: 1px; margin: 10px 0; }
+.brand-subtitle { font-size: 15px; font-weight: 600; opacity: 0.9; }
+.main-nav { background-color: rgba(0,0,0,0.2); padding: 12px 0; position: sticky; top: 0; z-index: 100; }
+.main-nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; gap: 4px; }
+.main-nav a { color: white; text-decoration: none; padding: 10px 18px; display: block; font-size: 14px; font-weight: 700; transition: background-color 0.3s; border-bottom: 3px solid transparent; border-radius: 8px 8px 0 0; }
+.main-nav a:hover, .main-nav a.active { background-color: rgba(255,255,255,0.15); border-bottom-color: var(--fun-yellow); }
+
+/* ═══ CONTENEDOR PRINCIPAL ═══ */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.main-content { min-height: 100vh; padding: 40px 0; background: white; }
+.section {
+    margin: 60px 0;
+    padding: 50px 0;
+    border-top: 3px dashed #e0e0e0;
+}
+.section:first-child { border-top: none; margin-top: 0; }
+
+/* ═══ TÍTULOS ═══ */
+.section-title {
+    font-size: 34px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.section-title i { font-size: 38px; color: var(--fun-pink); }
+.section-title .emoji-big { font-size: 42px; }
+.subsection-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 35px;
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ═══ TARJETAS DIVERTIDAS ═══ */
+.fun-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin: 30px 0; }
+.fun-card {
+    border-radius: 20px;
+    padding: 28px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    cursor: default;
+}
+.fun-card:hover { transform: translateY(-8px) rotate(1deg); box-shadow: 0 14px 30px rgba(0,0,0,0.15); }
+.fun-card .big-emoji { font-size: 56px; margin-bottom: 12px; display: block; }
+.fun-card h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+.fun-card p { font-size: 14px; line-height: 1.5; }
+.fun-card.pink  { background: linear-gradient(135deg, #ffe0f0, #ffc8e5); border: 3px solid var(--fun-pink); }
+.fun-card.blue  { background: linear-gradient(135deg, #dceeff, #c0dbff); border: 3px solid var(--fun-blue); }
+.fun-card.green { background: linear-gradient(135deg, #d8f5e0, #b8edc5); border: 3px solid var(--fun-green); }
+.fun-card.yellow{ background: linear-gradient(135deg, #fff9c0, #fff0a0); border: 3px solid var(--fun-yellow); }
+.fun-card.purple{ background: linear-gradient(135deg, #eadeff, #d5c0ff); border: 3px solid var(--fun-purple); }
+.fun-card.orange{ background: linear-gradient(135deg, #ffe8d0, #ffd4b0); border: 3px solid var(--fun-orange); }
+
+/* ═══ HISTORIA / CUENTO ═══ */
+.story-box {
+    background: linear-gradient(135deg, #fff9f0, #fff3e0);
+    border: 3px solid var(--fun-yellow);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 25px 0;
+    position: relative;
+}
+.story-box::before {
+    content: '📖';
+    font-size: 36px;
+    position: absolute;
+    top: -20px;
+    left: 30px;
+    background: white;
+    padding: 0 8px;
+}
+.story-box h4 { font-size: 18px; font-weight: 900; color: #b7500a; margin-bottom: 10px; }
+.story-box p { font-size: 16px; line-height: 1.7; color: #5a3a1a; }
+.story-box .bubble {
+    background: white;
+    border-radius: 15px;
+    padding: 12px 18px;
+    margin: 10px 0;
+    border-left: 5px solid var(--fun-orange);
+    font-size: 15px;
+    font-style: italic;
+}
+
+/* ═══ CAJAS INFO ═══ */
+.info-box { padding: 20px 25px; border-radius: 16px; margin: 20px 0; }
+.info-box.warning { background-color: #fff9e0; border-left: 6px solid var(--warning-color); }
+.info-box.success { background-color: #e8fdf0; border-left: 6px solid var(--success-color); }
+.info-box.info    { background-color: #e0f4ff; border-left: 6px solid var(--info-color); }
+.info-box.fun     { background: linear-gradient(135deg, #fff0fb, #f0e8ff); border-left: 6px solid var(--fun-purple); }
+.info-box h4 { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800; }
+.info-box p, .info-box li { font-size: 15px; line-height: 1.6; }
+
+/* ═══ DIAGRAMA SVG ═══ */
+.svg-diagram { margin: 30px 0; text-align: center; overflow-x: auto; }
+.svg-diagram svg { max-width: 100%; height: auto; }
+
+/* ═══ PASOS / STEPS ═══ */
+.step {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding: 22px;
+    background-color: var(--light-bg);
+    border-radius: 16px;
+    border-left: 6px solid var(--fun-blue);
+    transition: transform 0.2s;
+}
+.step:hover { transform: translateX(6px); }
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    height: 58px;
+    background: linear-gradient(135deg, var(--fun-blue), var(--fun-purple));
+    color: white;
+    border-radius: 50%;
+    font-size: 26px;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+.step-content h3 { color: var(--primary-color); margin-bottom: 8px; font-size: 18px; font-weight: 800; }
+.step-content p { color: var(--dark-text); font-size: 15px; line-height: 1.6; }
+.step-content .mini-code {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+/* ═══ COMPARADOR ═══ */
+.compare-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+.compare-panel { border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.compare-panel-header { padding: 14px 20px; color: white; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.compare-panel-body { padding: 20px; background: #f8f9fa; }
+.compare-panel-body p { font-size: 15px; line-height: 1.7; }
+.compare-panel-body ul { margin-left: 20px; }
+.compare-panel-body li { font-size: 14px; margin: 6px 0; }
+
+/* ═══ INTERACTIVE FLOW ═══ */
+.flow-step { opacity: 0.35; transition: all 0.4s ease; cursor: pointer; }
+.flow-step:hover, .flow-step.active { opacity: 1; }
+.flow-step.active rect, .flow-step.active ellipse, .flow-step.active circle {
+    stroke-width: 4;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+}
+.flow-description {
+    min-height: 130px;
+    padding: 22px 28px;
+    background: linear-gradient(135deg, #f0f4ff, #e8f5ff);
+    border-radius: 16px;
+    border-left: 6px solid var(--fun-blue);
+    margin-top: 20px;
+    transition: all 0.3s;
+}
+.flow-description h4 { color: var(--primary-color); margin-bottom: 8px; font-size: 18px; font-weight: 800; }
+.flow-description p { font-size: 15px; line-height: 1.6; }
+
+/* ═══ TABS ═══ */
+.tabs { display: flex; border-bottom: 3px solid var(--border-color); margin-bottom: 0; flex-wrap: wrap; gap: 4px; }
+.tab-btn {
+    padding: 12px 24px;
+    border: none;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 800;
+    color: #666;
+    border-radius: 12px 12px 0 0;
+    transition: all 0.3s;
+    font-family: 'Nunito', sans-serif;
+}
+.tab-btn:hover { color: var(--primary-color); background-color: #e0e8ff; }
+.tab-btn.active { color: white; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); }
+.tab-content { display: none; padding: 25px 0; }
+.tab-content.active { display: block; }
+
+/* ═══ ACORDEÓN ═══ */
+.accordion-item { border: 2px solid var(--border-color); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+.accordion-header {
+    background: linear-gradient(135deg, #f8f9ff, #eef2ff);
+    padding: 18px 22px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--primary-color);
+    transition: background-color 0.3s;
+}
+.accordion-header:hover { background: linear-gradient(135deg, #eef2ff, #dce4ff); }
+.accordion-header i.chevron { transition: transform 0.3s; font-size: 16px; }
+.accordion-header.open i.chevron { transform: rotate(180deg); }
+.accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; padding: 0 22px; }
+.accordion-body.open { max-height: 4000px; padding: 20px 22px; }
+
+/* ═══ BADGE / ETIQUETA ═══ */
+.tech-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: white;
+    margin: 3px;
+}
+.badge-frontend { background: #1a1a1a; }
+.badge-backend  { background: #e0234e; }
+.badge-db       { background: #336791; }
+.badge-docker   { background: #2496ed; }
+
+/* ═══ HIGHLIGHT SYNTAX ═══ */
+.hl-kw   { color: #c678dd; font-weight: 700; }
+.hl-str  { color: #98c379; }
+.hl-fn   { color: #61afef; }
+.hl-type { color: #e06c75; }
+.hl-deco { color: #e5c07b; }
+.hl-num  { color: #d19a66; }
+.hl-comment { color: #5c6370; font-style: italic; }
+
+/* ═══ CODE BLOCK ═══ */
+.code-block {
+    background: linear-gradient(135deg, #1e1e2e, #2d2d3e);
+    border-left: 6px solid var(--fun-purple);
+    border-radius: 14px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    position: relative;
+}
+.code-block code {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #cdd6f4;
+    line-height: 1.8;
+    white-space: pre;
+    white-space: pre-wrap;
+    word-break: break-word;
+    display: block;
+}
+.code-block .file-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--fun-purple);
+    color: white;
+    padding: 4px 14px;
+    border-radius: 0 14px 0 10px;
+    font-size: 11px;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+}
+
+/* ═══ GLOBO DE DIÁLOGO ═══ */
+.speech-bubble {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin: 15px 0 15px 60px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 15px;
+    font-weight: 600;
+    border: 2px solid #e0e0e0;
+}
+.speech-bubble::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: 16px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 18px solid #e0e0e0;
+}
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 18px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 14px solid white;
+}
+.speaker { font-size: 40px; float: left; margin-right: 10px; }
+
+/* ═══ QUIZ ═══ */
+.quiz-box {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 3px solid var(--fun-green);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 25px 0;
+}
+.quiz-box h4 { font-size: 20px; font-weight: 900; color: #166534; margin-bottom: 16px; }
+.quiz-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: 3px solid #bbf7d0;
+    border-radius: 14px;
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--dark-text);
+}
+.quiz-option:hover { background: #f0fdf4; border-color: var(--fun-green); transform: translateX(4px); }
+.quiz-option.correct { background: #dcfce7; border-color: #16a34a; color: #166534; }
+.quiz-option.wrong { background: #fef2f2; border-color: #dc2626; color: #991b1b; }
+.quiz-feedback { padding: 14px; border-radius: 12px; margin-top: 12px; font-size: 15px; font-weight: 700; display: none; }
+.quiz-feedback.correct { background: #dcfce7; color: #166534; border: 2px solid #16a34a; }
+.quiz-feedback.wrong   { background: #fef2f2; color: #991b1b; border: 2px solid #dc2626; }
+
+/* ═══ ANALOGÍA VISUAL ═══ */
+.analogy-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 20px 0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.analogy-cell {
+    flex: 1;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+.analogy-cell .big-emoji { font-size: 40px; display: block; margin-bottom: 8px; }
+.analogy-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background: #f0f0f0;
+    font-size: 22px;
+    color: #999;
+}
+
+/* ═══ FOOTER ═══ */
+.footer { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 40px 0; margin-top: 60px; }
+.footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+.footer-section h3 { margin-bottom: 12px; color: var(--fun-yellow); font-size: 17px; font-weight: 800; }
+.footer-section ul { list-style: none; }
+.footer-section ul li { margin: 8px 0; font-size: 14px; opacity: 0.85; }
+.footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); margin-top: 25px; font-size: 14px; opacity: 0.7; }
+
+/* ═══ PROGRESS BAR ═══ */
+.progress-bar-wrap { background: #e0e0e0; border-radius: 99px; height: 20px; margin: 8px 0; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 99px; display: flex; align-items: center; padding-left: 12px; font-size: 11px; font-weight: 800; color: white; transition: width 1s ease; }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 768px) {
+    .section-title { font-size: 24px; }
+    .main-nav ul { flex-direction: column; align-items: stretch; }
+    .main-nav a { text-align: center; }
+    .fun-cards { grid-template-columns: 1fr; }
+    .compare-panels { grid-template-columns: 1fr; }
+    .step { flex-direction: column; }
+    .analogy-row { flex-direction: column; }
+    .analogy-arrow { display: none; }
+}
+    </style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<header class="main-header">
+    <div class="top-bar">
+        <div class="container">
+            <div class="brand-container">
+                <img src="https://raw.githubusercontent.com/code-corhuila/material-mineria-datos/b3725d694125ab35294ddfe415a327bc1445d32c/01-week/01-session/LOGO%20CORHUILA%20BLANCO%20PNG%20(2).png" alt="Logo Corhuila" style="max-width: 110px; height: auto; margin-bottom: 15px;">
+                <h1 class="brand-name">🧒 ¿Cómo hablan el Frontend y el Backend?</h1>
+                <p class="brand-subtitle">Una guía super fácil — ¡Explicado como si tuvieras 5 años! 🎈</p>
+            </div>
+        </div>
+    </div>
+    <nav class="main-nav">
+        <ul>
+            <li><a href="#que-es" class="nav-link">🍕 ¿Qué es esto?</a></li>
+            <li><a href="#los-personajes" class="nav-link">🧑‍🤝‍🧑 Los personajes</a></li>
+            <li><a href="#la-conversacion" class="nav-link">💬 La conversación</a></li>
+            <li><a href="#el-viaje" class="nav-link">🚀 El viaje del mensaje</a></li>
+            <li><a href="#el-codigo" class="nav-link">💻 En el código</a></li>
+            <li><a href="#errores" class="nav-link">❌ Los errores</a></li>
+            <li><a href="#quiz" class="nav-link">🏆 Quiz</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<main class="main-content">
+<div class="container">
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN 1: ¿QUÉ ES ESTO?                                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section id="que-es" class="section">
+    <h2 class="section-title"><span class="emoji-big">🍕</span> Imagina que quieres pizza</h2>
+
+    <div class="story-box">
+        <h4>El cuento para entenderlo todo:</h4>
+        <p>Imagina que estás en un restaurante de pizza. 🍕</p>
+        <div class="bubble">Tú eres el <strong>cliente</strong> que entra al restaurante y hace un pedido.</div>
+        <div class="bubble">El <strong>mesero</strong> toma tu pedido y lo lleva a la cocina. ¡Él habla contigo y con el cocinero!</div>
+        <div class="bubble">El <strong>cocinero</strong> está en la cocina, prepara la pizza y se la da al mesero.</div>
+        <div class="bubble">La <strong>despensa</strong> guarda los ingredientes: tomate, queso, harina... sin ella no hay pizza.</div>
+    </div>
+
+    <div class="fun-cards">
+        <div class="fun-card pink">
+            <span class="big-emoji">🖥️</span>
+            <h3 style="color: #c2185b;">Frontend</h3>
+            <p>Es lo que <strong>tú ves</strong> en la pantalla. Botones, formularios, listas. Es como el <strong>restaurante</strong> donde tú entras.</p>
+            <br>
+            <span class="tech-badge badge-frontend">⚛ Next.js + React</span>
+        </div>
+        <div class="fun-card blue">
+            <span class="big-emoji">⚙️</span>
+            <h3 style="color: #0d47a1;">Backend</h3>
+            <p>Es el "cerebro" escondido. No lo ves, pero hace todo el trabajo importante. Es como la <strong>cocina</strong>.</p>
+            <br>
+            <span class="tech-badge badge-backend">🔧 NestJS</span>
+        </div>
+        <div class="fun-card green">
+            <span class="big-emoji">💾</span>
+            <h3 style="color: #1b5e20;">Base de Datos</h3>
+            <p>Guarda toda la información para siempre. Es como la <strong>despensa</strong>: tiene todo guardado en cajitas.</p>
+            <br>
+            <span class="tech-badge badge-db">🐘 PostgreSQL</span>
+        </div>
+        <div class="fun-card yellow">
+            <span class="big-emoji">📨</span>
+            <h3 style="color: #e65100;">HTTP / API</h3>
+            <p>Es el idioma que usan el frontend y el backend para hablar. Como cuando dices <em>"quiero una pizza de queso"</em>.</p>
+            <br>
+            <span class="tech-badge" style="background:#e65100;">📡 REST API</span>
+        </div>
+    </div>
+
+    <div class="info-box fun">
+        <h4><span style="font-size:22px">🤔</span> ¿Por qué están separados?</h4>
+        <p>¡Muy buena pregunta! El frontend y el backend están <strong>separados como piezas de LEGO</strong> 🧱. Si algo falla en la cocina (backend), el restaurante (frontend) puede seguir abierto mostrando un mensaje de "estamos arreglando algo". Y si cambias la decoración del restaurante, la cocina no necesita cambiar nada.</p>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN 2: LOS PERSONAJES                                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section id="los-personajes" class="section">
+    <h2 class="section-title"><span class="emoji-big">🧑‍🤝‍🧑</span> Los personajes de nuestra app</h2>
+
+    <p style="font-size:16px; margin-bottom: 25px;">En nuestro sistema de la escuela hay 3 personajes principales. Cada uno vive en un lugar diferente y tiene un trabajo especial. ¡Haz clic en cada uno para conocerlo mejor! 👇</p>
+
+    <!-- SVG interactivo de los 3 personajes -->
+    <div class="svg-diagram">
+        <svg viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#ff6eb4"/>
+                </marker>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+            </defs>
+
+            <!-- Fondo -->
+            <rect x="0" y="0" width="860" height="320" rx="20" fill="#fef9ff" stroke="#e0d0ff" stroke-width="2"/>
+
+            <!-- ── FRONTEND ── -->
+            <g class="flow-step active" data-step="0" data-title="🖥️ Frontend (Next.js)" data-desc="El frontend vive en el NAVEGADOR de tu computador (Chrome, Firefox...). Cuando abres localhost:3000 lo estás viendo. Está hecho con React y Next.js. Su trabajo es mostrar botones, formularios y listas bonitas. Cuando haces clic en 'Crear estudiante' el frontend LLAMA al backend para pedirle que guarde los datos. ¡Él NUNCA habla directamente con la base de datos!" onclick="activatePersonaje(0)">
+                <rect x="30" y="40" width="220" height="230" rx="18" fill="#fff0f8" stroke="#ff6eb4" stroke-width="3"/>
+                <text x="140" y="80" font-size="50" text-anchor="middle">🖥️</text>
+                <text x="140" y="110" font-size="16" font-weight="900" fill="#c2185b" text-anchor="middle">FRONTEND</text>
+                <text x="140" y="130" font-size="12" fill="#666" text-anchor="middle">El restaurante</text>
+                <text x="140" y="152" font-size="11" fill="#555" text-anchor="middle">• Next.js + React</text>
+                <text x="140" y="170" font-size="11" fill="#555" text-anchor="middle">• Puerto 3000</text>
+                <text x="140" y="188" font-size="11" fill="#555" text-anchor="middle">• Vive en el navegador</text>
+                <text x="140" y="206" font-size="11" fill="#555" text-anchor="middle">• Muestra botones</text>
+                <text x="140" y="224" font-size="11" fill="#555" text-anchor="middle">• Envía peticiones HTTP</text>
+                <rect x="60" y="240" width="160" height="22" rx="10" fill="#ff6eb4"/>
+                <text x="140" y="255" font-size="11" font-weight="800" fill="white" text-anchor="middle">👆 Haz clic</text>
+            </g>
+
+            <!-- Flecha F → B -->
+            <g>
+                <line x1="250" y1="155" x2="310" y2="155" stroke="#ff6eb4" stroke-width="3" marker-end="url(#arrow1)" stroke-dasharray="8,4"/>
+                <text x="280" y="143" font-size="11" font-weight="800" fill="#c2185b" text-anchor="middle">HTTP</text>
+                <text x="280" y="173" font-size="10" fill="#888" text-anchor="middle">fetch()</text>
+            </g>
+
+            <!-- Flecha B → F (respuesta) -->
+            <g>
+                <line x1="310" y1="175" x2="250" y2="175" stroke="#6bcb77" stroke-width="2" stroke-dasharray="5,3"
+                      marker-end="url(#arrowGreen3)"/>
+                <text x="280" y="195" font-size="10" fill="#27ae60" text-anchor="middle">JSON ✅</text>
+            </g>
+
+            <!-- ── BACKEND ── -->
+            <g class="flow-step" data-step="1" data-title="⚙️ Backend (NestJS)" data-desc="El backend vive en un SERVIDOR (en nuestro caso, un contenedor Docker). Escucha en el puerto 3001. Cuando el frontend le envía una petición, él la revisa, aplica las reglas del negocio y habla con la base de datos usando Prisma. Es como el chef: no lo ves pero hace todo el trabajo importante. Tiene 3 capas: Controller (recibe), Service (piensa), Repository (busca datos)." onclick="activatePersonaje(1)">
+                <rect x="320" y="40" width="220" height="230" rx="18" fill="#fff5f0" stroke="#ff8c42" stroke-width="3"/>
+                <text x="430" y="80" font-size="50" text-anchor="middle">⚙️</text>
+                <text x="430" y="110" font-size="16" font-weight="900" fill="#bf360c" text-anchor="middle">BACKEND</text>
+                <text x="430" y="130" font-size="12" fill="#666" text-anchor="middle">La cocina</text>
+                <text x="430" y="152" font-size="11" fill="#555" text-anchor="middle">• NestJS (Node.js)</text>
+                <text x="430" y="170" font-size="11" fill="#555" text-anchor="middle">• Puerto 3001</text>
+                <text x="430" y="188" font-size="11" fill="#555" text-anchor="middle">• Vive en Docker</text>
+                <text x="430" y="206" font-size="11" fill="#555" text-anchor="middle">• Valida los datos</text>
+                <text x="430" y="224" font-size="11" fill="#555" text-anchor="middle">• Habla con la BD</text>
+                <rect x="360" y="240" width="140" height="22" rx="10" fill="#ff8c42"/>
+                <text x="430" y="255" font-size="11" font-weight="800" fill="white" text-anchor="middle">👆 Haz clic</text>
+            </g>
+
+            <!-- Flecha B → BD -->
+            <g>
+                <line x1="540" y1="155" x2="600" y2="155" stroke="#4d96ff" stroke-width="3" marker-end="url(#arrowBlue2)" stroke-dasharray="8,4"/>
+                <text x="570" y="143" font-size="11" font-weight="800" fill="#1565c0" text-anchor="middle">Prisma</text>
+                <text x="570" y="173" font-size="10" fill="#888" text-anchor="middle">SQL</text>
+            </g>
+
+            <!-- Flecha BD → B (respuesta) -->
+            <g>
+                <line x1="600" y1="175" x2="540" y2="175" stroke="#6bcb77" stroke-width="2" stroke-dasharray="5,3"
+                      marker-end="url(#arrowGreen3)"/>
+                <text x="570" y="195" font-size="10" fill="#27ae60" text-anchor="middle">datos 📦</text>
+            </g>
+
+            <!-- ── BASE DE DATOS ── -->
+            <g class="flow-step" data-step="2" data-title="💾 Base de Datos (PostgreSQL)" data-desc="La base de datos guarda TODO para siempre en una tabla. Es como un cuaderno gigante donde hay una fila para cada estudiante, cada docente, cada materia. PostgreSQL es como una despensa muy organizada con cajitas etiquetadas. El backend habla con ella usando Prisma, que traduce código TypeScript a SQL (el idioma de las bases de datos)." onclick="activatePersonaje(2)">
+                <rect x="610" y="40" width="220" height="230" rx="18" fill="#f0f8ff" stroke="#4d96ff" stroke-width="3"/>
+                <text x="720" y="80" font-size="50" text-anchor="middle">💾</text>
+                <text x="720" y="110" font-size="16" font-weight="900" fill="#0d47a1" text-anchor="middle">BASE DE DATOS</text>
+                <text x="720" y="130" font-size="12" fill="#666" text-anchor="middle">La despensa</text>
+                <text x="720" y="152" font-size="11" fill="#555" text-anchor="middle">• PostgreSQL 16</text>
+                <text x="720" y="170" font-size="11" fill="#555" text-anchor="middle">• Puerto 5432</text>
+                <text x="720" y="188" font-size="11" fill="#555" text-anchor="middle">• Vive en Docker</text>
+                <text x="720" y="206" font-size="11" fill="#555" text-anchor="middle">• 8 tablas con datos</text>
+                <text x="720" y="224" font-size="11" fill="#555" text-anchor="middle">• Guarda para siempre</text>
+                <rect x="650" y="240" width="140" height="22" rx="10" fill="#4d96ff"/>
+                <text x="720" y="255" font-size="11" font-weight="800" fill="white" text-anchor="middle">👆 Haz clic</text>
+            </g>
+
+            <!-- "El usuario" debajo del frontend -->
+            <text x="140" y="300" font-size="12" fill="#888" text-anchor="middle" font-weight="700">👤 Tú lo ves aquí</text>
+            <text x="430" y="300" font-size="12" fill="#888" text-anchor="middle" font-weight="700">🔒 Escondido</text>
+            <text x="720" y="300" font-size="12" fill="#888" text-anchor="middle" font-weight="700">🔒 Escondido</text>
+
+            <defs>
+                <marker id="arrowGreen3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#6bcb77"/>
+                </marker>
+                <marker id="arrowBlue2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#4d96ff"/>
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- Panel de descripción del personaje -->
+    <div class="flow-description" id="personajeDesc">
+        <h4>🖥️ Frontend (Next.js)</h4>
+        <p>El frontend vive en el <strong>NAVEGADOR</strong> de tu computador (Chrome, Firefox...). Cuando abres <code>localhost:3000</code> lo estás viendo. Está hecho con React y Next.js. Su trabajo es mostrar botones, formularios y listas bonitas. Cuando haces clic en "Crear estudiante" el frontend <strong>LLAMA</strong> al backend para pedirle que guarde los datos. ¡Él NUNCA habla directamente con la base de datos!</p>
+    </div>
+
+    <!-- Analogía visual -->
+    <h3 class="subsection-title">🏪 La analogía del restaurante</h3>
+    <div class="analogy-row">
+        <div class="analogy-cell" style="background: #fff0f8;">
+            <span class="big-emoji">👤</span>
+            <strong>Tú</strong><br>
+            <small style="color:#888">El cliente hambriento</small>
+        </div>
+        <div class="analogy-arrow">➡️</div>
+        <div class="analogy-cell" style="background: #fff0f8;">
+            <span class="big-emoji">🖥️</span>
+            <strong>Frontend</strong><br>
+            <small style="color:#888">El restaurante / menú</small>
+        </div>
+        <div class="analogy-arrow">📨</div>
+        <div class="analogy-cell" style="background: #fff5f0;">
+            <span class="big-emoji">🍳</span>
+            <strong>Backend</strong><br>
+            <small style="color:#888">La cocina / el chef</small>
+        </div>
+        <div class="analogy-arrow">🛒</div>
+        <div class="analogy-cell" style="background: #f0f8ff;">
+            <span class="big-emoji">🏪</span>
+            <strong>Base de Datos</strong><br>
+            <small style="color:#888">La despensa / bodega</small>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN 3: LA CONVERSACIÓN                                 -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section id="la-conversacion" class="section">
+    <h2 class="section-title"><span class="emoji-big">💬</span> ¿Cómo hablan entre ellos?</h2>
+
+    <p style="font-size:16px; margin-bottom: 20px;">El frontend y el backend hablan usando un idioma especial llamado <strong>HTTP</strong>. Son como cartas que se envían por internet. Cada carta tiene un tipo: ¿quiero algo? ¿mando algo nuevo? ¿cambio algo? ¿borro algo?</p>
+
+    <div class="fun-cards">
+        <div class="fun-card green">
+            <span class="big-emoji">📥</span>
+            <h3 style="color: #1b5e20;">GET</h3>
+            <p><strong>"Dame los datos"</strong><br>Como decir: <em>"¿Me das la lista de todos los estudiantes?"</em></p>
+            <br>
+            <code style="background:#1b5e20; color:white; padding:4px 10px; border-radius:8px; font-size:12px;">GET /estudiantes</code>
+        </div>
+        <div class="fun-card blue">
+            <span class="big-emoji">📤</span>
+            <h3 style="color: #0d47a1;">POST</h3>
+            <p><strong>"Crea algo nuevo"</strong><br>Como decir: <em>"Registra a este nuevo estudiante en el sistema"</em></p>
+            <br>
+            <code style="background:#0d47a1; color:white; padding:4px 10px; border-radius:8px; font-size:12px;">POST /estudiantes</code>
+        </div>
+        <div class="fun-card yellow">
+            <span class="big-emoji">✏️</span>
+            <h3 style="color: #e65100;">PUT</h3>
+            <p><strong>"Actualiza esto"</strong><br>Como decir: <em>"Cambia el correo de Juan Pérez"</em></p>
+            <br>
+            <code style="background:#e65100; color:white; padding:4px 10px; border-radius:8px; font-size:12px;">PUT /estudiantes/1</code>
+        </div>
+        <div class="fun-card pink">
+            <span class="big-emoji">🗑️</span>
+            <h3 style="color: #b71c1c;">DELETE</h3>
+            <p><strong>"Borra esto"</strong><br>Como decir: <em>"Elimina al estudiante con ID número 1"</em></p>
+            <br>
+            <code style="background:#b71c1c; color:white; padding:4px 10px; border-radius:8px; font-size:12px;">DELETE /estudiantes/1</code>
+        </div>
+    </div>
+
+    <h3 class="subsection-title">📦 ¿Cómo se ven los mensajes?</h3>
+
+    <div class="compare-panels">
+        <div class="compare-panel">
+            <div class="compare-panel-header" style="background: linear-gradient(135deg, #e91e63, #c2185b);">
+                📤 El frontend ENVÍA (petición)
+            </div>
+            <div class="compare-panel-body">
+                <p>Cuando creas un estudiante, el frontend envía esta "carta" al backend:</p>
+                <div class="code-block" style="margin-top: 14px;">
+                    <code><span class="hl-comment">// Destino de la carta</span>
+POST http://localhost:3001/api/v1/estudiantes
+
+<span class="hl-comment">// El sobre (headers)</span>
+Content-Type: application/json
+
+<span class="hl-comment">// El contenido (body)</span>
+{
+  <span class="hl-str">"nombres"</span>: <span class="hl-str">"Juan Carlos"</span>,
+  <span class="hl-str">"apellidos"</span>: <span class="hl-str">"Pérez Gómez"</span>,
+  <span class="hl-str">"codigoEstudiantil"</span>: <span class="hl-str">"EST-2026-001"</span>,
+  <span class="hl-str">"programaAcademicoId"</span>: <span class="hl-num">1</span>
+}</code>
+                </div>
+            </div>
+        </div>
+        <div class="compare-panel">
+            <div class="compare-panel-header" style="background: linear-gradient(135deg, #27ae60, #1b5e20);">
+                📥 El backend RESPONDE
+            </div>
+            <div class="compare-panel-body">
+                <p>El backend siempre responde con este formato especial (nuestro ResponseInterceptor):</p>
+                <div class="code-block" style="margin-top: 14px;">
+                    <code><span class="hl-comment">// Código de éxito</span>
+HTTP/1.1 <span class="hl-num">201</span> Created
+
+<span class="hl-comment">// La respuesta envuelta</span>
+{
+  <span class="hl-str">"statusCode"</span>: <span class="hl-num">201</span>,
+  <span class="hl-str">"message"</span>: <span class="hl-str">"Created"</span>,
+  <span class="hl-str">"data"</span>: {
+    <span class="hl-str">"id"</span>: <span class="hl-num">1</span>,
+    <span class="hl-str">"nombres"</span>: <span class="hl-str">"Juan Carlos"</span>,
+    <span class="hl-str">"apellidos"</span>: <span class="hl-str">"Pérez Gómez"</span>
+  }
+}</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box info">
+        <h4>🔢 Los códigos de estado — ¡Como semáforos!</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
+            <div style="background:#dcfce7; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:28px;">🟢</div>
+                <strong>200 OK</strong><br><small>Todo salió bien 🎉</small>
+            </div>
+            <div style="background:#dcfce7; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:28px;">🟢</div>
+                <strong>201 Created</strong><br><small>Se creó algo nuevo 🆕</small>
+            </div>
+            <div style="background:#fff9c4; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:28px;">🟡</div>
+                <strong>400 Bad Request</strong><br><small>Mandaste datos incorrectos 📝</small>
+            </div>
+            <div style="background:#fef2f2; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:28px;">🔴</div>
+                <strong>404 Not Found</strong><br><small>No existe lo que buscas 🔍</small>
+            </div>
+            <div style="background:#fef2f2; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:28px;">🔴</div>
+                <strong>409 Conflict</strong><br><small>Ya existe uno igual ♊</small>
+            </div>
+            <div style="background:#fef2f2; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:28px;">🔴</div>
+                <strong>500 Error</strong><br><small>El servidor se rompió 💥</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN 4: EL VIAJE DEL MENSAJE                           -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section id="el-viaje" class="section">
+    <h2 class="section-title"><span class="emoji-big">🚀</span> El viaje de un mensaje</h2>
+
+    <p style="font-size:16px; margin-bottom: 20px;">Cuando haces clic en <strong>"Guardar estudiante"</strong> en el navegador, el mensaje recorre 5 paradas antes de volver con la respuesta. ¡Haz clic en cada parada para ver qué pasa!</p>
+
+    <!-- SVG Interactivo del viaje -->
+    <div class="svg-diagram">
+        <svg id="viajeSvg" viewBox="0 0 860 240" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="860" height="240" rx="16" fill="#f0f4ff" stroke="#c5cae9" stroke-width="2"/>
+            <text x="430" y="28" font-size="15" font-weight="900" fill="#1e3c72" text-anchor="middle">El viaje de una petición — clic para explorar cada parada 🚂</text>
+
+            <!-- TREN TRACKS -->
+            <line x1="40" y1="120" x2="820" y2="120" stroke="#ddd" stroke-width="4"/>
+
+            <!-- PARADA 0: Navegador -->
+            <g class="flow-step active" data-step="0"
+               data-title="🌐 Parada 1: Tu navegador (Frontend)"
+               data-desc="Aquí empieza todo. Tú escribes el nombre del estudiante en el formulario y haces clic en 'Guardar'. React llama a la función handleSubmit(), que a su vez llama al estudiantesService.create(dto). El service llama a apiPost() que usa fetch() para enviar la petición HTTP al backend. ¡El formulario se bloquea y aparece un loading mientras espera!"
+               onclick="activateViaje(0)">
+                <circle cx="80" cy="120" r="42" fill="#fff0f8" stroke="#ff6eb4" stroke-width="3"/>
+                <text x="80" y="108" font-size="24" text-anchor="middle">🌐</text>
+                <text x="80" y="130" font-size="10" font-weight="900" fill="#c2185b" text-anchor="middle">Navegador</text>
+                <text x="80" y="145" font-size="9" fill="#888" text-anchor="middle">Frontend</text>
+            </g>
+
+            <!-- FLECHA 0→1 -->
+            <text x="172" y="105" font-size="9" fill="#ff6eb4" text-anchor="middle" font-weight="700">fetch()</text>
+            <line x1="122" y1="120" x2="212" y2="120" stroke="#ff6eb4" stroke-width="2.5" marker-end="url(#arrowPink)"/>
+
+            <!-- PARADA 1: ValidationPipe -->
+            <g class="flow-step" data-step="1"
+               data-title="🛡️ Parada 2: ValidationPipe (Guardia)"
+               data-desc="Antes de entrar a la cocina, hay un guardia de seguridad: el ValidationPipe. Revisa que el JSON que mandaste tenga todos los campos correctos. ¿Mandaste el email con formato válido? ¿El programaAcademicoId es un número entero? Si algo falla, ¡el guardia te devuelve un error 400 sin siquiera molestar al controller!"
+               onclick="activateViaje(1)">
+                <circle cx="255" cy="120" r="42" fill="#fff9e0" stroke="#ffc107" stroke-width="3"/>
+                <text x="255" y="108" font-size="24" text-anchor="middle">🛡️</text>
+                <text x="255" y="130" font-size="10" font-weight="900" fill="#e65100" text-anchor="middle">Validation</text>
+                <text x="255" y="145" font-size="9" fill="#888" text-anchor="middle">Pipe</text>
+            </g>
+
+            <text x="342" y="105" font-size="9" fill="#ffc107" text-anchor="middle" font-weight="700">DTO OK ✅</text>
+            <line x1="297" y1="120" x2="382" y2="120" stroke="#ffc107" stroke-width="2.5" marker-end="url(#arrowYellow)"/>
+
+            <!-- PARADA 2: Controller -->
+            <g class="flow-step" data-step="2"
+               data-title="🎯 Parada 3: Controller (Recepcionista)"
+               data-desc="El Controller es como el recepcionista del hotel. Sabe a quién llamar según lo que pidas. Decoradores como @Post() le dicen 'responde cuando llegue una petición POST a /estudiantes'. Él toma los datos con @Body() y los pasa al Service. ¡No hace nada más! No valida, no guarda en la BD. Solo recibe y entrega."
+               onclick="activateViaje(2)">
+                <circle cx="425" cy="120" r="42" fill="#fce4ec" stroke="#e91e63" stroke-width="3"/>
+                <text x="425" y="108" font-size="24" text-anchor="middle">🎯</text>
+                <text x="425" y="130" font-size="10" font-weight="900" fill="#ad1457" text-anchor="middle">Controller</text>
+                <text x="425" y="145" font-size="9" fill="#888" text-anchor="middle">@Post()</text>
+            </g>
+
+            <text x="512" y="105" font-size="9" fill="#e91e63" text-anchor="middle" font-weight="700">service.create()</text>
+            <line x1="467" y1="120" x2="552" y2="120" stroke="#e91e63" stroke-width="2.5" marker-end="url(#arrowRed3)"/>
+
+            <!-- PARADA 3: Service -->
+            <g class="flow-step" data-step="3"
+               data-title="🧠 Parada 4: Service (El cerebro)"
+               data-desc="El Service es el más inteligente. Aquí están las REGLAS. Antes de crear un estudiante, verifica: ¿Ya existe alguien con ese código? ¿El programa académico existe? Si algo está mal, lanza una excepción HTTP (NotFoundException, ConflictException) que el HttpExceptionFilter convierte en un mensaje de error bonito. Si todo está bien, llama al Repository para guardar."
+               onclick="activateViaje(3)">
+                <circle cx="595" cy="120" r="42" fill="#fff8e1" stroke="#ff8c42" stroke-width="3"/>
+                <text x="595" y="108" font-size="24" text-anchor="middle">🧠</text>
+                <text x="595" y="130" font-size="10" font-weight="900" fill="#bf360c" text-anchor="middle">Service</text>
+                <text x="595" y="145" font-size="9" fill="#888" text-anchor="middle">Lógica</text>
+            </g>
+
+            <text x="682" y="105" font-size="9" fill="#ff8c42" text-anchor="middle" font-weight="700">repo.create()</text>
+            <line x1="637" y1="120" x2="722" y2="120" stroke="#ff8c42" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+
+            <!-- PARADA 4: Repository + BD -->
+            <g class="flow-step" data-step="4"
+               data-title="💾 Parada 5: Repository + Base de Datos"
+               data-desc="El Repository habla con PostgreSQL usando Prisma. Convierte el código TypeScript en SQL y lo ejecuta. prisma.estudiante.create({ data: dto }) se convierte en INSERT INTO estudiantes (...) VALUES (...). La base de datos guarda el nuevo estudiante y devuelve el registro con su ID generado automáticamente. ¡La respuesta viaja de vuelta por todas las paradas!"
+               onclick="activateViaje(4)">
+                <circle cx="765" cy="120" r="42" fill="#e3f2fd" stroke="#4d96ff" stroke-width="3"/>
+                <text x="765" y="108" font-size="24" text-anchor="middle">💾</text>
+                <text x="765" y="130" font-size="10" font-weight="900" fill="#0d47a1" text-anchor="middle">Repository</text>
+                <text x="765" y="145" font-size="9" fill="#888" text-anchor="middle">+ PostgreSQL</text>
+            </g>
+
+            <!-- Respuesta de vuelta (arco inferior) -->
+            <path d="M 765 162 Q 430 210 80 162" fill="none" stroke="#6bcb77" stroke-width="2.5" stroke-dasharray="8,4" marker-end="url(#arrowGreen4)"/>
+            <text x="430" y="215" font-size="11" fill="#27ae60" text-anchor="middle" font-weight="800">← Respuesta: { statusCode: 201, data: { id: 1, nombres: "Juan Carlos" ... } }</text>
+
+            <defs>
+                <marker id="arrowPink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ff6eb4"/></marker>
+                <marker id="arrowYellow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffc107"/></marker>
+                <marker id="arrowRed3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e91e63"/></marker>
+                <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ff8c42"/></marker>
+                <marker id="arrowGreen4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6bcb77"/></marker>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- Panel descripción viaje -->
+    <div class="flow-description" id="viajeDesc">
+        <h4>🌐 Parada 1: Tu navegador (Frontend)</h4>
+        <p>Aquí empieza todo. Tú escribes el nombre del estudiante en el formulario y haces clic en <strong>"Guardar"</strong>. React llama a la función <code>handleSubmit()</code>, que a su vez llama al <code>estudiantesService.create(dto)</code>. El service llama a <code>apiPost()</code> que usa <code>fetch()</code> para enviar la petición HTTP al backend. ¡El formulario se bloquea y aparece un loading mientras espera!</p>
+    </div>
+
+    <h3 class="subsection-title">🎒 Paso a paso: "Crear un estudiante"</h3>
+
+    <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+            <h3>Llenar el formulario (Frontend)</h3>
+            <p>En la página <code>/estudiantes</code> el usuario escribe: nombre, apellidos, código, correo, programa. Cuando hace clic en "Guardar", React ejecuta la función <code>handleSubmit()</code>.</p>
+            <span class="mini-code">setLoading(true) // 🔄 Mostrar spinner</span>
+        </div>
+    </div>
+
+    <div class="step" style="border-left-color: var(--fun-yellow);">
+        <div class="step-number" style="background: linear-gradient(135deg, #ffc107, #ff8c42);">2</div>
+        <div class="step-content">
+            <h3>Llamar al service (Frontend)</h3>
+            <p>El componente llama a <code>estudiantesService.create(formData)</code>. Este service llama a <code>apiPost('/estudiantes', formData)</code> que usa <code>fetch()</code>.</p>
+            <span class="mini-code">const result = await estudiantesService.create(dto)</span>
+        </div>
+    </div>
+
+    <div class="step" style="border-left-color: var(--fun-pink);">
+        <div class="step-number" style="background: linear-gradient(135deg, #e91e63, #ff6eb4);">3</div>
+        <div class="step-content">
+            <h3>Llega al Controller (Backend)</h3>
+            <p>NestJS recibe la petición POST. El <code>ValidationPipe</code> verifica el DTO. Si está OK, el controller llama a <code>estudiantesService.create(dto)</code>.</p>
+            <span class="mini-code">@Post() create(@Body() dto: CreateEstudianteDto)</span>
+        </div>
+    </div>
+
+    <div class="step" style="border-left-color: var(--fun-orange);">
+        <div class="step-number" style="background: linear-gradient(135deg, #ff8c42, #ffc107);">4</div>
+        <div class="step-content">
+            <h3>Lógica de negocio (Service)</h3>
+            <p>El service verifica que no exista un estudiante con el mismo código. Si existe, lanza <code>ConflictException</code> (error 409). Si no, llama al repository.</p>
+            <span class="mini-code">if (error.code === 'P2002') throw new ConflictException(...)</span>
+        </div>
+    </div>
+
+    <div class="step" style="border-left-color: #4d96ff;">
+        <div class="step-number" style="background: linear-gradient(135deg, #4d96ff, #9b5de5);">5</div>
+        <div class="step-content">
+            <h3>Guardar en PostgreSQL (Repository)</h3>
+            <p>El repository llama a Prisma: <code>prisma.estudiante.create({ data: dto })</code>. Prisma genera el SQL y ejecuta el INSERT en PostgreSQL. Devuelve el estudiante con su ID nuevo.</p>
+            <span class="mini-code">INSERT INTO "estudiantes" ("nombres", ...) VALUES (...) RETURNING *</span>
+        </div>
+    </div>
+
+    <div class="step" style="border-left-color: var(--fun-green);">
+        <div class="step-number" style="background: linear-gradient(135deg, #6bcb77, #00bbf9);">6</div>
+        <div class="step-content">
+            <h3>La respuesta viaja de vuelta</h3>
+            <p>Los datos suben por todas las capas. El <code>ResponseInterceptor</code> los envuelve en <code>{ statusCode, message, data }</code>. El frontend recibe el JSON y actualiza la tabla con el nuevo estudiante. ¡Éxito! 🎉</p>
+            <span class="mini-code">setEstudiantes([...estudiantes, nuevoEstudiante])</span>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN 5: EN EL CÓDIGO                                   -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section id="el-codigo" class="section">
+    <h2 class="section-title"><span class="emoji-big">💻</span> ¿Cómo se ve en el código real?</h2>
+
+    <p style="font-size:16px; margin-bottom: 20px;">Ahora veamos cómo el frontend llama al backend en el código real. ¡No te asustes! Lo explicamos parte por parte. 🧩</p>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'tab-apilib')">🌐 lib/api.ts</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-service-fe')">🔗 services/</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-page')">📄 page.tsx</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-controller-be')">🎯 Controller</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-service-be')">🧠 Service</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-repo-be')">💾 Repository</button>
+    </div>
+
+    <!-- TAB: lib/api.ts -->
+    <div id="tab-apilib" class="tab-content active">
+        <div class="info-box fun">
+            <h4>🌐 El mensajero central</h4>
+            <p><code>lib/api.ts</code> es el mensajero que todos los services del frontend usan. Tiene 4 funciones: <code>apiGet</code>, <code>apiPost</code>, <code>apiPut</code>, <code>apiDelete</code>. Cada función usa <code>fetch()</code> de JavaScript para enviar mensajes HTTP al backend. La variable <code>NEXT_PUBLIC_API_URL</code> guarda la dirección del backend (<code>http://localhost:3001</code>).</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">frontend/src/lib/api.ts</span>
+            <code><span class="hl-comment">// La dirección del backend (cocina)</span>
+<span class="hl-kw">const</span> BASE_URL = process.env.<span class="hl-type">NEXT_PUBLIC_API_URL</span>;
+<span class="hl-comment">// = "http://localhost:3001"</span>
+
+<span class="hl-comment">// 📥 PEDIR datos → GET</span>
+<span class="hl-kw">export async function</span> <span class="hl-fn">apiGet</span>&lt;T&gt;(path: <span class="hl-type">string</span>): <span class="hl-type">Promise</span>&lt;T&gt; {
+  <span class="hl-kw">const</span> res = <span class="hl-kw">await</span> <span class="hl-fn">fetch</span>(`${BASE_URL}/api/v1${path}`);
+  <span class="hl-comment">// La respuesta viene con { statusCode, message, data }</span>
+  <span class="hl-kw">const</span> json = <span class="hl-kw">await</span> res.<span class="hl-fn">json</span>();
+  <span class="hl-kw">return</span> json.data;  <span class="hl-comment">// ← Solo nos importa el data</span>
+}
+
+<span class="hl-comment">// 📤 ENVIAR datos nuevos → POST</span>
+<span class="hl-kw">export async function</span> <span class="hl-fn">apiPost</span>&lt;T&gt;(path: <span class="hl-type">string</span>, body: <span class="hl-type">unknown</span>): <span class="hl-type">Promise</span>&lt;T&gt; {
+  <span class="hl-kw">const</span> res = <span class="hl-kw">await</span> <span class="hl-fn">fetch</span>(`${BASE_URL}/api/v1${path}`, {
+    method: <span class="hl-str">'POST'</span>,
+    headers: { <span class="hl-str">'Content-Type'</span>: <span class="hl-str">'application/json'</span> },
+    body: JSON.<span class="hl-fn">stringify</span>(body), <span class="hl-comment">// Convierte objeto → texto JSON</span>
+  });
+  <span class="hl-kw">const</span> json = <span class="hl-kw">await</span> res.<span class="hl-fn">json</span>();
+  <span class="hl-kw">return</span> json.data;
+}
+
+<span class="hl-comment">// ✏️ ACTUALIZAR → PUT  |  🗑️ BORRAR → DELETE</span>
+<span class="hl-comment">// (misma lógica, diferente method)</span></code>
+        </div>
+        <div class="story-box">
+            <h4>¿Por qué json.data?</h4>
+            <p>Nuestro backend siempre responde en este formato gracias al <strong>ResponseInterceptor</strong>:</p>
+            <div class="bubble"><code>{ statusCode: 200, message: "OK", <strong>data</strong>: [aquí van los datos reales] }</code></div>
+            <p>Entonces <code>json.data</code> saca solo la parte interesante. ¡Como abrir un regalo y quedarte con el juguete, no con la caja!</p>
+        </div>
+    </div>
+
+    <!-- TAB: Service FE -->
+    <div id="tab-service-fe" class="tab-content">
+        <div class="info-box fun">
+            <h4>🔗 El traductor del frontend</h4>
+            <p>Cada módulo tiene su archivo en <code>services/</code>. El service del frontend es el intermediario entre la <em>página</em> y el <em>cliente HTTP</em>. Agrupa todas las llamadas de un módulo en un solo lugar. Si mañana cambia la URL del backend, solo cambias este archivo.</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">frontend/src/services/estudiantes.service.ts</span>
+            <code><span class="hl-kw">import</span> { apiGet, apiPost, apiPut, apiDelete } <span class="hl-kw">from</span> <span class="hl-str">'../lib/api'</span>;
+<span class="hl-kw">import</span> { <span class="hl-type">Estudiante</span> } <span class="hl-kw">from</span> <span class="hl-str">'../interfaces/estudiante.interface'</span>;
+
+<span class="hl-kw">export const</span> estudiantesService = {
+
+  <span class="hl-comment">// Trae TODOS los estudiantes</span>
+  findAll: () =&gt;
+    <span class="hl-fn">apiGet</span>&lt;<span class="hl-type">Estudiante</span>[]&gt;(<span class="hl-str">'/estudiantes'</span>),
+  <span class="hl-comment">// → GET http://localhost:3001/api/v1/estudiantes</span>
+
+  <span class="hl-comment">// Trae UN estudiante por ID</span>
+  findOne: (id: <span class="hl-type">number</span>) =&gt;
+    <span class="hl-fn">apiGet</span>&lt;<span class="hl-type">Estudiante</span>&gt;(`/estudiantes/${id}`),
+
+  <span class="hl-comment">// CREA un estudiante nuevo</span>
+  create: (dto: <span class="hl-type">Partial</span>&lt;<span class="hl-type">Estudiante</span>&gt;) =&gt;
+    <span class="hl-fn">apiPost</span>&lt;<span class="hl-type">Estudiante</span>&gt;(<span class="hl-str">'/estudiantes'</span>, dto),
+
+  <span class="hl-comment">// ACTUALIZA un estudiante</span>
+  update: (id: <span class="hl-type">number</span>, dto: <span class="hl-type">Partial</span>&lt;<span class="hl-type">Estudiante</span>&gt;) =&gt;
+    <span class="hl-fn">apiPut</span>&lt;<span class="hl-type">Estudiante</span>&gt;(`/estudiantes/${id}`, dto),
+
+  <span class="hl-comment">// ELIMINA un estudiante</span>
+  remove: (id: <span class="hl-type">number</span>) =&gt;
+    <span class="hl-fn">apiDelete</span>(`/estudiantes/${id}`),
+
+  <span class="hl-comment">// Historial académico (HU-14)</span>
+  historial: (id: <span class="hl-type">number</span>) =&gt;
+    <span class="hl-fn">apiGet</span>&lt;<span class="hl-type">any</span>&gt;(`/estudiantes/${id}/historial`),
+};</code>
+        </div>
+    </div>
+
+    <!-- TAB: Page -->
+    <div id="tab-page" class="tab-content">
+        <div class="info-box fun">
+            <h4>📄 La página React</h4>
+            <p>Cada página es un componente React con <code>'use client'</code>. Usa <code>useState</code> para guardar datos en memoria y <code>useEffect</code> para cargar datos cuando la página abre. Todo lo que ve el usuario está aquí.</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">frontend/src/app/(dashboard)/estudiantes/page.tsx (simplificado)</span>
+            <code><span class="hl-str">'use client'</span>; <span class="hl-comment">// ← "Esto corre en el navegador"</span>
+<span class="hl-kw">import</span> { useState, useEffect } <span class="hl-kw">from</span> <span class="hl-str">'react'</span>;
+<span class="hl-kw">import</span> { estudiantesService } <span class="hl-kw">from</span> <span class="hl-str">'@/services/estudiantes.service'</span>;
+
+<span class="hl-kw">export default function</span> <span class="hl-fn">EstudiantesPage</span>() {
+  <span class="hl-comment">// 📦 Caja donde guardamos la lista</span>
+  <span class="hl-kw">const</span> [estudiantes, setEstudiantes] = <span class="hl-fn">useState</span>([]);
+  <span class="hl-comment">// ⏳ ¿Estamos cargando?</span>
+  <span class="hl-kw">const</span> [loading, setLoading]         = <span class="hl-fn">useState</span>(<span class="hl-kw">false</span>);
+  <span class="hl-comment">// ❌ ¿Hubo un error?</span>
+  <span class="hl-kw">const</span> [error, setError]             = <span class="hl-fn">useState</span>(<span class="hl-kw">null</span>);
+
+  <span class="hl-comment">// 🚪 Al abrir la página → cargar estudiantes</span>
+  <span class="hl-fn">useEffect</span>(() =&gt; { <span class="hl-fn">load</span>(); }, []);
+
+  <span class="hl-kw">async function</span> <span class="hl-fn">load</span>() {
+    <span class="hl-fn">setLoading</span>(<span class="hl-kw">true</span>);
+    <span class="hl-kw">try</span> {
+      <span class="hl-kw">const</span> data = <span class="hl-kw">await</span> estudiantesService.<span class="hl-fn">findAll</span>();
+      <span class="hl-fn">setEstudiantes</span>(data);  <span class="hl-comment">// ← Actualiza la pantalla</span>
+    } <span class="hl-kw">catch</span> {
+      <span class="hl-fn">setError</span>(<span class="hl-str">'Error al cargar'</span>);
+    } <span class="hl-kw">finally</span> {
+      <span class="hl-fn">setLoading</span>(<span class="hl-kw">false</span>);
+    }
+  }
+
+  <span class="hl-comment">// 💾 Al guardar el formulario</span>
+  <span class="hl-kw">async function</span> <span class="hl-fn">handleSubmit</span>(formData) {
+    <span class="hl-kw">await</span> estudiantesService.<span class="hl-fn">create</span>(formData);
+    <span class="hl-fn">load</span>(); <span class="hl-comment">// ← Recarga la lista</span>
+  }
+
+  <span class="hl-kw">return</span> (
+    &lt;<span class="hl-type">div</span>&gt;
+      {loading &amp;&amp; &lt;<span class="hl-type">p</span>&gt;⏳ Cargando...&lt;/<span class="hl-type">p</span>&gt;}
+      {error   &amp;&amp; &lt;<span class="hl-type">p</span>&gt;❌ {error}&lt;/<span class="hl-type">p</span>&gt;}
+      {<span class="hl-comment">/* tabla con estudiantes */</span>}
+    &lt;/<span class="hl-type">div</span>&gt;
+  );
+}</code>
+        </div>
+    </div>
+
+    <!-- TAB: Controller BE -->
+    <div id="tab-controller-be" class="tab-content">
+        <div class="info-box fun">
+            <h4>🎯 El portero del backend</h4>
+            <p>El Controller en NestJS es como el portero de un edificio. Tiene una lista de quién puede entrar: <code>@Get()</code>, <code>@Post()</code>, etc. Cuando alguien llama (petición HTTP), el portero la recibe y la pasa adentro al Service. ¡Nunca sale de su puesto!</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">backend/src/modules/estudiantes/controller/estudiantes.controller.ts</span>
+            <code><span class="hl-deco">@Controller</span>(<span class="hl-str">'estudiantes'</span>)
+<span class="hl-comment">// 🏠 Mi dirección es /api/v1/estudiantes</span>
+<span class="hl-kw">export class</span> <span class="hl-type">EstudiantesController</span> {
+
+  <span class="hl-comment">// NestJS me da el Service automáticamente (magia 🪄)</span>
+  <span class="hl-kw">constructor</span>(<span class="hl-kw">private readonly</span> svc: <span class="hl-type">EstudiantesService</span>) {}
+
+  <span class="hl-deco">@Get</span>()
+  <span class="hl-comment">// 📥 GET /estudiantes → dame TODOS</span>
+  <span class="hl-fn">findAll</span>() {
+    <span class="hl-kw">return</span> <span class="hl-kw">this</span>.svc.<span class="hl-fn">findAll</span>();
+  }
+
+  <span class="hl-deco">@Get</span>(<span class="hl-str">':id'</span>)
+  <span class="hl-comment">// 📥 GET /estudiantes/5 → dame el #5</span>
+  <span class="hl-fn">findOne</span>(<span class="hl-deco">@Param</span>(<span class="hl-str">'id'</span>, <span class="hl-type">ParseIntPipe</span>) id: <span class="hl-type">number</span>) {
+    <span class="hl-kw">return</span> <span class="hl-kw">this</span>.svc.<span class="hl-fn">findOne</span>(id);
+  }
+
+  <span class="hl-deco">@Post</span>()
+  <span class="hl-comment">// 📤 POST /estudiantes → crea uno nuevo</span>
+  <span class="hl-fn">create</span>(<span class="hl-deco">@Body</span>() dto: <span class="hl-type">CreateEstudianteDto</span>) {
+    <span class="hl-kw">return</span> <span class="hl-kw">this</span>.svc.<span class="hl-fn">create</span>(dto);
+  }
+
+  <span class="hl-deco">@Get</span>(<span class="hl-str">':id/historial'</span>)
+  <span class="hl-comment">// 📊 GET /estudiantes/1/historial → historial académico</span>
+  <span class="hl-fn">historial</span>(<span class="hl-deco">@Param</span>(<span class="hl-str">'id'</span>, <span class="hl-type">ParseIntPipe</span>) id: <span class="hl-type">number</span>) {
+    <span class="hl-kw">return</span> <span class="hl-kw">this</span>.svc.<span class="hl-fn">historial</span>(id);
+  }
+}</code>
+        </div>
+    </div>
+
+    <!-- TAB: Service BE -->
+    <div id="tab-service-be" class="tab-content">
+        <div class="info-box fun">
+            <h4>🧠 El cerebro pensante</h4>
+            <p>El Service es el más inteligente de los 3. Conoce las reglas: "no puede haber dos estudiantes con el mismo código", "no puedes matricularte en algo que no existe". Cuando algo está mal lanza una <strong>excepción</strong>: es como levantar la mano para decir "¡espera, algo está mal aquí!"</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">backend/src/modules/estudiantes/service/estudiantes.service.ts</span>
+            <code><span class="hl-deco">@Injectable</span>()
+<span class="hl-kw">export class</span> <span class="hl-type">EstudiantesService</span> {
+  <span class="hl-kw">constructor</span>(<span class="hl-kw">private readonly</span> repo: <span class="hl-type">EstudiantesRepository</span>) {}
+
+  <span class="hl-comment">// ✅ findAll: simplemente pedir al repo la lista</span>
+  <span class="hl-fn">findAll</span>() { <span class="hl-kw">return</span> <span class="hl-kw">this</span>.repo.<span class="hl-fn">findAll</span>(); }
+
+  <span class="hl-comment">// ✅ findOne: verificar que exista</span>
+  <span class="hl-kw">async</span> <span class="hl-fn">findOne</span>(id: <span class="hl-type">number</span>) {
+    <span class="hl-kw">const</span> est = <span class="hl-kw">await</span> <span class="hl-kw">this</span>.repo.<span class="hl-fn">findOne</span>(id);
+    <span class="hl-kw">if</span> (!est)
+      <span class="hl-comment">// 🚨 Si no existe → error 404 Not Found</span>
+      <span class="hl-kw">throw new</span> <span class="hl-type">NotFoundException</span>(
+        `Estudiante #${id} no encontrado`
+      );
+    <span class="hl-kw">return</span> est;
+  }
+
+  <span class="hl-comment">// ✅ create: intentar crear, atrapar duplicados</span>
+  <span class="hl-kw">async</span> <span class="hl-fn">create</span>(dto: <span class="hl-type">CreateEstudianteDto</span>) {
+    <span class="hl-kw">try</span> {
+      <span class="hl-kw">return await</span> <span class="hl-kw">this</span>.repo.<span class="hl-fn">create</span>(dto);
+    } <span class="hl-kw">catch</span> (e) {
+      <span class="hl-kw">if</span> (e.code === <span class="hl-str">'P2002'</span>)
+        <span class="hl-comment">// 🚨 Código UNIQUE de Prisma → error 409 Conflict</span>
+        <span class="hl-kw">throw new</span> <span class="hl-type">ConflictException</span>(<span class="hl-str">'Ya existe ese estudiante'</span>);
+      <span class="hl-kw">throw</span> e;
+    }
+  }
+}</code>
+        </div>
+    </div>
+
+    <!-- TAB: Repository BE -->
+    <div id="tab-repo-be" class="tab-content">
+        <div class="info-box fun">
+            <h4>💾 El que habla con la base de datos</h4>
+            <p>El Repository es el único que sabe cómo hablar con PostgreSQL. Usa <strong>Prisma</strong>, que es como un traductor: convierte código TypeScript bonito en SQL aburrido. <code>prisma.estudiante.findMany()</code> se convierte en <code>SELECT * FROM estudiantes</code>. ¡El Service no sabe SQL ni necesita saberlo!</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">backend/src/modules/estudiantes/repository/estudiantes.repository.ts</span>
+            <code><span class="hl-deco">@Injectable</span>()
+<span class="hl-kw">export class</span> <span class="hl-type">EstudiantesRepository</span> {
+  <span class="hl-kw">constructor</span>(<span class="hl-kw">private readonly</span> prisma: <span class="hl-type">PrismaService</span>) {}
+
+  <span class="hl-comment">// → SELECT * FROM estudiantes ORDER BY id ASC</span>
+  <span class="hl-fn">findAll</span>() {
+    <span class="hl-kw">return</span> <span class="hl-kw">this</span>.prisma.estudiante.<span class="hl-fn">findMany</span>({
+      include: { programaAcademico: <span class="hl-kw">true</span> }, <span class="hl-comment">// LEFT JOIN</span>
+      orderBy: { id: <span class="hl-str">'asc'</span> },
+    });
+  }
+
+  <span class="hl-comment">// → SELECT * FROM estudiantes WHERE id = $1</span>
+  <span class="hl-fn">findOne</span>(id: <span class="hl-type">number</span>) {
+    <span class="hl-kw">return</span> <span class="hl-kw">this</span>.prisma.estudiante.<span class="hl-fn">findUnique</span>({
+      where: { id },
+      include: { programaAcademico: <span class="hl-kw">true</span> },
+    });
+  }
+
+  <span class="hl-comment">// → INSERT INTO estudiantes (...) VALUES (...)</span>
+  <span class="hl-fn">create</span>(dto: <span class="hl-type">CreateEstudianteDto</span>) {
+    <span class="hl-kw">return</span> <span class="hl-kw">this</span>.prisma.estudiante.<span class="hl-fn">create</span>({
+      data: {
+        ...dto,
+        fechaNacimiento: <span class="hl-kw">new</span> <span class="hl-type">Date</span>(dto.fechaNacimiento),
+      },
+      include: { programaAcademico: <span class="hl-kw">true</span> },
+    });
+  }
+
+  <span class="hl-comment">// → DELETE FROM estudiantes WHERE id = $1</span>
+  <span class="hl-fn">remove</span>(id: <span class="hl-type">number</span>) {
+    <span class="hl-kw">return</span> <span class="hl-kw">this</span>.prisma.estudiante.<span class="hl-fn">delete</span>({ where: { id } });
+  }
+}</code>
+        </div>
+        <div class="story-box">
+            <h4>¿Qué es <code>include</code>?</h4>
+            <p>En SQL se llama <strong>JOIN</strong>: unir dos tablas. <code>include: { programaAcademico: true }</code> le dice a Prisma: <em>"además del estudiante, tráeme también los datos del programa al que pertenece"</em>. Así en la respuesta viene todo junto, sin hacer dos consultas.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN 6: LOS ERRORES                                    -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section id="errores" class="section">
+    <h2 class="section-title"><span class="emoji-big">❌</span> ¿Qué pasa cuando algo sale mal?</h2>
+
+    <p style="font-size:16px; margin-bottom: 20px;">Los errores son normales. La diferencia entre un buen sistema y uno malo es <strong>cómo maneja los errores</strong>. Nuestro sistema tiene un "guardabosques" para cada tipo de problema. 🌲</p>
+
+    <!-- Acordeón de tipos de error -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>🟡 Error 400 — "Mandaste datos incorrectos"</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="accordion-body">
+            <div class="compare-panels">
+                <div class="compare-panel">
+                    <div class="compare-panel-header" style="background: #e65100;">❌ Lo que pasa</div>
+                    <div class="compare-panel-body">
+                        <p>El frontend envía un formulario con el email con formato incorrecto o falta un campo obligatorio.</p>
+                        <div class="code-block" style="margin-top:12px;">
+                            <code>POST /api/v1/estudiantes
+{
+  "nombres": "Juan",
+  "correoInstitucional": "esto-no-es-email"
+  <span class="hl-comment">// ← ❌ falta @</span>
+}</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="compare-panel">
+                    <div class="compare-panel-header" style="background: #27ae60;">✅ La respuesta del backend</div>
+                    <div class="compare-panel-body">
+                        <p>El <code>ValidationPipe</code> detecta el error ANTES de llegar al Controller y responde automáticamente:</p>
+                        <div class="code-block" style="margin-top:12px;">
+                            <code>{
+  <span class="hl-str">"statusCode"</span>: <span class="hl-num">400</span>,
+  <span class="hl-str">"message"</span>: [
+    <span class="hl-str">"correoInstitucional must be an email"</span>
+  ],
+  <span class="hl-str">"error"</span>: <span class="hl-str">"Bad Request"</span>
+}</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>🔴 Error 404 — "No existe lo que buscas"</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="accordion-body">
+            <div class="compare-panels">
+                <div class="compare-panel">
+                    <div class="compare-panel-header" style="background: #c62828;">❌ Lo que pasa</div>
+                    <div class="compare-panel-body">
+                        <p>El frontend pide el estudiante con ID 999 que no existe en la base de datos.</p>
+                        <div class="code-block" style="margin-top:12px;"><code>GET /api/v1/estudiantes/999</code></div>
+                    </div>
+                </div>
+                <div class="compare-panel">
+                    <div class="compare-panel-header" style="background: #27ae60;">✅ El Service lanza la excepción</div>
+                    <div class="compare-panel-body">
+                        <p>El Service encuentra null en el Repository y lanza <code>NotFoundException</code>. El <code>HttpExceptionFilter</code> la formatea:</p>
+                        <div class="code-block" style="margin-top:12px;">
+                            <code>{
+  <span class="hl-str">"statusCode"</span>: <span class="hl-num">404</span>,
+  <span class="hl-str">"message"</span>: <span class="hl-str">"Estudiante #999 no encontrado"</span>,
+  <span class="hl-str">"error"</span>: <span class="hl-str">"Not Found"</span>
+}</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>🔴 Error 409 — "Ya existe uno igual"</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="accordion-body">
+            <div class="compare-panels">
+                <div class="compare-panel">
+                    <div class="compare-panel-header" style="background: #c62828;">❌ Lo que pasa</div>
+                    <div class="compare-panel-body">
+                        <p>Intentas crear un estudiante con un código que ya existe (restricción UNIQUE en PostgreSQL).</p>
+                        <div class="code-block" style="margin-top:12px;">
+                            <code>POST /api/v1/estudiantes
+{
+  "codigoEstudiantil": "EST-2026-001"
+  <span class="hl-comment">// ← Ya existe</span>
+}</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="compare-panel">
+                    <div class="compare-panel-header" style="background: #27ae60;">✅ Prisma P2002 → ConflictException</div>
+                    <div class="compare-panel-body">
+                        <p>Prisma devuelve error código <code>P2002</code>. El Service lo atrapa y lanza <code>ConflictException</code>:</p>
+                        <div class="code-block" style="margin-top:12px;">
+                            <code>{
+  <span class="hl-str">"statusCode"</span>: <span class="hl-num">409</span>,
+  <span class="hl-str">"message"</span>: <span class="hl-str">"Ya existe ese estudiante"</span>,
+  <span class="hl-str">"error"</span>: <span class="hl-str">"Conflict"</span>
+}</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box success">
+        <h4>🛡️ Los dos guardianes del error</h4>
+        <p><strong>ResponseInterceptor</strong>: envuelve TODAS las respuestas exitosas en <code>{ statusCode, message, data }</code>.<br>
+        <strong>HttpExceptionFilter</strong>: atrapa TODOS los errores y los convierte en JSON legible. Sin él, el error sería un HTML gigante e incomprensible.</p>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN 7: QUIZ                                           -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section id="quiz" class="section">
+    <h2 class="section-title"><span class="emoji-big">🏆</span> ¿Cuánto aprendiste?</h2>
+
+    <p style="font-size:16px; margin-bottom: 25px;">¡Es hora del quiz! Responde las preguntas y ve si eres un maestro del Frontend-Backend. 🎓</p>
+
+    <!-- Pregunta 1 -->
+    <div class="quiz-box">
+        <h4>🎯 Pregunta 1: ¿Qué hace el Controller en el backend?</h4>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q1')">Guarda datos en la base de datos directamente</button>
+        <button class="quiz-option" onclick="checkAnswer(this, true, 'q1')">Recibe la petición HTTP y la pasa al Service</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q1')">Valida que el email tenga formato correcto</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q1')">Hace los cálculos de notas</button>
+        <div id="fb-q1" class="quiz-feedback"></div>
+    </div>
+
+    <!-- Pregunta 2 -->
+    <div class="quiz-box" style="background: linear-gradient(135deg, #f0f4ff, #e8edff); border-color: #4d96ff;">
+        <h4 style="color:#1565c0;">🚀 Pregunta 2: ¿Qué función de lib/api.ts usarías para CREAR un nuevo docente?</h4>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q2')">apiGet('/docentes')</button>
+        <button class="quiz-option" onclick="checkAnswer(this, true, 'q2')">apiPost('/docentes', docenteData)</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q2')">apiDelete('/docentes/1')</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q2')">apiPut('/docentes/1', docenteData)</button>
+        <div id="fb-q2" class="quiz-feedback"></div>
+    </div>
+
+    <!-- Pregunta 3 -->
+    <div class="quiz-box" style="background: linear-gradient(135deg, #fff9e8, #fff3c4); border-color: #ffc107;">
+        <h4 style="color:#b45309;">💾 Pregunta 3: ¿Qué código HTTP devuelve el backend cuando algo se crea exitosamente?</h4>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q3')">200 OK</button>
+        <button class="quiz-option" onclick="checkAnswer(this, true, 'q3')">201 Created</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q3')">404 Not Found</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q3')">500 Internal Server Error</button>
+        <div id="fb-q3" class="quiz-feedback"></div>
+    </div>
+
+    <!-- Pregunta 4 -->
+    <div class="quiz-box" style="background: linear-gradient(135deg, #fff0fb, #f5e0ff); border-color: #9b5de5;">
+        <h4 style="color:#6b21a8;">🧩 Pregunta 4: ¿Cuál capa del backend ejecuta las consultas SQL con Prisma?</h4>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q4')">Controller</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q4')">Service</button>
+        <button class="quiz-option" onclick="checkAnswer(this, true, 'q4')">Repository</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q4')">ValidationPipe</button>
+        <div id="fb-q4" class="quiz-feedback"></div>
+    </div>
+
+    <!-- Pregunta 5 -->
+    <div class="quiz-box" style="background: linear-gradient(135deg, #f0fff4, #dcfce7); border-color: #6bcb77;">
+        <h4 style="color:#166534;">🔗 Pregunta 5: ¿Por qué el frontend usa json.data en lugar de solo json?</h4>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q5')">Porque data es más corto de escribir</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q5')">Es un error del programador</button>
+        <button class="quiz-option" onclick="checkAnswer(this, true, 'q5')">Porque el ResponseInterceptor envuelve los datos en { statusCode, message, data }</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q5')">Porque json es una variable reservada en JavaScript</button>
+        <div id="fb-q5" class="quiz-feedback"></div>
+    </div>
+
+    <!-- Resultados -->
+    <div id="quiz-result" style="display:none; text-align:center; margin-top:30px;">
+        <div style="background: linear-gradient(135deg, #1e3c72, #2a5298); color:white; border-radius:20px; padding:30px;">
+            <div style="font-size:60px; margin-bottom:10px;" id="result-emoji">🏆</div>
+            <h3 style="font-size:24px; margin-bottom:8px;" id="result-title">¡Excelente!</h3>
+            <p style="font-size:16px; opacity:0.9;" id="result-text">Sacaste 5/5</p>
+            <div style="margin-top:16px;">
+                <div class="progress-bar-wrap" style="max-width:300px; margin:0 auto;">
+                    <div class="progress-bar" id="result-bar" style="background: linear-gradient(135deg, #6bcb77, #00bbf9); width:0%;">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div><!-- /container -->
+</main><!-- /main-content -->
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>🎓 Lo que aprendiste hoy</h3>
+                <ul>
+                    <li>🖥️ Frontend = lo que ves en pantalla</li>
+                    <li>⚙️ Backend = la cocina escondida</li>
+                    <li>💾 Base de datos = la despensa</li>
+                    <li>📨 HTTP = el idioma que usan</li>
+                    <li>🔗 Controller → Service → Repository</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>🛠️ Las tecnologías</h3>
+                <ul>
+                    <li>⚛ Next.js 15 + React 19</li>
+                    <li>🔧 NestJS 10 (backend)</li>
+                    <li>🐘 PostgreSQL 16 (base de datos)</li>
+                    <li>🔮 Prisma 7 (ORM)</li>
+                    <li>🐳 Docker Compose</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>📡 Las URLs del proyecto</h3>
+                <ul>
+                    <li>🖥️ Frontend: localhost:3000</li>
+                    <li>⚙️ Backend API: localhost:3001</li>
+                    <li>💾 PostgreSQL: localhost:5432</li>
+                    <li>🛤️ Prefijo: /api/v1/*</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>🎉 Sistema de Gestión Académica — Guía para Niños | Programación Web — CORHUILA 2026</p>
+        </div>
+    </div>
+</footer>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+// ══════════════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════════════
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function() {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Resaltar sección activa al hacer scroll
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(l => {
+        l.classList.remove('active');
+        if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+    });
+});
+
+// ══════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════
+function openTab(evt, tabId) {
+    const parent = evt.target.closest('.section');
+    parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelector('#' + tabId).classList.add('active');
+    evt.target.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════
+// ACORDEÓN
+// ══════════════════════════════════════════════════
+function toggleAccordion(header) {
+    header.classList.toggle('open');
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+}
+
+// ══════════════════════════════════════════════════
+// PERSONAJES INTERACTIVOS
+// ══════════════════════════════════════════════════
+function activatePersonaje(step) {
+    document.querySelectorAll('#los-personajes .flow-step').forEach(el => {
+        el.classList.remove('active');
+    });
+    const target = document.querySelector(`#los-personajes [data-step="${step}"]`);
+    if (target) {
+        target.classList.add('active');
+        document.getElementById('personajeDesc').innerHTML =
+            `<h4>${target.dataset.title}</h4><p>${target.dataset.desc}</p>`;
+    }
+}
+
+// ══════════════════════════════════════════════════
+// VIAJE INTERACTIVO
+// ══════════════════════════════════════════════════
+function activateViaje(step) {
+    document.querySelectorAll('#viajeSvg .flow-step').forEach(el => {
+        el.classList.remove('active');
+    });
+    const target = document.querySelector(`#viajeSvg [data-step="${step}"]`);
+    if (target) {
+        target.classList.add('active');
+        document.getElementById('viajeDesc').innerHTML =
+            `<h4>${target.dataset.title}</h4><p>${target.dataset.desc}</p>`;
+    }
+}
+
+// ══════════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════════
+const answers = {};
+const correct = {
+    q1: '¡Correcto! 🎉 El Controller solo recibe la petición HTTP y la delega al Service. No guarda datos ni valida reglas de negocio.',
+    q2: '¡Correcto! 🎉 apiPost envía una petición POST con los datos en el body. Es el método para CREAR recursos nuevos.',
+    q3: '¡Correcto! 🎉 201 Created es el código estándar para cuando algo se creó exitosamente. 200 es para consultas.',
+    q4: '¡Correcto! 🎉 El Repository es el único que habla con la base de datos usando Prisma. El Service no sabe SQL.',
+    q5: '¡Correcto! 🎉 El ResponseInterceptor envuelve todo en { statusCode, message, data }. Por eso extraemos .data para obtener los datos reales.',
+};
+const wrong = {
+    q1: '❌ Incorrecto. El Controller no toca la base de datos. Solo recibe la petición y llama al Service.',
+    q2: '❌ Incorrecto. apiGet solo PIDE datos (GET). Para CREAR necesitas apiPost que envía el body con los datos.',
+    q3: '❌ Incorrecto. 201 Created es el código correcto para creación. 200 OK es para consultas exitosas.',
+    q4: '❌ Incorrecto. El Repository es el encargado de las consultas SQL con Prisma. El Service aplica las reglas de negocio.',
+    q5: '❌ Incorrecto. Es por el ResponseInterceptor que envuelve todos los datos en { statusCode, message, data }.',
+};
+
+function checkAnswer(btn, isCorrect, questionId) {
+    const fb = document.getElementById('fb-' + questionId);
+    if (answers[questionId]) return; // Ya respondió
+    answers[questionId] = isCorrect;
+
+    if (isCorrect) {
+        btn.classList.add('correct');
+        fb.textContent = correct[questionId];
+        fb.className = 'quiz-feedback correct';
+        fb.style.display = 'block';
+    } else {
+        btn.classList.add('wrong');
+        fb.textContent = wrong[questionId];
+        fb.className = 'quiz-feedback wrong';
+        fb.style.display = 'block';
+        // También marcar la correcta
+        btn.closest('.quiz-box').querySelectorAll('.quiz-option').forEach((b, i) => {
+            const map = {q1: 1, q2: 1, q3: 1, q4: 2, q5: 2};
+            if (b.onclick && b.onclick.toString().includes('true')) b.classList.add('correct');
+        });
+    }
+
+    // Deshabilitar todas las opciones de esta pregunta
+    btn.closest('.quiz-box').querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+
+    // Mostrar resultado si terminó todas
+    if (Object.keys(answers).length === 5) showResult();
+}
+
+function showResult() {
+    const score = Object.values(answers).filter(Boolean).length;
+    const percent = (score / 5) * 100;
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const emojis = ['😢', '😐', '🙂', '😊', '🥳', '🏆'];
+    const titles = ['Sigue intentando...', 'Vas bien', 'Buen trabajo', '¡Muy bien!', '¡Excelente!', '¡Maestro!'];
+    document.getElementById('result-emoji').textContent = emojis[score];
+    document.getElementById('result-title').textContent = titles[score];
+    document.getElementById('result-text').textContent = `Sacaste ${score}/5 respuestas correctas`;
+
+    setTimeout(() => {
+        const bar = document.getElementById('result-bar');
+        bar.style.width = percent + '%';
+        bar.textContent = percent + '%';
+    }, 300);
+}
+</script>
+
+</body>
+</html>
