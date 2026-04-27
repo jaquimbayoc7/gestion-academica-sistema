@@ -71,4 +71,22 @@ export class EstudiantesRepository {
   remove(id: number) {
     return this.prisma.estudiante.delete({ where: { id } });
   }
+
+  /** HU-14: Matrículas del estudiante con relaciones profundas para historial */
+  historial(id: number) {
+    return this.prisma.matricula.findMany({
+      where: { estudianteId: id },
+      include: {
+        asignacionDocente: {
+          include: {
+            asignatura: true,
+            docente: true,
+            periodoAcademico: true,
+          },
+        },
+        calificacion: true,
+      },
+      orderBy: { id: 'asc' },
+    });
+  }
 }

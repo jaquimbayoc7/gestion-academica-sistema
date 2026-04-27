@@ -45,6 +45,8 @@ const navItems = [
   { href: '/asignaciones', label: 'Asignaciones' },
   { href: '/matriculas', label: 'Matrículas' },
   { href: '/calificaciones', label: 'Calificaciones' },
+  { href: '/historial', label: 'Historial Académico' },
+  { href: '/reportes', label: 'Reportes' },
 ];
 
 export default function Sidebar() {

@@ -63,4 +63,16 @@ export class AsignacionesDocenteRepository {
   remove(id: number) {
     return this.prisma.asignacionDocente.delete({ where: { id } });
   }
+
+  /** HU-15: Matrículas de una asignación con calificaciones para el reporte */
+  reporte(id: number) {
+    return this.prisma.matricula.findMany({
+      where: { asignacionDocenteId: id },
+      include: {
+        estudiante: true,
+        calificacion: true,
+      },
+      orderBy: { id: 'asc' },
+    });
+  }
 }

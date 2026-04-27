@@ -27,4 +27,8 @@ export const estudiantesService = {
   update: (id: number, data: Partial<Omit<Estudiante, 'id' | 'createdAt' | 'updatedAt' | 'programaAcademico'>>) =>
     apiPut<Estudiante>(`/estudiantes/${id}`, data),
   remove: (id: number) => apiDelete<Estudiante>(`/estudiantes/${id}`),
+  /** HU-14: Historial académico del estudiante agrupado por período */
+  historial: (id: number) => apiGet<any>(`/estudiantes/${id}/historial`),
+  /** HU-16: Promedio acumulado ponderado por créditos */
+  promedioAcumulado: (id: number) => apiGet<any>(`/estudiantes/${id}/promedio`),
 };

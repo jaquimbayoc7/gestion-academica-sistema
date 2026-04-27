@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego Interactivo — Flujo de Peticiones: Ida y Vuelta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --primary-color:#1e3c72;--secondary-color:#2a5298;--accent-color:#ff6b6b;
+    --light-bg:#f8f9fa;--dark-text:#2c3e50;--border-color:#e0e0e0;
+    --success-color:#27ae60;--warning-color:#f39c12;--info-color:#3498db;
+    --nest-color:#e0234e;--postgres-color:#336791;--prisma-color:#2d3748;
+    --gold:#ffd700;--xp-bar:#8e44ad;
+}
+body{font-family:'Roboto',sans-serif;line-height:1.6;color:var(--dark-text);background:#fff}
+
+/* ===== LAYOUT ===== */
+.main-header{background:linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);color:#fff}
+.top-bar{background:rgba(0,0,0,.15);padding:20px 0;text-align:center}
+.brand-container{display:flex;flex-direction:column;align-items:center;gap:6px}
+.brand-name{font-size:24px;font-weight:700;letter-spacing:1px}
+.brand-subtitle{font-size:14px;font-weight:300;opacity:.9}
+.main-nav{background:rgba(0,0,0,.25);padding:15px 0;position:sticky;top:0;z-index:100}
+.main-nav ul{list-style:none;display:flex;justify-content:center;flex-wrap:wrap;max-width:1200px;margin:0 auto}
+.main-nav a{color:#fff;text-decoration:none;padding:12px 18px;font-size:13px;font-weight:500;transition:.3s;border-bottom:3px solid transparent}
+.main-nav a:hover,.main-nav a.active{background:rgba(255,255,255,.1);border-bottom-color:var(--accent-color)}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+.main-content{min-height:100vh;padding:40px 0}
+.section{margin:50px 0;padding:30px 0;border-top:1px solid var(--border-color)}.section:first-child{border-top:none}
+.section-title{font-size:30px;font-weight:700;margin-bottom:25px;color:var(--primary-color);display:flex;align-items:center;gap:14px}
+.section-title i{font-size:34px;color:var(--accent-color)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin:25px 0}
+.card{border:1px solid var(--border-color);border-radius:8px;padding:22px;background:#fff;transition:transform .3s,box-shadow .3s;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 16px rgba(0,0,0,.15)}
+.card-icon{font-size:38px;margin-bottom:12px}.card-title{font-size:17px;font-weight:600;margin-bottom:10px}
+.tech-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;color:#fff}
+.tech-badge.nest{background:var(--nest-color)}.tech-badge.postgres{background:var(--postgres-color)}.tech-badge.prisma{background:var(--prisma-color)}
+.info-box{padding:18px 22px;border-radius:8px;margin:18px 0}
+.info-box.warning{background:#fff3cd;border-left:4px solid var(--warning-color)}
+.info-box.success{background:#d4edda;border-left:4px solid var(--success-color)}
+.info-box.info{background:#d1ecf1;border-left:4px solid var(--info-color)}
+.info-box h4{margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.svg-diagram{margin:25px 0;text-align:center;overflow-x:auto}.svg-diagram svg{max-width:100%;height:auto}
+
+/* ===== HUD ===== */
+.player-hud{background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid #0f3460;border-radius:12px;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;margin-bottom:28px;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.hud-item{text-align:center;min-width:90px}.hud-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8899aa;margin-bottom:3px}
+.hud-value{font-size:26px;font-weight:700}.hud-value.gold{color:var(--gold)}.hud-value.level{color:#00d2ff}
+.hud-timer{font-family:'Fira Code',monospace;font-size:26px;font-weight:700;color:#00d2ff;letter-spacing:1px}
+.hud-timer.warning{color:var(--warning-color);animation:pulse 1s infinite}
+.hud-timer.danger{color:var(--accent-color);animation:pulse .5s infinite}
+.nota-big{font-size:54px;font-weight:700;margin:12px 0}
+.nota-big.excellent{color:#27ae60}.nota-big.good{color:#3498db}.nota-big.acceptable{color:#f39c12}.nota-big.low{color:#e74c3c}
+.nota-scale{font-size:13px;color:#aaa;margin-bottom:10px}
+
+/* ===== STAGES ===== */
+.game-stage{display:none;animation:fadeIn .5s ease}.game-stage.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.stage-progress{display:flex;gap:5px;margin-bottom:22px}
+.stage-dot{height:8px;flex:1;border-radius:4px;background:#e0e0e0;transition:background .5s}
+.stage-dot.completed{background:var(--success-color)}.stage-dot.current{background:var(--info-color);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ===== CHALLENGE CARD ===== */
+.challenge-card{background:#fff;border:2px solid var(--border-color);border-radius:12px;padding:28px;margin:18px 0;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.challenge-card.correct{border-color:var(--success-color);background:#f0fff4}
+.challenge-card.incorrect{border-color:var(--accent-color);background:#fff5f5}
+.challenge-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.challenge-number{width:42px;height:42px;border-radius:50%;background:var(--primary-color);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;flex-shrink:0}
+.challenge-title{font-size:17px;font-weight:600;color:var(--primary-color)}
+.challenge-subtitle{font-size:12px;color:#888;margin-top:2px}
+.challenge-question{font-size:15px;margin-bottom:18px;line-height:1.8}
+.difficulty{display:inline-flex;gap:3px;margin-left:8px}
+.difficulty-dot{width:9px;height:9px;border-radius:50%;background:#ddd}.difficulty-dot.filled{background:var(--accent-color)}
+
+/* OPTIONS (MC) */
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.option-btn{padding:14px 18px;border:2px solid var(--border-color);border-radius:10px;background:#fff;cursor:pointer;font-size:13px;font-weight:500;text-align:left;transition:.3s;display:flex;align-items:center;gap:10px;font-family:'Roboto',sans-serif}
+.option-btn:hover:not(.disabled){border-color:var(--info-color);background:#e3f2fd;transform:translateY(-2px)}
+.option-btn.selected{border-color:var(--info-color);background:#bbdefb}
+.option-btn.correct-answer{border-color:var(--success-color);background:#c8e6c9}
+.option-btn.wrong-answer{border-color:var(--accent-color);background:#ffcdd2}
+.option-btn.disabled{cursor:default;opacity:.8}
+.option-letter{width:30px;height:30px;border-radius:50%;border:2px solid var(--border-color);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;color:var(--primary-color)}
+.option-btn.correct-answer .option-letter{border-color:var(--success-color);background:var(--success-color);color:#fff}
+.option-btn.wrong-answer .option-letter{border-color:var(--accent-color);background:var(--accent-color);color:#fff}
+
+/* ===== DRAG & DROP PIPELINE (main mechanic) ===== */
+.pipeline-container{margin:18px 0;padding:20px;background:#f8f9fa;border-radius:14px;border:2px solid var(--border-color)}
+.pipeline-label{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:10px;font-weight:600}
+.pipeline-label i{margin-right:4px}
+.pipeline-slots{display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-height:70px}
+.pipeline-arrow{font-size:18px;color:var(--accent-color);font-weight:700}
+.pipeline-slot{min-width:110px;min-height:50px;border:2px dashed #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:7px;background:#fff;transition:.3s;text-align:center}
+.pipeline-slot.wide{min-width:160px}
+.pipeline-slot.over{border-color:var(--info-color);background:#e3f2fd}
+.pipeline-slot.filled{border-style:solid}
+.pipeline-slot.correct-slot{border-color:var(--success-color);background:#e8f5e9}
+.pipeline-slot.wrong-slot{border-color:var(--accent-color);background:#ffebee}
+.slot-num{font-size:9px;color:#bbb;font-weight:600}
+
+/* Vertical pipeline (ida y vuelta) */
+.pipeline-vertical{display:flex;flex-direction:column;gap:0;align-items:center}
+.pipeline-vertical .pipeline-slots{flex-direction:column;align-items:stretch}
+.pipeline-vertical .pipeline-arrow{transform:rotate(90deg);margin:2px 0}
+.pipeline-vertical .pipeline-slot{min-width:200px}
+
+.pipeline-roundtrip{display:grid;grid-template-columns:1fr 50px 1fr;gap:0;align-items:start}
+.pipeline-col{display:flex;flex-direction:column;gap:4px;align-items:center}
+.pipeline-col-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding:6px 14px;border-radius:20px;color:#fff}
+.pipeline-col-title.ida{background:var(--info-color)}.pipeline-col-title.vuelta{background:var(--success-color)}
+.pipeline-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding-top:40px}
+.pipeline-mid .mid-arrow{font-size:28px;color:var(--accent-color)}
+
+/* PLAYER NAMES */
+.players-form{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:14px;padding:28px;margin:24px 0;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.players-form h3{font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.players-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.player-field label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8899aa;margin-bottom:6px}
+.player-field input{width:100%;padding:12px 16px;border:2px solid #2a3a5a;border-radius:10px;background:#0d1117;color:#fff;font-size:15px;font-family:'Roboto',sans-serif;outline:none;transition:.3s}
+.player-field input:focus{border-color:var(--info-color);box-shadow:0 0 12px rgba(52,152,219,.3)}
+.player-field input::placeholder{color:#556;font-style:italic}
+.player-field input.error{border-color:var(--accent-color);animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.players-final{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0}
+.player-result{background:rgba(255,255,255,.1);border-radius:14px;padding:22px;text-align:center}
+.player-result .player-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.7;margin-bottom:4px}
+.player-result .player-name-display{font-size:22px;font-weight:700;margin-bottom:4px}
+.player-result .player-avatar{font-size:42px;margin-bottom:6px}
+@media(max-width:768px){.players-grid,.players-final{grid-template-columns:1fr}}
+
+/* Drag bank */
+.drag-bank{display:flex;flex-wrap:wrap;gap:9px;padding:14px;background:#eee;border-radius:10px;margin-top:14px;justify-content:center}
+.draggable{padding:9px 16px;border-radius:8px;cursor:grab;font-size:12px;font-weight:600;color:#fff;user-select:none;transition:transform .2s,box-shadow .2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.draggable:active{cursor:grabbing;transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.draggable.used{opacity:.3;cursor:default;pointer-events:none}
+.drag-nest{background:var(--nest-color)}.drag-db{background:var(--postgres-color)}.drag-prisma{background:var(--prisma-color)}
+.drag-dto{background:var(--warning-color)}.drag-green{background:var(--success-color)}.drag-http{background:var(--info-color)}
+.drag-error{background:#e74c3c}.drag-purple{background:var(--xp-bar)}.drag-dark{background:#34495e}
+.drag-teal{background:#16a085}.drag-orange{background:#e67e22}
+
+/* ===== CODE COMPLETION ===== */
+.code-completion{background:#1e1e1e;border-radius:10px;padding:22px;font-family:'Fira Code',monospace;font-size:13px;color:#e0e0e0;line-height:2;margin:18px 0}
+.code-blank{display:inline-block;min-width:120px;border-bottom:2px dashed #666;color:#ffd700;padding:2px 6px;margin:0 3px;text-align:center;cursor:pointer;border-radius:4px;transition:.3s}
+.code-blank.filled{border-bottom-color:var(--info-color);background:rgba(52,152,219,.15)}
+.code-blank.correct-blank{border-bottom-color:var(--success-color);background:rgba(39,174,96,.2);color:#27ae60}
+.code-blank.wrong-blank{border-bottom-color:var(--accent-color);background:rgba(255,107,107,.2);color:var(--accent-color)}
+.word-bank{display:flex;flex-wrap:wrap;gap:9px;padding:14px;background:#f5f5f5;border-radius:10px;margin:12px 0}
+.word-chip{padding:7px 14px;border-radius:20px;cursor:pointer;font-family:'Fira Code',monospace;font-size:12px;border:2px solid var(--border-color);background:#fff;transition:.3s;font-weight:500}
+.word-chip:hover{border-color:var(--info-color);background:#e3f2fd}.word-chip.used{opacity:.35;cursor:default;border-style:dashed}
+.hl-kw{color:#c678dd}.hl-deco{color:#e5c07b}.hl-str{color:#98c379}.hl-fn{color:#61afef}.hl-type{color:#e06c75}.hl-comment{color:#5c6370;font-style:italic}.hl-num{color:#d19a66}
+
+/* ===== API SIMULATOR ===== */
+.api-simulator{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:22px;color:#fff;margin:18px 0}
+.api-method-selector{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.method-btn{padding:7px 16px;border:2px solid transparent;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;font-family:'Fira Code',monospace;transition:.3s;color:#fff}
+.method-btn.get{background:#27ae60}.method-btn.post{background:#f39c12}.method-btn.put{background:#3498db}.method-btn.delete{background:#e74c3c}
+.method-btn.selected{transform:scale(1.1);box-shadow:0 0 15px rgba(255,255,255,.3)}
+.api-url-bar{background:#0d1117;border:1px solid #333;border-radius:8px;padding:10px 16px;font-family:'Fira Code',monospace;font-size:13px;color:#58a6ff;margin-bottom:12px}
+.api-request-body,.api-response{background:#0d1117;border:1px solid #333;border-radius:8px;padding:14px;font-family:'Fira Code',monospace;font-size:11px;color:#e0e0e0;line-height:1.6;margin-top:8px;min-height:50px;white-space:pre-wrap}
+.api-response.success-response{border-color:var(--success-color)}.api-response.error-response{border-color:var(--accent-color)}
+.send-btn{padding:10px 28px;background:linear-gradient(135deg,var(--info-color),#2980b9);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;transition:.3s;font-family:'Roboto',sans-serif}
+.send-btn:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(52,152,219,.4)}.send-btn:disabled{opacity:.5;cursor:default;transform:none}
+
+/* ===== FEEDBACK ===== */
+.feedback-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:1000;justify-content:center;align-items:center}
+.feedback-overlay.show{display:flex}
+.feedback-modal{background:#fff;border-radius:16px;padding:36px;text-align:center;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:popIn .4s ease}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.feedback-icon{font-size:60px;margin-bottom:12px}.feedback-title{font-size:22px;font-weight:700;margin-bottom:8px}
+.feedback-text{font-size:14px;color:#666;margin-bottom:18px;line-height:1.6}
+.feedback-xp{font-size:18px;font-weight:700;color:var(--xp-bar);margin-bottom:18px}
+.next-btn{padding:12px 36px;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:.3s;font-family:'Roboto',sans-serif}
+.next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(30,60,114,.4)}.next-btn.success-btn{background:linear-gradient(135deg,var(--success-color),#219a52)}
+
+.stage-complete{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:36px;text-align:center;color:#fff;margin:28px 0;box-shadow:0 8px 30px rgba(102,126,234,.4)}
+.stage-complete h3{font-size:26px;margin-bottom:8px}.stage-complete .stars{font-size:38px;margin:12px 0}.stage-complete p{font-size:15px;opacity:.9;margin-bottom:18px}
+
+.hint-text{display:none;background:#fff3cd;border-left:3px solid var(--warning-color);padding:10px 14px;border-radius:6px;margin:8px 0;font-size:12px;color:#856404}.hint-text.show{display:block}
+
+/* CONFETTI */
+.confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden}
+.confetti-piece{position:absolute;width:10px;height:10px;top:-20px;opacity:0;animation:confettiFall 3s ease-in forwards}
+@keyframes confettiFall{0%{top:-10%;opacity:1;transform:rotate(0) translateX(0)}100%{top:110%;opacity:0;transform:rotate(720deg) translateX(100px)}}
+
+/* FOOTER */
+.footer{background:var(--dark-text);color:#fff;padding:36px 0;margin-top:50px}
+.footer-content{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:35px}
+.footer-section h3{margin-bottom:12px;color:var(--accent-color)}.footer-section ul{list-style:none}.footer-section ul li{margin:6px 0}
+.footer-section a{color:#ccc;text-decoration:none}.footer-section a:hover{color:#fff}
+.footer-bottom{text-align:center;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);margin-top:25px}
+
+@media(max-width:768px){
+    .section-title{font-size:22px}.main-nav ul{flex-direction:column}.cards-grid{grid-template-columns:1fr}
+    .options-grid{grid-template-columns:1fr}.player-hud{flex-direction:column;text-align:center}
+    .pipeline-slots{flex-direction:column}.pipeline-roundtrip{grid-template-columns:1fr}
+    .pipeline-mid{flex-direction:row;padding-top:0}
+}
+    </style>
+</head>
+<body>
+
+<header class="main-header">
+    <div class="top-bar">
+        <div class="container">
+            <div class="brand-container">
+                <img src="https://raw.githubusercontent.com/Memory-Jeancarlo/img/refs/heads/main/corhuila.png" alt="Corhuila" style="max-height:58px">
+                <div class="brand-name">🧩 Juego: Flujo de Peticiones — Ida y Vuelta</div>
+                <div class="brand-subtitle">Sistema de Gestión Académica — Arma el recorrido de cada petición CRUD</div>
+            </div>
+        </div>
+    </div>
+    <nav class="main-nav">
+        <ul>
+            <li><a href="#intro" class="nav-link active"><i class="fas fa-play-circle"></i> Inicio</a></li>
+            <li><a href="#nivel1" class="nav-link"><i class="fas fa-gamepad"></i> Nivel 1</a></li>
+            <li><a href="#nivel2" class="nav-link"><i class="fas fa-gamepad"></i> Nivel 2</a></li>
+            <li><a href="#nivel3" class="nav-link"><i class="fas fa-gamepad"></i> Nivel 3</a></li>
+            <li><a href="#nivel4" class="nav-link"><i class="fas fa-gamepad"></i> Nivel 4</a></li>
+            <li><a href="#nivel5" class="nav-link"><i class="fas fa-gamepad"></i> Nivel 5</a></li>
+            <li><a href="#nivel6" class="nav-link"><i class="fas fa-gamepad"></i> Nivel 6</a></li>
+            <li><a href="#resultados" class="nav-link"><i class="fas fa-trophy"></i> Resultados</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<main class="main-content">
+<div class="container">
+
+<!-- HUD -->
+<div class="player-hud" id="playerHud">
+    <div class="hud-item"><div class="hud-label">Nivel</div><div class="hud-value level" id="hudLevel">—</div></div>
+    <div class="hud-item"><div class="hud-label">Nota</div><div class="hud-value gold" id="hudScore">0.0</div></div>
+    <div class="hud-item"><div class="hud-label">Tiempo</div><div class="hud-timer" id="hudTimer">07:00</div></div>
+    <div class="hud-item"><div class="hud-label">Racha</div><div class="hud-value" id="hudStreak" style="color:#ff6b6b">🔥 0</div></div>
+    <div class="hud-item"><div class="hud-label">Retos</div><div class="hud-value" id="hudChallenges" style="color:#ccc;font-size:16px">0/24</div></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="stage-progress" id="stageProgress">
+    <div class="stage-dot current" data-stage="0"></div>
+    <div class="stage-dot" data-stage="1"></div>
+    <div class="stage-dot" data-stage="2"></div>
+    <div class="stage-dot" data-stage="3"></div>
+    <div class="stage-dot" data-stage="4"></div>
+    <div class="stage-dot" data-stage="5"></div>
+    <div class="stage-dot" data-stage="6"></div>
+    <div class="stage-dot" data-stage="7"></div>
+</div>
+
+<!-- ════════════════════════════════════════ INTRO ════════════════════════════════════════ -->
+<section id="intro" class="section game-stage active" data-stage="0">
+    <h2 class="section-title"><i class="fas fa-play-circle"></i> Bienvenido al Juego de Flujos</h2>
+    <p style="font-size:17px;margin-bottom:18px">En este juego deberás <strong>armar con bloques arrastrables</strong> el recorrido completo de cada petición CRUD —desde que el cliente envía la solicitud HTTP hasta que la respuesta regresa— pasando por cada capa del backend.</p>
+
+    <div class="cards-grid">
+        <div class="card"><div class="card-icon">🧩</div><div class="card-title">14 Pipelines Arrastrables</div><p>La mayoría de retos son de arrastrar bloques para armar el flujo de ida y vuelta de las peticiones.</p></div>
+        <div class="card"><div class="card-icon">🎯</div><div class="card-title">24 Retos / 6 Niveles</div><p>Desde el flujo básico hasta errores completos con manejo de excepciones.</p></div>
+        <div class="card"><div class="card-icon">⏱️</div><div class="card-title">7 Minutos</div><p>Contra reloj. Mantén tu racha de aciertos para la mejor nota.</p></div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:20px 0">
+        <span class="tech-badge nest"><i class="fas fa-server"></i> NestJS</span>
+        <span class="tech-badge prisma"><i class="fas fa-code"></i> Prisma ORM</span>
+        <span class="tech-badge postgres"><i class="fas fa-database"></i> PostgreSQL</span>
+    </div>
+
+    <div class="svg-diagram">
+        <svg viewBox="0 0 820 150" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="820" height="150" rx="14" fill="#f8f9fa" stroke="#e0e0e0"/>
+            <text x="410" y="24" font-size="13" font-weight="700" fill="#1e3c72" text-anchor="middle">Flujo de una petición CRUD — Ida y Vuelta</text>
+            <!-- IDA -->
+            <rect x="15" y="45" width="95" height="40" rx="8" fill="#3498db"/><text x="62" y="70" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">🌐 Cliente</text>
+            <line x1="110" y1="65" x2="130" y2="65" stroke="#ff6b6b" stroke-width="2" marker-end="url(#ar)"/>
+            <rect x="133" y="45" width="100" height="40" rx="8" fill="#e0234e"/><text x="183" y="70" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">📡 Controller</text>
+            <line x1="233" y1="65" x2="253" y2="65" stroke="#ff6b6b" stroke-width="2"/>
+            <rect x="256" y="45" width="100" height="40" rx="8" fill="#e0234e"/><text x="306" y="70" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">⚙️ Service</text>
+            <line x1="356" y1="65" x2="376" y2="65" stroke="#ff6b6b" stroke-width="2"/>
+            <rect x="379" y="45" width="100" height="40" rx="8" fill="#e0234e"/><text x="429" y="70" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">📦 Repository</text>
+            <line x1="479" y1="65" x2="499" y2="65" stroke="#ff6b6b" stroke-width="2"/>
+            <rect x="502" y="45" width="100" height="40" rx="8" fill="#2d3748"/><text x="552" y="70" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">🔧 Prisma</text>
+            <line x1="602" y1="65" x2="622" y2="65" stroke="#ff6b6b" stroke-width="2"/>
+            <rect x="625" y="45" width="110" height="40" rx="8" fill="#336791"/><text x="680" y="70" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">🗄️ PostgreSQL</text>
+            <!-- VUELTA -->
+            <line x1="680" y1="95" x2="62" y2="95" stroke="#27ae60" stroke-width="2" stroke-dasharray="6,3"/>
+            <text x="370" y="115" font-size="10" fill="#27ae60" text-anchor="middle" font-weight="600">← Respuesta (vuelta): PostgreSQL → Prisma → Repository → Service → Controller → Cliente</text>
+            <text x="410" y="140" font-size="13" font-weight="700" fill="#ff6b6b" text-anchor="middle">👇 Haz clic en "Comenzar" para armar los flujos 👇</text>
+            <defs><marker id="ar" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#ff6b6b"/></marker></defs>
+        </svg>
+    </div>
+
+    <div class="players-form">
+        <h3><i class="fas fa-users"></i> Nombres de los Jugadores</h3>
+        <div class="players-grid">
+            <div class="player-field">
+                <label for="player1">👤 Jugador 1</label>
+                <input type="text" id="player1" placeholder="Escribe el nombre..." maxlength="30" autocomplete="off">
+            </div>
+            <div class="player-field">
+                <label for="player2">👤 Jugador 2</label>
+                <input type="text" id="player2" placeholder="Escribe el nombre..." maxlength="30" autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin-top:18px">
+        <button class="next-btn success-btn" onclick="startGame()" style="font-size:19px;padding:16px 56px">🚀 Comenzar Juego</button>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════ NIVEL 1 — FLUJO BÁSICO ════════════════════════════════════════ -->
+<section id="nivel1" class="section game-stage" data-stage="1">
+    <h2 class="section-title"><i class="fas fa-route" style="color:#3498db"></i> Nivel 1 — Flujo Básico de Capas</h2>
+    <p>Comprende el orden de las capas que atraviesa una petición.</p>
+
+    <!-- C1: Pipeline IDA básica -->
+    <div class="challenge-card" id="c1">
+        <div class="challenge-header"><div class="challenge-number">1</div><div><div class="challenge-title">Arma la IDA de una petición GET /api/v1/estudiantes</div><div class="challenge-subtitle">🧩 Pipeline — Orden de capas <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Arrastra los bloques al orden correcto que sigue la petición <strong>de ida</strong> (del cliente a la BD):</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-arrow-right"></i> Flujo de IDA</div>
+            <div class="pipeline-slots" id="slots_c1">
+                <div class="pipeline-slot" data-expect="Cliente HTTP" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="Controller" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="Service" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="Repository" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="Prisma Client" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="PostgreSQL" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">6</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c1">
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma Client" ondragstart="dragS(event)">🔧 Prisma Client</div>
+            <div class="draggable drag-db" draggable="true" data-value="PostgreSQL" ondragstart="dragS(event)">🗄️ PostgreSQL</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service" ondragstart="dragS(event)">⚙️ Service</div>
+            <div class="draggable drag-http" draggable="true" data-value="Cliente HTTP" ondragstart="dragS(event)">🌐 Cliente HTTP</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Controller" ondragstart="dragS(event)">📡 Controller</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository" ondragstart="dragS(event)">📦 Repository</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c1','slots_c1')">Verificar Orden</button>
+        <div id="feedback_c1"></div>
+    </div>
+
+    <!-- C2: Pipeline VUELTA básica -->
+    <div class="challenge-card" id="c2">
+        <div class="challenge-header"><div class="challenge-number">2</div><div><div class="challenge-title">Arma la VUELTA de la respuesta</div><div class="challenge-subtitle">🧩 Pipeline — Retorno de datos <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Ahora PostgreSQL devolvió los datos. Arrastra el orden de la <strong>respuesta de vuelta</strong> hasta el cliente:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-arrow-left"></i> Flujo de VUELTA</div>
+            <div class="pipeline-slots" id="slots_c2">
+                <div class="pipeline-slot" data-expect="PostgreSQL retorna filas" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="Prisma mapea a objetos TS" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="Repository retorna al Service" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="Service aplica lógica/retorna" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot" data-expect="Controller envía Response JSON" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c2">
+            <div class="draggable drag-nest" draggable="true" data-value="Controller envía Response JSON" ondragstart="dragS(event)">📡 Controller envía Response JSON</div>
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma mapea a objetos TS" ondragstart="dragS(event)">🔧 Prisma mapea a objetos TS</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service aplica lógica/retorna" ondragstart="dragS(event)">⚙️ Service aplica lógica/retorna</div>
+            <div class="draggable drag-db" draggable="true" data-value="PostgreSQL retorna filas" ondragstart="dragS(event)">🗄️ PostgreSQL retorna filas</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository retorna al Service" ondragstart="dragS(event)">📦 Repository retorna al Service</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c2','slots_c2')">Verificar Orden</button>
+        <div id="feedback_c2"></div>
+    </div>
+
+    <!-- C3: MC -->
+    <div class="challenge-card" id="c3">
+        <div class="challenge-header"><div class="challenge-number">3</div><div><div class="challenge-title">¿Qué capa habla directamente con PostgreSQL?</div><div class="challenge-subtitle">Opción múltiple <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">De todas las capas del backend, ¿cuál ejecuta las queries SQL reales contra la base de datos?</div>
+        <div class="options-grid" id="opts_c3">
+            <button class="option-btn" onclick="checkMC('c3',this,0)"><span class="option-letter">A</span> Controller</button>
+            <button class="option-btn" onclick="checkMC('c3',this,1)"><span class="option-letter">B</span> Service</button>
+            <button class="option-btn" onclick="checkMC('c3',this,2)"><span class="option-letter">C</span> Prisma Client (dentro del Repository)</button>
+            <button class="option-btn" onclick="checkMC('c3',this,3)"><span class="option-letter">D</span> El DTO</button>
+        </div>
+        <div id="feedback_c3"></div>
+    </div>
+
+    <!-- C4: MC -->
+    <div class="challenge-card" id="c4">
+        <div class="challenge-header"><div class="challenge-number">4</div><div><div class="challenge-title">¿Qué componente valida el body ANTES de que llegue al Controller?</div><div class="challenge-subtitle">Opción múltiple <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Al enviar un <code>POST</code> con un body JSON, ¿quién valida que los campos sean correctos según el DTO?</div>
+        <div class="options-grid" id="opts_c4">
+            <button class="option-btn" onclick="checkMC('c4',this,0)"><span class="option-letter">A</span> ValidationPipe (global pipe de NestJS)</button>
+            <button class="option-btn" onclick="checkMC('c4',this,1)"><span class="option-letter">B</span> PostgreSQL con constraints</button>
+            <button class="option-btn" onclick="checkMC('c4',this,2)"><span class="option-letter">C</span> Prisma Schema</button>
+            <button class="option-btn" onclick="checkMC('c4',this,3)"><span class="option-letter">D</span> El Repository</button>
+        </div>
+        <div id="feedback_c4"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:22px"><button class="next-btn" onclick="goToStage(2)">Siguiente Nivel →</button></div>
+</section>
+
+<!-- ════════════════════════════════════════ NIVEL 2 — FLUJO CREATE ════════════════════════════════════════ -->
+<section id="nivel2" class="section game-stage" data-stage="2">
+    <h2 class="section-title"><i class="fas fa-plus-circle" style="color:#f39c12"></i> Nivel 2 — Flujo CREATE (POST → INSERT)</h2>
+    <p>Arma el recorrido completo de una petición POST que crea un recurso.</p>
+
+    <!-- C5: Pipeline completa CREATE ida y vuelta -->
+    <div class="challenge-card" id="c5">
+        <div class="challenge-header"><div class="challenge-number">5</div><div><div class="challenge-title">Arma el flujo completo: POST /api/v1/docentes (Ida + Vuelta)</div><div class="challenge-subtitle">🧩 Pipeline completa 8 pasos <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Ordena los <strong>8 pasos</strong> del ida y vuelta de crear un Docente nuevo:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-arrows-alt-h"></i> Flujo CREATE completo</div>
+            <div class="pipeline-slots" id="slots_c5">
+                <div class="pipeline-slot wide" data-expect="POST JSON llega al servidor" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="ValidationPipe valida DTO" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Controller llama Service.create()" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service llama Repository.create()" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Repository ejecuta prisma.docente.create()" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma genera INSERT INTO docentes" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">6</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="PostgreSQL inserta y retorna la fila" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">7</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Respuesta 201 Created con JSON" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">8</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c5">
+            <div class="draggable drag-db" draggable="true" data-value="PostgreSQL inserta y retorna la fila" ondragstart="dragS(event)">🗄️ PostgreSQL inserta y retorna fila</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Controller llama Service.create()" ondragstart="dragS(event)">📡 Controller → Service.create()</div>
+            <div class="draggable drag-green" draggable="true" data-value="Respuesta 201 Created con JSON" ondragstart="dragS(event)">✅ Response 201 Created + JSON</div>
+            <div class="draggable drag-dto" draggable="true" data-value="ValidationPipe valida DTO" ondragstart="dragS(event)">🛡️ ValidationPipe valida DTO</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository ejecuta prisma.docente.create()" ondragstart="dragS(event)">📦 Repository → prisma.create()</div>
+            <div class="draggable drag-http" draggable="true" data-value="POST JSON llega al servidor" ondragstart="dragS(event)">🌐 POST JSON llega al servidor</div>
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma genera INSERT INTO docentes" ondragstart="dragS(event)">🔧 Prisma → INSERT INTO docentes</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service llama Repository.create()" ondragstart="dragS(event)">⚙️ Service → Repository.create()</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c5','slots_c5')">Verificar Orden</button>
+        <div id="feedback_c5"></div>
+    </div>
+
+    <!-- C6: Pipeline body transformation -->
+    <div class="challenge-card" id="c6">
+        <div class="challenge-header"><div class="challenge-number">6</div><div><div class="challenge-title">¿Qué le pasa al body JSON en cada capa?</div><div class="challenge-subtitle">🧩 Pipeline — Transformación del body <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Ordena cómo se <strong>transforma el body</strong> del POST al crear un Estudiante:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-exchange-alt"></i> Transformación del body</div>
+            <div class="pipeline-slots" id="slots_c6">
+                <div class="pipeline-slot wide" data-expect="JSON crudo del cliente" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="ValidationPipe lo transforma en CreateEstudianteDto" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service pasa el DTO al Repository" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Repository usa data:{...dto} en prisma.create()" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma genera INSERT con campos del DTO" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c6">
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma genera INSERT con campos del DTO" ondragstart="dragS(event)">🔧 Prisma → INSERT con campos DTO</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository usa data:{...dto} en prisma.create()" ondragstart="dragS(event)">📦 Repository → data:{...dto}</div>
+            <div class="draggable drag-http" draggable="true" data-value="JSON crudo del cliente" ondragstart="dragS(event)">🌐 JSON crudo del cliente</div>
+            <div class="draggable drag-dto" draggable="true" data-value="ValidationPipe lo transforma en CreateEstudianteDto" ondragstart="dragS(event)">🛡️ Pipe → CreateEstudianteDto</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service pasa el DTO al Repository" ondragstart="dragS(event)">⚙️ Service pasa DTO al Repository</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c6','slots_c6')">Verificar Orden</button>
+        <div id="feedback_c6"></div>
+    </div>
+
+    <!-- C7: API Sim POST -->
+    <div class="challenge-card" id="c7">
+        <div class="challenge-header"><div class="challenge-number">7</div><div><div class="challenge-title">Simulador: Crear una Asignatura</div><div class="challenge-subtitle">API Simulator <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Selecciona el método HTTP correcto para <strong>crear</strong> una asignatura (dispara <code>prisma.asignatura.create()</code> → <code>INSERT INTO</code>):</div>
+        <div class="api-simulator">
+            <div class="api-method-selector" id="msel_c7">
+                <button class="method-btn get" onclick="selectMethod('c7','GET',this)">GET</button>
+                <button class="method-btn post" onclick="selectMethod('c7','POST',this)">POST</button>
+                <button class="method-btn put" onclick="selectMethod('c7','PUT',this)">PUT</button>
+                <button class="method-btn delete" onclick="selectMethod('c7','DELETE',this)">DELETE</button>
+            </div>
+            <div class="api-url-bar">→ http://localhost:3001/api/v1/asignaturas</div>
+            <div style="color:#8899aa;font-size:11px;margin-bottom:4px">📦 Body:</div>
+            <div class="api-request-body">{ "nombre": "Programación Web", "codigo": "PW-401", "creditos": 4, "programaAcademicoId": 1 }</div>
+            <button class="send-btn" style="margin-top:12px" id="sendBtn_c7" onclick="sendAPI('c7')" disabled>▶ Enviar</button>
+            <div class="api-response" id="resp_c7" style="display:none"></div>
+        </div>
+        <div id="feedback_c7"></div>
+    </div>
+
+    <!-- C8: MC -->
+    <div class="challenge-card" id="c8">
+        <div class="challenge-header"><div class="challenge-number">8</div><div><div class="challenge-title">¿Qué HTTP status retorna un POST exitoso?</div><div class="challenge-subtitle">Opción múltiple <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Cuando <code>prisma.create()</code> se ejecuta con éxito y PostgreSQL inserta la fila, ¿qué status HTTP retorna el backend?</div>
+        <div class="options-grid" id="opts_c8">
+            <button class="option-btn" onclick="checkMC('c8',this,0)"><span class="option-letter">A</span> 200 OK</button>
+            <button class="option-btn" onclick="checkMC('c8',this,1)"><span class="option-letter">B</span> 201 Created</button>
+            <button class="option-btn" onclick="checkMC('c8',this,2)"><span class="option-letter">C</span> 204 No Content</button>
+            <button class="option-btn" onclick="checkMC('c8',this,3)"><span class="option-letter">D</span> 301 Redirect</button>
+        </div>
+        <div id="feedback_c8"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:22px"><button class="next-btn" onclick="goToStage(3)">Siguiente Nivel →</button></div>
+</section>
+
+<!-- ════════════════════════════════════════ NIVEL 3 — FLUJO READ ════════════════════════════════════════ -->
+<section id="nivel3" class="section game-stage" data-stage="3">
+    <h2 class="section-title"><i class="fas fa-search" style="color:#27ae60"></i> Nivel 3 — Flujo READ (GET → SELECT)</h2>
+
+    <!-- C9: Pipeline GET all con include -->
+    <div class="challenge-card" id="c9">
+        <div class="challenge-header"><div class="challenge-number">9</div><div><div class="challenge-title">Arma: GET /api/v1/estudiantes (con include)</div><div class="challenge-subtitle">🧩 Pipeline — findMany + JOIN <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Ordena el flujo ida y vuelta de listar estudiantes <strong>con su programa académico</strong>:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-arrows-alt-h"></i> READ con include</div>
+            <div class="pipeline-slots" id="slots_c9">
+                <div class="pipeline-slot wide" data-expect="GET /api/v1/estudiantes" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Controller → Service.findAll()" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Repository → prisma.findMany({include})" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma genera SELECT + LEFT JOIN" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="PostgreSQL retorna filas con JOIN" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Response 200 con array JSON + programa" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">6</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c9">
+            <div class="draggable drag-green" draggable="true" data-value="Response 200 con array JSON + programa" ondragstart="dragS(event)">✅ Response 200 + JSON[]</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository → prisma.findMany({include})" ondragstart="dragS(event)">📦 prisma.findMany({include})</div>
+            <div class="draggable drag-http" draggable="true" data-value="GET /api/v1/estudiantes" ondragstart="dragS(event)">🌐 GET /api/v1/estudiantes</div>
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma genera SELECT + LEFT JOIN" ondragstart="dragS(event)">🔧 Prisma → SELECT + LEFT JOIN</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Controller → Service.findAll()" ondragstart="dragS(event)">📡 Controller → Service.findAll()</div>
+            <div class="draggable drag-db" draggable="true" data-value="PostgreSQL retorna filas con JOIN" ondragstart="dragS(event)">🗄️ PostgreSQL retorna filas+JOIN</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c9','slots_c9')">Verificar Orden</button>
+        <div id="feedback_c9"></div>
+    </div>
+
+    <!-- C10: Pipeline GET by ID con 404 -->
+    <div class="challenge-card" id="c10">
+        <div class="challenge-header"><div class="challenge-number">10</div><div><div class="challenge-title">Arma: GET /api/v1/docentes/999 (No encontrado)</div><div class="challenge-subtitle">🧩 Pipeline — findOne → 404 <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span></span></div></div></div>
+        <div class="challenge-question">El docente 999 no existe. Ordena el flujo de ida hasta que llega el error 404:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-exclamation-triangle"></i> Flujo NOT FOUND</div>
+            <div class="pipeline-slots" id="slots_c10">
+                <div class="pipeline-slot wide" data-expect="GET /api/v1/docentes/999" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Controller → Service.findOne(999)" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Repository → prisma.findUnique({where:{id:999}})" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="PostgreSQL retorna null (no existe)" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service lanza NotFoundException(404)" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Response 404 Not Found" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">6</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c10">
+            <div class="draggable drag-error" draggable="true" data-value="Service lanza NotFoundException(404)" ondragstart="dragS(event)">🚫 Service → NotFoundException</div>
+            <div class="draggable drag-http" draggable="true" data-value="GET /api/v1/docentes/999" ondragstart="dragS(event)">🌐 GET /docentes/999</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository → prisma.findUnique({where:{id:999}})" ondragstart="dragS(event)">📦 prisma.findUnique(999)</div>
+            <div class="draggable drag-error" draggable="true" data-value="Response 404 Not Found" ondragstart="dragS(event)">❌ Response 404 Not Found</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Controller → Service.findOne(999)" ondragstart="dragS(event)">📡 Controller → findOne(999)</div>
+            <div class="draggable drag-db" draggable="true" data-value="PostgreSQL retorna null (no existe)" ondragstart="dragS(event)">🗄️ PostgreSQL → null</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c10','slots_c10')">Verificar Orden</button>
+        <div id="feedback_c10"></div>
+    </div>
+
+    <!-- C11: Pipeline calificaciones nested include -->
+    <div class="challenge-card" id="c11">
+        <div class="challenge-header"><div class="challenge-number">11</div><div><div class="challenge-title">Arma: GET Calificaciones con include anidado</div><div class="challenge-subtitle">🧩 Pipeline — JOINs múltiples <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span></span></div></div></div>
+        <div class="challenge-question">Listar calificaciones trae: matrícula → estudiante + asignación → asignatura + docente. Ordena qué genera Prisma:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-project-diagram"></i> Include anidado → JOINs</div>
+            <div class="pipeline-slots" id="slots_c11">
+                <div class="pipeline-slot wide" data-expect="Repository usa include anidado" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma une calificaciones + matriculas" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma une matriculas + estudiantes" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma une asignacion_docente + asignatura + docente" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="PostgreSQL retorna resultado combinado" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c11">
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma une calificaciones + matriculas" ondragstart="dragS(event)">🔧 JOIN calificaciones↔matriculas</div>
+            <div class="draggable drag-db" draggable="true" data-value="PostgreSQL retorna resultado combinado" ondragstart="dragS(event)">🗄️ PostgreSQL → resultado combinado</div>
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma une asignacion_docente + asignatura + docente" ondragstart="dragS(event)">🔧 JOIN asignación↔asignatura+docente</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository usa include anidado" ondragstart="dragS(event)">📦 Repository → include anidado</div>
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma une matriculas + estudiantes" ondragstart="dragS(event)">🔧 JOIN matriculas↔estudiantes</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c11','slots_c11')">Verificar Orden</button>
+        <div id="feedback_c11"></div>
+    </div>
+
+    <!-- C12: API Sim GET -->
+    <div class="challenge-card" id="c12">
+        <div class="challenge-header"><div class="challenge-number">12</div><div><div class="challenge-title">Simulador: Obtener un Programa por ID</div><div class="challenge-subtitle">API Simulator <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Quieres <strong>leer</strong> el programa id=2. ¿Qué método HTTP dispara <code>prisma.findUnique()</code> → <code>SELECT WHERE id=2</code>?</div>
+        <div class="api-simulator">
+            <div class="api-method-selector" id="msel_c12">
+                <button class="method-btn get" onclick="selectMethod('c12','GET',this)">GET</button>
+                <button class="method-btn post" onclick="selectMethod('c12','POST',this)">POST</button>
+                <button class="method-btn put" onclick="selectMethod('c12','PUT',this)">PUT</button>
+                <button class="method-btn delete" onclick="selectMethod('c12','DELETE',this)">DELETE</button>
+            </div>
+            <div class="api-url-bar">→ http://localhost:3001/api/v1/programas/2</div>
+            <button class="send-btn" style="margin-top:10px" id="sendBtn_c12" onclick="sendAPI('c12')" disabled>▶ Enviar</button>
+            <div class="api-response" id="resp_c12" style="display:none"></div>
+        </div>
+        <div id="feedback_c12"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:22px"><button class="next-btn" onclick="goToStage(4)">Siguiente Nivel →</button></div>
+</section>
+
+<!-- ════════════════════════════════════════ NIVEL 4 — FLUJO UPDATE ════════════════════════════════════════ -->
+<section id="nivel4" class="section game-stage" data-stage="4">
+    <h2 class="section-title"><i class="fas fa-edit" style="color:#3498db"></i> Nivel 4 — Flujo UPDATE (PUT → UPDATE SET)</h2>
+
+    <!-- C13: Pipeline UPDATE completa -->
+    <div class="challenge-card" id="c13">
+        <div class="challenge-header"><div class="challenge-number">13</div><div><div class="challenge-title">Arma: PUT /api/v1/estudiantes/5 (Ida + Vuelta)</div><div class="challenge-subtitle">🧩 Pipeline — 7 pasos con verificación <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span></span></div></div></div>
+        <div class="challenge-question">El Service primero verifica que el estudiante exista, y luego lo actualiza. Ordena:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-arrows-alt-h"></i> Flujo UPDATE completo</div>
+            <div class="pipeline-slots" id="slots_c13">
+                <div class="pipeline-slot wide" data-expect="PUT /api/v1/estudiantes/5 + body" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Controller → Service.update(5, dto)" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service llama findOne(5) para verificar existencia" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="findOne ejecuta SELECT WHERE id=5 ✓ existe" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Repository → prisma.update({where, data})" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma genera UPDATE SET ... WHERE id=5" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">6</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Response 200 OK con datos actualizados" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">7</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c13">
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma genera UPDATE SET ... WHERE id=5" ondragstart="dragS(event)">🔧 Prisma → UPDATE SET WHERE</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service llama findOne(5) para verificar existencia" ondragstart="dragS(event)">⚙️ Service.findOne(5) verificar</div>
+            <div class="draggable drag-green" draggable="true" data-value="Response 200 OK con datos actualizados" ondragstart="dragS(event)">✅ Response 200 OK</div>
+            <div class="draggable drag-http" draggable="true" data-value="PUT /api/v1/estudiantes/5 + body" ondragstart="dragS(event)">🌐 PUT /estudiantes/5 + body</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Controller → Service.update(5, dto)" ondragstart="dragS(event)">📡 Controller → Service.update()</div>
+            <div class="draggable drag-teal" draggable="true" data-value="findOne ejecuta SELECT WHERE id=5 ✓ existe" ondragstart="dragS(event)">🔍 SELECT id=5 → ✓ existe</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository → prisma.update({where, data})" ondragstart="dragS(event)">📦 prisma.update({where,data})</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c13','slots_c13')">Verificar Orden</button>
+        <div id="feedback_c13"></div>
+    </div>
+
+    <!-- C14: Pipeline UPDATE calificación con cálculo -->
+    <div class="challenge-card" id="c14">
+        <div class="challenge-header"><div class="challenge-number">14</div><div><div class="challenge-title">Arma: PUT Calificación con cálculo de notaDefinitiva</div><div class="challenge-subtitle">🧩 Pipeline — Lógica de negocio en Service <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span></span></div></div></div>
+        <div class="challenge-question">Al actualizar nota3, el Service recalcula notaDefinitiva antes de guardar. Ordena:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-calculator"></i> UPDATE + Cálculo</div>
+            <div class="pipeline-slots" id="slots_c14">
+                <div class="pipeline-slot wide" data-expect="PUT /calificaciones/3 con { nota3: 4.5 }" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service obtiene calificación actual (nota1, nota2)" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service calcula: nota1×0.30 + nota2×0.30 + nota3×0.40" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Repository guarda nota3 + notaDefinitiva calculada" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma → UPDATE SET nota3=4.5, notaDefinitiva=4.20" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c14">
+            <div class="draggable drag-nest" draggable="true" data-value="Service calcula: nota1×0.30 + nota2×0.30 + nota3×0.40" ondragstart="dragS(event)">🧮 Service calcula fórmula</div>
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma → UPDATE SET nota3=4.5, notaDefinitiva=4.20" ondragstart="dragS(event)">🔧 UPDATE SET nota3 + definitiva</div>
+            <div class="draggable drag-http" draggable="true" data-value="PUT /calificaciones/3 con { nota3: 4.5 }" ondragstart="dragS(event)">🌐 PUT /calificaciones/3</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository guarda nota3 + notaDefinitiva calculada" ondragstart="dragS(event)">📦 Repository guarda notas</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service obtiene calificación actual (nota1, nota2)" ondragstart="dragS(event)">⚙️ Service obtiene notas actuales</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c14','slots_c14')">Verificar Orden</button>
+        <div id="feedback_c14"></div>
+    </div>
+
+    <!-- C15: MC -->
+    <div class="challenge-card" id="c15">
+        <div class="challenge-header"><div class="challenge-number">15</div><div><div class="challenge-title">¿Qué SQL genera <code>prisma.update({where:{id:5}, data:{email:"nuevo@mail.com"}})</code>?</div><div class="challenge-subtitle">Opción múltiple <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="options-grid" id="opts_c15">
+            <button class="option-btn" onclick="checkMC('c15',this,0)"><span class="option-letter">A</span> <code>INSERT INTO docentes (email) VALUES ('nuevo@mail.com')</code></button>
+            <button class="option-btn" onclick="checkMC('c15',this,1)"><span class="option-letter">B</span> <code>UPDATE docentes SET email='nuevo@mail.com' WHERE id=5</code></button>
+            <button class="option-btn" onclick="checkMC('c15',this,2)"><span class="option-letter">C</span> <code>DELETE FROM docentes WHERE id=5</code></button>
+            <button class="option-btn" onclick="checkMC('c15',this,3)"><span class="option-letter">D</span> <code>SELECT email FROM docentes WHERE id=5</code></button>
+        </div>
+        <div id="feedback_c15"></div>
+    </div>
+
+    <!-- C16: API Sim PUT -->
+    <div class="challenge-card" id="c16">
+        <div class="challenge-header"><div class="challenge-number">16</div><div><div class="challenge-title">Simulador: Actualizar un Período Académico</div><div class="challenge-subtitle">API Simulator <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Quieres <strong>actualizar</strong> el período id=1. ¿Método HTTP correcto?</div>
+        <div class="api-simulator">
+            <div class="api-method-selector" id="msel_c16">
+                <button class="method-btn get" onclick="selectMethod('c16','GET',this)">GET</button>
+                <button class="method-btn post" onclick="selectMethod('c16','POST',this)">POST</button>
+                <button class="method-btn put" onclick="selectMethod('c16','PUT',this)">PUT</button>
+                <button class="method-btn delete" onclick="selectMethod('c16','DELETE',this)">DELETE</button>
+            </div>
+            <div class="api-url-bar">→ http://localhost:3001/api/v1/periodos/1</div>
+            <div style="color:#8899aa;font-size:11px;margin-bottom:4px">📦 Body:</div>
+            <div class="api-request-body">{ "nombre": "2026-2" }</div>
+            <button class="send-btn" style="margin-top:10px" id="sendBtn_c16" onclick="sendAPI('c16')" disabled>▶ Enviar</button>
+            <div class="api-response" id="resp_c16" style="display:none"></div>
+        </div>
+        <div id="feedback_c16"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:22px"><button class="next-btn" onclick="goToStage(5)">Siguiente Nivel →</button></div>
+</section>
+
+<!-- ════════════════════════════════════════ NIVEL 5 — FLUJO DELETE ════════════════════════════════════════ -->
+<section id="nivel5" class="section game-stage" data-stage="5">
+    <h2 class="section-title"><i class="fas fa-trash-alt" style="color:#e74c3c"></i> Nivel 5 — Flujo DELETE + Errores FK</h2>
+
+    <!-- C17: Pipeline DELETE exitoso -->
+    <div class="challenge-card" id="c17">
+        <div class="challenge-header"><div class="challenge-number">17</div><div><div class="challenge-title">Arma: DELETE /api/v1/matriculas/3 (Exitoso)</div><div class="challenge-subtitle">🧩 Pipeline — DELETE exitoso <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Ordena el flujo ida y vuelta para eliminar una matrícula con éxito:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-arrows-alt-h"></i> DELETE exitoso</div>
+            <div class="pipeline-slots" id="slots_c17">
+                <div class="pipeline-slot wide" data-expect="DELETE /api/v1/matriculas/3" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service.findOne(3) verifica existencia" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Repository → prisma.matricula.delete({where})" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma → DELETE FROM matriculas WHERE id=3" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="PostgreSQL elimina la fila exitosamente" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Response 200 OK" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">6</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c17">
+            <div class="draggable drag-green" draggable="true" data-value="Response 200 OK" ondragstart="dragS(event)">✅ Response 200 OK</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository → prisma.matricula.delete({where})" ondragstart="dragS(event)">📦 prisma.delete({where})</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service.findOne(3) verifica existencia" ondragstart="dragS(event)">⚙️ Service.findOne(3)</div>
+            <div class="draggable drag-http" draggable="true" data-value="DELETE /api/v1/matriculas/3" ondragstart="dragS(event)">🌐 DELETE /matriculas/3</div>
+            <div class="draggable drag-db" draggable="true" data-value="PostgreSQL elimina la fila exitosamente" ondragstart="dragS(event)">🗄️ PostgreSQL elimina fila</div>
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma → DELETE FROM matriculas WHERE id=3" ondragstart="dragS(event)">🔧 DELETE FROM matriculas</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c17','slots_c17')">Verificar Orden</button>
+        <div id="feedback_c17"></div>
+    </div>
+
+    <!-- C18: Pipeline DELETE con FK error -->
+    <div class="challenge-card" id="c18">
+        <div class="challenge-header"><div class="challenge-number">18</div><div><div class="challenge-title">Arma: DELETE Programa con hijos → Error P2003</div><div class="challenge-subtitle">🧩 Pipeline — FK violation ida y vuelta <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span></span></div></div></div>
+        <div class="challenge-question">Intentas borrar un Programa que tiene Estudiantes. Ordena el flujo de error completo:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-exclamation-circle"></i> Error FK ida y vuelta</div>
+            <div class="pipeline-slots" id="slots_c18">
+                <div class="pipeline-slot wide" data-expect="DELETE /programas/1" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service verifica existencia → OK" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Repository intenta prisma.delete()" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="PostgreSQL rechaza: FK constraint violation" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma lanza error P2003" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service captura P2003 → ConflictException(409)" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">6</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c18">
+            <div class="draggable drag-error" draggable="true" data-value="Prisma lanza error P2003" ondragstart="dragS(event)">⚠️ Prisma → error P2003</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service verifica existencia → OK" ondragstart="dragS(event)">⚙️ Service findOne → OK</div>
+            <div class="draggable drag-http" draggable="true" data-value="DELETE /programas/1" ondragstart="dragS(event)">🌐 DELETE /programas/1</div>
+            <div class="draggable drag-error" draggable="true" data-value="Service captura P2003 → ConflictException(409)" ondragstart="dragS(event)">🚫 Service → ConflictException(409)</div>
+            <div class="draggable drag-db" draggable="true" data-value="PostgreSQL rechaza: FK constraint violation" ondragstart="dragS(event)">🗄️ PostgreSQL rechaza FK</div>
+            <div class="draggable drag-dark" draggable="true" data-value="Repository intenta prisma.delete()" ondragstart="dragS(event)">📦 Repository → prisma.delete()</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c18','slots_c18')">Verificar Orden</button>
+        <div id="feedback_c18"></div>
+    </div>
+
+    <!-- C19: MC -->
+    <div class="challenge-card" id="c19">
+        <div class="challenge-header"><div class="challenge-number">19</div><div><div class="challenge-title">¿Qué módulo NO tiene endpoint DELETE?</div><div class="challenge-subtitle">Opción múltiple — Regla de negocio <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="options-grid" id="opts_c19">
+            <button class="option-btn" onclick="checkMC('c19',this,0)"><span class="option-letter">A</span> Estudiantes</button>
+            <button class="option-btn" onclick="checkMC('c19',this,1)"><span class="option-letter">B</span> Calificaciones (regla: solo se actualizan, no se borran)</button>
+            <button class="option-btn" onclick="checkMC('c19',this,2)"><span class="option-letter">C</span> Docentes</button>
+            <button class="option-btn" onclick="checkMC('c19',this,3)"><span class="option-letter">D</span> Programas</button>
+        </div>
+        <div id="feedback_c19"></div>
+    </div>
+
+    <!-- C20: API Sim DELETE -->
+    <div class="challenge-card" id="c20">
+        <div class="challenge-header"><div class="challenge-number">20</div><div><div class="challenge-title">Simulador: Eliminar una Asignación Docente</div><div class="challenge-subtitle">API Simulator <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Quieres <strong>eliminar</strong> la asignación id=7. ¿Cuál método HTTP dispara <code>prisma.delete()</code> → <code>DELETE FROM</code>?</div>
+        <div class="api-simulator">
+            <div class="api-method-selector" id="msel_c20">
+                <button class="method-btn get" onclick="selectMethod('c20','GET',this)">GET</button>
+                <button class="method-btn post" onclick="selectMethod('c20','POST',this)">POST</button>
+                <button class="method-btn put" onclick="selectMethod('c20','PUT',this)">PUT</button>
+                <button class="method-btn delete" onclick="selectMethod('c20','DELETE',this)">DELETE</button>
+            </div>
+            <div class="api-url-bar">→ http://localhost:3001/api/v1/asignaciones-docente/7</div>
+            <button class="send-btn" style="margin-top:10px" id="sendBtn_c20" onclick="sendAPI('c20')" disabled>▶ Enviar</button>
+            <div class="api-response" id="resp_c20" style="display:none"></div>
+        </div>
+        <div id="feedback_c20"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:22px"><button class="next-btn" onclick="goToStage(6)">Siguiente Nivel →</button></div>
+</section>
+
+<!-- ════════════════════════════════════════ NIVEL 6 — ERRORES COMPLETOS ════════════════════════════════════════ -->
+<section id="nivel6" class="section game-stage" data-stage="6">
+    <h2 class="section-title"><i class="fas fa-shield-alt" style="color:#8e44ad"></i> Nivel 6 — Flujos de Error Completos</h2>
+    <p>Arma los flujos completos de errores más comunes en el sistema.</p>
+
+    <!-- C21: Pipeline UNIQUE error (P2002) -->
+    <div class="challenge-card" id="c21">
+        <div class="challenge-header"><div class="challenge-number">21</div><div><div class="challenge-title">Arma: POST estudiante duplicado → Error P2002</div><div class="challenge-subtitle">🧩 Pipeline — UNIQUE violation ida y vuelta <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span></span></div></div></div>
+        <div class="challenge-question">Intentas crear un estudiante con un <code>codigoEstudiantil</code> que ya existe. Ordena el flujo completo:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-exclamation-circle"></i> Error UNIQUE P2002</div>
+            <div class="pipeline-slots" id="slots_c21">
+                <div class="pipeline-slot wide" data-expect="POST /estudiantes con código duplicado" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="ValidationPipe valida DTO → OK" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service → Repository → prisma.create()" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma ejecuta INSERT INTO estudiantes" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="PostgreSQL rechaza: UNIQUE constraint" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">5</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Prisma lanza P2002 al Service" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">6</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="Service → ConflictException → Response 409" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">7</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c21">
+            <div class="draggable drag-error" draggable="true" data-value="PostgreSQL rechaza: UNIQUE constraint" ondragstart="dragS(event)">🗄️ PostgreSQL rechaza UNIQUE</div>
+            <div class="draggable drag-error" draggable="true" data-value="Service → ConflictException → Response 409" ondragstart="dragS(event)">🚫 Service → 409 Conflict</div>
+            <div class="draggable drag-dto" draggable="true" data-value="ValidationPipe valida DTO → OK" ondragstart="dragS(event)">🛡️ ValidationPipe → OK</div>
+            <div class="draggable drag-prisma" draggable="true" data-value="Prisma ejecuta INSERT INTO estudiantes" ondragstart="dragS(event)">🔧 Prisma → INSERT INTO</div>
+            <div class="draggable drag-http" draggable="true" data-value="POST /estudiantes con código duplicado" ondragstart="dragS(event)">🌐 POST /estudiantes (duplicado)</div>
+            <div class="draggable drag-nest" draggable="true" data-value="Service → Repository → prisma.create()" ondragstart="dragS(event)">⚙️ Service → Repository → create()</div>
+            <div class="draggable drag-error" draggable="true" data-value="Prisma lanza P2002 al Service" ondragstart="dragS(event)">⚠️ Prisma lanza P2002</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c21','slots_c21')">Verificar Orden</button>
+        <div id="feedback_c21"></div>
+    </div>
+
+    <!-- C22: Pipeline dependencias matrícula -->
+    <div class="challenge-card" id="c22">
+        <div class="challenge-header"><div class="challenge-number">22</div><div><div class="challenge-title">Arma: Orden de INSERTs en la BD para crear una Matrícula</div><div class="challenge-subtitle">🧩 Pipeline — Dependencias FK <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span></span></div></div></div>
+        <div class="challenge-question">Para insertar una Matrícula, las FK obligan a crear primero los padres. Ordena los INSERT:</div>
+        <div class="pipeline-container">
+            <div class="pipeline-label"><i class="fas fa-sitemap"></i> Orden de INSERTs por FK</div>
+            <div class="pipeline-slots" id="slots_c22">
+                <div class="pipeline-slot wide" data-expect="INSERT ProgramaAcademico + PeriodoAcademico" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">1</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="INSERT Estudiante + Docente + Asignatura" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">2</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="INSERT AsignacionDocente (requiere Docente+Asignatura+Periodo)" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">3</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-slot wide" data-expect="INSERT Matricula (requiere Estudiante+AsignacionDocente)" ondrop="dropP(event,this)" ondragover="allowD(event)" ondragleave="leaveD(event)"><span class="slot-num">4</span></div>
+            </div>
+        </div>
+        <div class="drag-bank" id="bank_c22">
+            <div class="draggable drag-green" draggable="true" data-value="INSERT AsignacionDocente (requiere Docente+Asignatura+Periodo)" ondragstart="dragS(event)">🔗 INSERT AsignacionDocente</div>
+            <div class="draggable drag-http" draggable="true" data-value="INSERT Matricula (requiere Estudiante+AsignacionDocente)" ondragstart="dragS(event)">📝 INSERT Matricula</div>
+            <div class="draggable drag-db" draggable="true" data-value="INSERT ProgramaAcademico + PeriodoAcademico" ondragstart="dragS(event)">🏛️ INSERT Programa + Periodo</div>
+            <div class="draggable drag-dto" draggable="true" data-value="INSERT Estudiante + Docente + Asignatura" ondragstart="dragS(event)">👥 INSERT Estudiante+Docente+Asignatura</div>
+        </div>
+        <button class="next-btn" style="margin-top:12px" onclick="checkPipeline('c22','slots_c22')">Verificar Orden</button>
+        <div id="feedback_c22"></div>
+    </div>
+
+    <!-- C23: MC error codes -->
+    <div class="challenge-card" id="c23">
+        <div class="challenge-header"><div class="challenge-number">23</div><div><div class="challenge-title">Relaciona el error Prisma con el HTTP status</div><div class="challenge-subtitle">Opción múltiple <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot"></span></span></div></div></div>
+        <div class="challenge-question">Cuando el Service recibe <strong>P2002</strong> (UNIQUE) → <code>ConflictException</code>, y cuando no encuentra un registro → <code>NotFoundException</code>. ¿Qué HTTP status retorna cada uno?</div>
+        <div class="options-grid" id="opts_c23">
+            <button class="option-btn" onclick="checkMC('c23',this,0)"><span class="option-letter">A</span> P2002 → 400, Not Found → 500</button>
+            <button class="option-btn" onclick="checkMC('c23',this,1)"><span class="option-letter">B</span> P2002 → 409, Not Found → 404</button>
+            <button class="option-btn" onclick="checkMC('c23',this,2)"><span class="option-letter">C</span> P2002 → 404, Not Found → 409</button>
+            <button class="option-btn" onclick="checkMC('c23',this,3)"><span class="option-letter">D</span> P2002 → 200, Not Found → 200</button>
+        </div>
+        <div id="feedback_c23"></div>
+    </div>
+
+    <!-- C24: Code Completion -->
+    <div class="challenge-card" id="c24">
+        <div class="challenge-header"><div class="challenge-number">24</div><div><div class="challenge-title">Completa el catch de errores en el Service</div><div class="challenge-subtitle">Code Completion — try/catch <span class="difficulty"><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span><span class="difficulty-dot filled"></span></span></div></div></div>
+        <div class="challenge-question">Completa cómo el Service maneja los errores de Prisma al crear:</div>
+        <div class="code-completion" id="codeComp_c24">
+            <span class="hl-kw">try</span> {<br>
+            &nbsp;&nbsp;<span class="hl-kw">return await</span> <span class="hl-kw">this</span>.repository.<span class="code-blank" data-answer="create" data-index="0" onclick="selectBlank(this)">???</span>(dto);<br>
+            } <span class="hl-kw">catch</span> (error) {<br>
+            &nbsp;&nbsp;<span class="hl-kw">if</span> (error.code === <span class="hl-str">'</span><span class="code-blank" data-answer="P2002" data-index="1" onclick="selectBlank(this)">???</span><span class="hl-str">'</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="hl-kw">throw new</span> <span class="code-blank" data-answer="ConflictException" data-index="2" onclick="selectBlank(this)">???</span>(<span class="hl-str">'Ya existe'</span>);<br>
+            &nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;<span class="hl-kw">if</span> (error.code === <span class="hl-str">'</span><span class="code-blank" data-answer="P2003" data-index="3" onclick="selectBlank(this)">???</span><span class="hl-str">'</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="hl-kw">throw new</span> <span class="code-blank" data-answer="NotFoundException" data-index="4" onclick="selectBlank(this)">???</span>(<span class="hl-str">'FK no existe'</span>);<br>
+            &nbsp;&nbsp;}<br>
+            }
+        </div>
+        <div class="word-bank" id="wordBank_c24">
+            <span class="word-chip" onclick="fillBlank(this,'c24')">create</span>
+            <span class="word-chip" onclick="fillBlank(this,'c24')">P2002</span>
+            <span class="word-chip" onclick="fillBlank(this,'c24')">ConflictException</span>
+            <span class="word-chip" onclick="fillBlank(this,'c24')">P2003</span>
+            <span class="word-chip" onclick="fillBlank(this,'c24')">NotFoundException</span>
+            <span class="word-chip" onclick="fillBlank(this,'c24')">update</span>
+            <span class="word-chip" onclick="fillBlank(this,'c24')">BadRequestException</span>
+            <span class="word-chip" onclick="fillBlank(this,'c24')">P1000</span>
+        </div>
+        <button class="next-btn" style="margin-top:10px" onclick="checkCode('c24')">Verificar Código</button>
+        <div id="feedback_c24"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:22px"><button class="next-btn success-btn" onclick="goToStage(7)">🏆 Ver Resultados Finales</button></div>
+</section>
+
+<!-- ════════════════════════════════════════ RESULTADOS ════════════════════════════════════════ -->
+<section id="resultados" class="section game-stage" data-stage="7">
+    <h2 class="section-title"><i class="fas fa-trophy" style="color:#ffd700"></i> Resultados Finales</h2>
+    <div class="stage-complete" id="finalResults">
+        <h3>🧩 ¡Juego de Flujos Completado!</h3>
+        <div class="players-final" id="playersFinal" style="display:none">
+            <div class="player-result"><div class="player-avatar">🧑‍💻</div><div class="player-label">Jugador 1</div><div class="player-name-display" id="finalPlayer1">—</div></div>
+            <div class="player-result"><div class="player-avatar">👩‍💻</div><div class="player-label">Jugador 2</div><div class="player-name-display" id="finalPlayer2">—</div></div>
+        </div>
+        <div class="stars" id="finalStars">⭐⭐⭐</div>
+        <div class="nota-big" id="finalNota">0.0</div>
+        <div class="nota-scale">Escala: 0.0 — 5.0</div>
+        <p id="finalMessage">Cargando...</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;margin:25px 0;text-align:center">
+            <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:18px"><div style="font-size:34px;font-weight:700" id="finalCorrect">0/24</div><div style="font-size:12px;opacity:.8">Correctas</div></div>
+            <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:18px"><div style="font-size:34px;font-weight:700" id="finalStreak">0</div><div style="font-size:12px;opacity:.8">Mejor Racha</div></div>
+            <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:18px"><div style="font-size:34px;font-weight:700" id="finalTime">--:--</div><div style="font-size:12px;opacity:.8">Tiempo Usado</div></div>
+        </div>
+        <button class="next-btn" onclick="resetGame()" style="background:linear-gradient(135deg,#ff6b6b,#ee5a24)">🔄 Jugar de Nuevo</button>
+    </div>
+
+    <h3 style="font-size:19px;font-weight:600;margin-top:35px;color:var(--secondary-color)"><i class="fas fa-brain"></i> Conceptos reforzados</h3>
+    <div class="cards-grid">
+        <div class="card"><div class="card-icon">🔀</div><div class="card-title">Flujo de Ida</div><p>Cliente → ValidationPipe → Controller → Service → Repository → Prisma → PostgreSQL</p></div>
+        <div class="card"><div class="card-icon">🔁</div><div class="card-title">Flujo de Vuelta</div><p>PostgreSQL → Prisma mapea objetos → Repository → Service (lógica) → Controller → JSON Response</p></div>
+        <div class="card"><div class="card-icon">📝</div><div class="card-title">CRUD ↔ SQL</div><p>POST→INSERT, GET→SELECT, PUT→UPDATE, DELETE→DELETE. Include→LEFT JOIN.</p></div>
+        <div class="card"><div class="card-icon">🧮</div><div class="card-title">Lógica en Service</div><p>Verificar existencia, calcular notaDefinitiva, capturar errores Prisma (P2002, P2003).</p></div>
+        <div class="card"><div class="card-icon">⚠️</div><div class="card-title">Errores ida y vuelta</div><p>BD rechaza → Prisma lanza error → Service captura → Exception HTTP → Response con status code.</p></div>
+        <div class="card"><div class="card-icon">🔗</div><div class="card-title">Dependencias FK</div><p>Orden de inserción: padres primero, hijos después. No puedes borrar padres con hijos.</p></div>
+    </div>
+</section>
+
+</div>
+</main>
+
+<!-- Feedback overlay -->
+<div class="feedback-overlay" id="feedbackOverlay">
+    <div class="feedback-modal" id="feedbackModal">
+        <div class="feedback-icon" id="feedbackIcon">✅</div>
+        <div class="feedback-title" id="feedbackTitle">¡Correcto!</div>
+        <div class="feedback-text" id="feedbackText"></div>
+        <div class="feedback-xp" id="feedbackXP">+1</div>
+        <button class="next-btn" onclick="closeFeedback()">Continuar</button>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section"><h3><i class="fas fa-gamepad"></i> Sobre Este Juego</h3><p>Juego interactivo de arrastrar bloques para armar flujos de peticiones CRUD ida y vuelta a través de NestJS + Prisma + PostgreSQL.</p></div>
+            <div class="footer-section"><h3>Niveles</h3><ul><li>Nivel 1 — Flujo Básico</li><li>Nivel 2 — CREATE</li><li>Nivel 3 — READ</li><li>Nivel 4 — UPDATE</li><li>Nivel 5 — DELETE</li><li>Nivel 6 — Errores</li></ul></div>
+            <div class="footer-section"><h3>Stack</h3><ul><li><a href="https://nestjs.com/" target="_blank" rel="noopener noreferrer">NestJS</a></li><li><a href="https://www.prisma.io/" target="_blank" rel="noopener noreferrer">Prisma ORM</a></li><li><a href="https://www.postgresql.org/" target="_blank" rel="noopener noreferrer">PostgreSQL</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2026 Programación Web — Ingeniería de Sistemas — CORHUILA.</p></div>
+    </div>
+</footer>
+
+<!-- ════════════════════════════════════════ JAVASCRIPT ════════════════════════════════════════ -->
+<script>
+var G = {
+    correct:0, streak:0, maxStreak:0, currentStage:0,
+    done:0, total:24, answered:{},
+    selectedBlanks:{}, selectedMethods:{},
+    timerSec:420, timerInt:null, timerOn:false, startTime:null, timeUp:false,
+    player1:'', player2:''
+};
+function nota(){ return parseFloat(((G.correct/G.total)*5).toFixed(1)); }
+
+/* ───── ANSWER KEYS ───── */
+var mcKey = {
+    c3:  {c:2, ex:'¡Correcto! <strong>Prisma Client</strong> (usado dentro del Repository) traduce los métodos TypeScript a queries SQL que PostgreSQL ejecuta. Ninguna otra capa habla directamente con la BD.'},
+    c4:  {c:0, ex:'¡Exacto! El <strong>ValidationPipe</strong> global de NestJS valida el body contra los decoradores del DTO (@IsString, @IsEmail, etc.) <strong>antes</strong> de que llegue al Controller. Si falla, retorna 400 Bad Request sin tocar la BD.'},
+    c8:  {c:1, ex:'¡Bien! Un POST exitoso retorna <strong>201 Created</strong>. NestJS lo hace automáticamente con <code>@Post()</code>. El body de la respuesta incluye el recurso creado con su ID generado.'},
+    c15: {c:1, ex:'¡Correcto! <code>prisma.update({where:{id:5}, data:{email:...}})</code> genera <code>UPDATE docentes SET email=\'nuevo@mail.com\' WHERE id=5</code>. Solo actualiza los campos enviados en <code>data</code>.'},
+    c19: {c:1, ex:'¡Exacto! <strong>Calificaciones</strong> no tiene DELETE. Es una regla de negocio: las notas registradas no se eliminan, solo se actualizan con PUT. Matrículas SÍ tiene DELETE (pero no UPDATE).'},
+    c23: {c:1, ex:'¡Correcto! <strong>P2002</strong> (UNIQUE violation) → <code>ConflictException</code> → <strong>409</strong>. Registro no encontrado → <code>NotFoundException</code> → <strong>404</strong>. Estos son los mappings que hace el Service.'},
+};
+
+var pipeKey = {
+    c1:  'El flujo de ida de cualquier petición: Cliente → Controller → Service → Repository → Prisma → PostgreSQL. Cada capa tiene una responsabilidad específica.',
+    c2:  'La vuelta es inversa: PostgreSQL retorna las filas SQL, Prisma las mapea a objetos TypeScript, y cada capa los pasa hasta que el Controller envía el JSON al cliente.',
+    c5:  'Flujo CREATE completo: el POST llega, el Pipe valida el DTO, el Controller delega al Service, este al Repository, que usa Prisma para generar el INSERT. PostgreSQL inserta y la respuesta regresa como 201.',
+    c6:  'El body se transforma: JSON crudo → DTO validado → el Service lo pasa → el Repository lo usa en data:{...dto} → Prisma genera el INSERT con esos campos.',
+    c9:  'Con include, Prisma genera un SELECT + LEFT JOIN. PostgreSQL retorna las filas con la relación incluida, y la respuesta lleva cada estudiante con su programa embebido.',
+    c10: 'Cuando findUnique retorna null, el Service lanza NotFoundException. NestJS la convierte en Response 404 automáticamente. La BD no lanza error, simplemente no encuentra la fila.',
+    c11: 'Los includes anidados generan JOINs encadenados: calificaciones→matriculas→estudiantes y calificaciones→matriculas→asignaciones→asignaturas+docentes. Todo en una respuesta.',
+    c13: 'El UPDATE primero verifica existencia con findOne (SELECT). Si existe, ejecuta prisma.update que genera UPDATE SET. Si no existe, lanza 404 antes de intentar el UPDATE.',
+    c14: 'El Service es la capa que contiene la lógica de negocio. Obtiene las notas actuales, aplica la fórmula, y envía tanto la nota nueva como la definitiva calculada al Repository.',
+    c17: 'DELETE exitoso: verifica existencia, ejecuta prisma.delete → DELETE FROM, PostgreSQL elimina la fila, y la respuesta es 200 OK.',
+    c18: 'Si PostgreSQL rechaza el DELETE por FK, Prisma lanza P2003. El Service captura ese error y lo convierte en ConflictException (409), informando al cliente que hay dependencias.',
+    c21: 'El DTO pasa la validación (los campos son correctos), pero PostgreSQL rechaza el INSERT por UNIQUE constraint en codigoEstudiantil. Prisma lanza P2002, el Service retorna 409.',
+    c22: 'Las FK obligan un orden: primero tablas sin FK (Programa, Periodo), luego tablas que dependen de ellas (Estudiante, Docente, Asignatura), luego AsignacionDocente, y finalmente Matricula.',
+};
+
+var apiKey = {
+    c7:  {m:'POST',  ok:'{\n  "statusCode": 201,\n  "data": {\n    "id": 5,\n    "nombre": "Programación Web",\n    "codigo": "PW-401"\n  }\n}\n\nPrisma → INSERT INTO asignaturas ...\nPostgreSQL → fila insertada → Response 201', err:'❌ Incorrecto. Para CREAR se usa POST.\nPOST → Controller @Post() → Service → Repository → prisma.create() → INSERT INTO'},
+    c12: {m:'GET',   ok:'{\n  "statusCode": 200,\n  "data": {\n    "id": 2,\n    "nombre": "Ing. Sistemas",\n    "codigo": "ING-SIS"\n  }\n}\n\nPrisma → SELECT * FROM programas WHERE id=2\nPostgreSQL → fila encontrada → Response 200', err:'❌ Incorrecto. Para LEER se usa GET.\nGET → Controller @Get(:id) → Service → Repository → prisma.findUnique() → SELECT WHERE'},
+    c16: {m:'PUT',   ok:'{\n  "statusCode": 200,\n  "data": {\n    "id": 1,\n    "nombre": "2026-2"\n  }\n}\n\nPrisma → UPDATE periodos SET nombre=\'2026-2\' WHERE id=1\nPostgreSQL → fila actualizada → Response 200', err:'❌ Incorrecto. Para ACTUALIZAR se usa PUT.\nPUT → Controller @Put(:id) → Service → Repository → prisma.update() → UPDATE SET'},
+    c20: {m:'DELETE', ok:'{\n  "statusCode": 200,\n  "message": "Asignación docente eliminada"\n}\n\nPrisma → DELETE FROM asignaciones_docente WHERE id=7\nPostgreSQL → fila eliminada → Response 200', err:'❌ Incorrecto. Para ELIMINAR se usa DELETE.\nDELETE → Controller @Delete(:id) → Service → Repository → prisma.delete() → DELETE FROM'},
+};
+
+/* ───── TIMER ───── */
+function startGame(){
+    var p1=document.getElementById('player1'),p2=document.getElementById('player2');
+    var n1=p1.value.trim(),n2=p2.value.trim();
+    p1.classList.remove('error');p2.classList.remove('error');
+    if(!n1){p1.classList.add('error');p1.focus();return;}
+    if(!n2){p2.classList.add('error');p2.focus();return;}
+    G.player1=n1;G.player2=n2;
+    G.startTime=Date.now(); startTimer(); goToStage(1);
+}
+function startTimer(){
+    G.timerOn=true; showTimer();
+    G.timerInt=setInterval(function(){ G.timerSec--; showTimer(); if(G.timerSec<=0){clearInterval(G.timerInt);G.timerOn=false;G.timeUp=true;goToStage(7);}},1000);
+}
+function showTimer(){
+    var m=Math.floor(G.timerSec/60),s=G.timerSec%60,el=document.getElementById('hudTimer');
+    el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    el.className='hud-timer';
+    if(G.timerSec<=60) el.classList.add('danger');
+    else if(G.timerSec<=120) el.classList.add('warning');
+}
+function elapsed(){
+    if(!G.startTime)return'--:--';
+    var e=Math.floor((Date.now()-G.startTime)/1000),m=Math.floor(e/60),s=e%60;
+    return(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+
+/* ───── NAV ───── */
+function goToStage(n){
+    G.currentStage=n;
+    document.querySelectorAll('.game-stage').forEach(function(s){s.classList.remove('active')});
+    var t=document.querySelector('.game-stage[data-stage="'+n+'"]');
+    if(t){t.classList.add('active');t.scrollIntoView({behavior:'smooth',block:'start'});}
+    updDots(); if(n===7) showFinal();
+}
+function updDots(){
+    document.querySelectorAll('.stage-dot').forEach(function(d){
+        var s=+d.getAttribute('data-stage');d.classList.remove('completed','current');
+        if(s<G.currentStage)d.classList.add('completed');else if(s===G.currentStage)d.classList.add('current');
+    });
+}
+
+/* ───── SCORING ───── */
+function addOk(){ G.correct++;G.streak++;if(G.streak>G.maxStreak)G.maxStreak=G.streak;G.done++;updHUD(); }
+function addFail(){ G.streak=0;G.done++;updHUD(); }
+function updHUD(){
+    document.getElementById('hudScore').textContent=nota().toFixed(1);
+    document.getElementById('hudLevel').textContent=G.currentStage||'—';
+    document.getElementById('hudStreak').textContent='🔥 '+G.streak;
+    document.getElementById('hudChallenges').textContent=G.done+'/'+G.total;
+}
+
+/* ───── MULTIPLE CHOICE ───── */
+function checkMC(id,btn,idx){
+    if(G.answered[id])return; G.answered[id]=true;
+    var k=mcKey[id],ok=k.c===idx;
+    document.querySelectorAll('#opts_'+id+' .option-btn').forEach(function(b,i){b.classList.add('disabled');if(i===k.c)b.classList.add('correct-answer');});
+    if(!ok){btn.classList.add('wrong-answer');addFail();showModal(false,k.ex);}
+    else{addOk();showModal(true,k.ex);}
+}
+
+/* ───── DRAG & DROP PIPELINE ───── */
+var _dVal=null,_dEl=null;
+function dragS(e){_dVal=e.target.getAttribute('data-value');_dEl=e.target;e.dataTransfer.setData('text/plain',_dVal);e.dataTransfer.effectAllowed='move';}
+function allowD(e){e.preventDefault();e.currentTarget.classList.add('over');}
+function leaveD(e){e.currentTarget.classList.remove('over');}
+function dropP(e,slot){
+    e.preventDefault();slot.classList.remove('over');
+    if(slot.querySelector('.draggable'))return;
+    var val=e.dataTransfer.getData('text/plain');
+    var card=slot.closest('.challenge-card');
+    var elems=card.querySelectorAll('.drag-bank .draggable');
+    var found=null;
+    elems.forEach(function(d){if(d.getAttribute('data-value')===val&&!d.classList.contains('used'))found=d;});
+    if(!found)return;
+    found.classList.add('used');
+    var clone=found.cloneNode(true);
+    clone.setAttribute('draggable','false');
+    clone.style.cursor='default';
+    clone.style.fontSize='11px';
+    clone.style.padding='7px 12px';
+    slot.innerHTML='';
+    slot.appendChild(clone);
+    slot.classList.add('filled');
+}
+
+function checkPipeline(cid,slotsId){
+    if(G.answered[cid])return;
+    var slots=document.getElementById(slotsId).querySelectorAll('.pipeline-slot');
+    var allFilled=true,allOk=true;
+    slots.forEach(function(s){
+        var exp=s.getAttribute('data-expect'),dr=s.querySelector('.draggable');
+        if(!dr){allFilled=false;return;}
+        if(dr.getAttribute('data-value')===exp)s.classList.add('correct-slot');
+        else{s.classList.add('wrong-slot');allOk=false;}
+    });
+    if(!allFilled){document.getElementById('feedback_'+cid).innerHTML='<div class="info-box warning"><h4>⚠️ Incompleto</h4><p>Arrastra todos los bloques antes de verificar.</p></div>';return;}
+    G.answered[cid]=true;
+    if(allOk){addOk();showModal(true,pipeKey[cid]||'¡Pipeline correcta!');}
+    else{addFail();showModal(false,(pipeKey[cid]||'Algunos bloques están mal.')+'<br>Los slots verdes son correctos, los rojos no.');}
+}
+
+/* ───── CODE COMPLETION ───── */
+function selectBlank(el){
+    var comp=el.closest('.code-completion').id.replace('codeComp_','');
+    document.querySelectorAll('#codeComp_'+comp+' .code-blank').forEach(function(b){b.style.outline='none';});
+    el.style.outline='2px solid #ffd700';
+    G.selectedBlanks[comp]=+el.getAttribute('data-index');
+}
+function fillBlank(chip,comp){
+    if(chip.classList.contains('used'))return;
+    var idx=G.selectedBlanks[comp]; if(idx===undefined)return;
+    var blank=document.querySelector('#codeComp_'+comp+' .code-blank[data-index="'+idx+'"]');
+    if(!blank||blank.classList.contains('locked'))return;
+    if(blank.classList.contains('filled')){
+        var prev=blank.textContent;
+        document.querySelectorAll('#wordBank_'+comp+' .word-chip').forEach(function(c){if(c.textContent===prev&&c.classList.contains('used')){c.classList.remove('used');}});
+    }
+    blank.textContent=chip.textContent;blank.classList.add('filled');chip.classList.add('used');
+    blank.style.outline='none';G.selectedBlanks[comp]=undefined;
+    var blanks=document.querySelectorAll('#codeComp_'+comp+' .code-blank');
+    for(var i=0;i<blanks.length;i++){if(!blanks[i].classList.contains('filled')){selectBlank(blanks[i]);break;}}
+}
+function checkCode(comp){
+    if(G.answered[comp])return;G.answered[comp]=true;
+    var blanks=document.querySelectorAll('#codeComp_'+comp+' .code-blank'),ok=true;
+    blanks.forEach(function(b){
+        if(b.textContent.trim()===b.getAttribute('data-answer'))b.classList.add('correct-blank');
+        else{b.classList.add('wrong-blank');ok=false;
+            var ans=b.getAttribute('data-answer');setTimeout(function(){b.textContent=ans;b.classList.remove('wrong-blank');b.classList.add('correct-blank');},1500);
+        }
+        b.classList.add('locked');
+    });
+    document.querySelectorAll('#wordBank_'+comp+' .word-chip').forEach(function(c){c.classList.add('used');});
+    if(ok){addOk();showModal(true,'¡Código completo! El try/catch del Service convierte errores de Prisma (BD) en excepciones HTTP comprensibles para el cliente.');}
+    else{addFail();showModal(false,'Algunos huecos no eran correctos. P2002→ConflictException(409) y P2003→NotFoundException(404). Las respuestas correctas se muestran en verde.');}
+}
+
+/* ───── API SIMULATOR ───── */
+function selectMethod(cid,m,btn){
+    if(G.answered[cid])return;G.selectedMethods[cid]=m;
+    document.querySelectorAll('#msel_'+cid+' .method-btn').forEach(function(b){b.classList.remove('selected');});
+    btn.classList.add('selected');document.getElementById('sendBtn_'+cid).disabled=false;
+}
+function sendAPI(cid){
+    if(G.answered[cid])return;G.answered[cid]=true;
+    var k=apiKey[cid],sel=G.selectedMethods[cid],r=document.getElementById('resp_'+cid);
+    r.style.display='block';
+    document.querySelectorAll('#msel_'+cid+' .method-btn').forEach(function(b){b.style.pointerEvents='none';});
+    document.getElementById('sendBtn_'+cid).disabled=true;
+    if(sel===k.m){r.classList.add('success-response');r.innerHTML='<code>'+k.ok+'</code>';addOk();showModal(true,'¡Método correcto! <strong>'+sel+'</strong> dispara la operación CRUD correspondiente a través de toda la pipeline hasta PostgreSQL y de vuelta.');}
+    else{r.classList.add('error-response');r.innerHTML='<code>'+k.err+'</code>';addFail();showModal(false,'El método correcto era <strong>'+k.m+'</strong>. Recuerda el mapeo: GET→SELECT, POST→INSERT, PUT→UPDATE, DELETE→DELETE.');}
+}
+
+/* ───── FEEDBACK MODAL ───── */
+function showModal(ok,txt){
+    document.getElementById('feedbackIcon').textContent=ok?'✅':'❌';
+    document.getElementById('feedbackTitle').textContent=ok?'¡Correcto!':'Incorrecto';
+    document.getElementById('feedbackTitle').style.color=ok?'var(--success-color)':'var(--accent-color)';
+    document.getElementById('feedbackText').innerHTML=txt;
+    document.getElementById('feedbackXP').textContent=ok?'Nota: '+nota().toFixed(1)+' / 5.0':'Racha perdida 💔';
+    document.getElementById('feedbackXP').style.color=ok?'var(--success-color)':'var(--accent-color)';
+    document.getElementById('feedbackOverlay').classList.add('show');
+    if(ok)confetti();
+}
+function closeFeedback(){document.getElementById('feedbackOverlay').classList.remove('show');}
+
+/* ───── CONFETTI ───── */
+function confetti(){
+    var c=document.getElementById('confettiContainer'),cols=['#ff6b6b','#ffd700','#27ae60','#3498db','#8e44ad','#e0234e','#f39c12'];
+    for(var i=0;i<28;i++){var p=document.createElement('div');p.className='confetti-piece';p.style.left=Math.random()*100+'%';p.style.backgroundColor=cols[Math.floor(Math.random()*cols.length)];p.style.animationDelay=Math.random()+'s';p.style.animationDuration=(2+Math.random()*2)+'s';p.style.width=(6+Math.random()*8)+'px';p.style.height=(6+Math.random()*8)+'px';p.style.borderRadius=Math.random()>.5?'50%':'2px';c.appendChild(p);}
+    setTimeout(function(){c.innerHTML='';},4000);
+}
+
+/* ───── FINAL ───── */
+function showFinal(){
+    if(G.timerInt){clearInterval(G.timerInt);G.timerOn=false;}
+    var n=nota(),ne=document.getElementById('finalNota');ne.textContent=n.toFixed(1);
+    ne.className='nota-big';
+    if(n>=4.5)ne.classList.add('excellent');else if(n>=3.5)ne.classList.add('good');else if(n>=3)ne.classList.add('acceptable');else ne.classList.add('low');
+    document.getElementById('finalCorrect').textContent=G.correct+'/'+G.total;
+    document.getElementById('finalStreak').textContent=G.maxStreak;
+    document.getElementById('finalTime').textContent=elapsed();
+    if(G.player1||G.player2){
+        document.getElementById('playersFinal').style.display='grid';
+        document.getElementById('finalPlayer1').textContent=G.player1||'—';
+        document.getElementById('finalPlayer2').textContent=G.player2||'—';
+    }
+    var s,m;
+    if(n>=4.5){s='⭐⭐⭐';m='¡Excelente! Dominas los flujos de peticiones CRUD de ida y vuelta.';}
+    else if(n>=3.5){s='⭐⭐';m='¡Muy bien! Buen manejo de los flujos. Repasa los que fallaste.';}
+    else if(n>=3){s='⭐';m='Aprobado. Revisa la guía para mejorar tu comprensión de los flujos.';}
+    else{s='☆';m='No alcanzaste 3.0. Estudia la guía interactiva y vuelve a intentar.';}
+    if(G.timeUp)m='⏰ ¡Tiempo! '+m+' ('+G.done+'/'+G.total+' retos)';
+    document.getElementById('finalStars').textContent=s;
+    document.getElementById('finalMessage').textContent=m;
+    confetti();setTimeout(confetti,1500);
+}
+function resetGame(){location.reload();}
+
+/* ───── INIT ───── */
+document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('.nav-link').forEach(function(l){
+        l.addEventListener('click',function(e){
+            e.preventDefault();var h=this.getAttribute('href').replace('#','');
+            var map={intro:0,nivel1:1,nivel2:2,nivel3:3,nivel4:4,nivel5:5,nivel6:6,resultados:7};
+            if(map[h]!==undefined)goToStage(map[h]);
+        });
+    });
+    var obs=new IntersectionObserver(function(entries){entries.forEach(function(en){if(en.isIntersecting){en.target.style.opacity='1';en.target.style.transform='translateY(0)';}});},{threshold:.1});
+    document.querySelectorAll('.card,.challenge-card').forEach(function(el){el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .6s ease,transform .6s ease';obs.observe(el);});
+    updHUD();
+});
+</script>
+</body>
+</html>

@@ -58,4 +58,10 @@ export class AsignacionesDocenteController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.asignacionesDocenteService.remove(id);
   }
+
+  /** GET /api/v1/asignaciones-docente/1/reporte → HU-15: Reporte de matriculados con estadísticas */
+  @Get(':id/reporte')
+  reporte(@Param('id', ParseIntPipe) id: number) {
+    return this.asignacionesDocenteService.reporte(id);
+  }
 }

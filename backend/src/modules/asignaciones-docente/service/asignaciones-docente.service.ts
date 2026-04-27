@@ -63,5 +63,40 @@ export class AsignacionesDocenteService {
     await this.findOne(id);
     return this.asignacionesDocenteRepository.remove(id);
   }
-}
+
+  /** HU-15: Reporte de matriculados por asignación con estadísticas */
+  async reporte(id: number) {
+    const asignacion = await this.findOne(id);
+    const matriculas = await this.asignacionesDocenteRepository.reporte(id);
+
+    const estudiantes = matriculas.map((m) => {
+      const cal = m.calificacion;
+      return {
+        matriculaId: m.id,
+        codigoEstudiantil: m.estudiante.codigoEstudiantil,
+        nombres: m.estudiante.nombres,
+        apellidos: m.estudiante.apellidos,
+        nota1: cal?.nota1 ?? null,
+        nota2: cal?.nota2 ?? null,
+        nota3: cal?.nota3 ?? null,
+        notaDefinitiva: cal?.notaDefinitiva ?? null,
+        estado: cal?.notaDefinitiva != null ? (cal.notaDefinitiva >= 3 ? 'Aprobado' : 'Reprobado') : 'Sin calificar',
+      };
+    });
+
+    const conNota = estudiantes.filter((e) => e.notaDefinitiva != null);
+    return {
+      asignacionId: asignacion.id,
+      asignatura: asignacion.asignatura?.nombre,
+      codigo: asignacion.asignatura?.codigo,
+      creditos: asignacion.asignatura?.creditos,
+      docente: `${asignacion.docente?.nombres} ${asignacion.docente?.apellidos}`,
+      periodo: asignacion.periodoAcademico?.nombre,
+      totalMatriculados: estudiantes.length,
+      aprobados: conNota.filter((e) => e.notaDefinitiva! >= 3).length,
+      reprobados: conNota.filter((e) => e.notaDefinitiva! < 3).length,
+      sinCalificar: estudiantes.filter((e) => e.notaDefinitiva == null).length,
+      estudiantes,
+    };
+  }
 }

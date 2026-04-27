@@ -81,4 +81,16 @@ export class EstudiantesController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.estudiantesService.remove(id);
   }
+
+  /** GET /api/v1/estudiantes/1/historial → HU-14: Historial académico agrupado por período */
+  @Get(':id/historial')
+  historial(@Param('id', ParseIntPipe) id: number) {
+    return this.estudiantesService.historial(id);
+  }
+
+  /** GET /api/v1/estudiantes/1/promedio → HU-16: Promedio acumulado ponderado por créditos */
+  @Get(':id/promedio')
+  promedioAcumulado(@Param('id', ParseIntPipe) id: number) {
+    return this.estudiantesService.promedioAcumulado(id);
+  }
 }

@@ -27,7 +27,7 @@
 
 ## 🎯 Estado Actual del Proyecto
 
-> **Última actualización:** 6 de Abril de 2026 — Sprint 4 en curso (Abr 20 → May 8)
+> **Última actualización:** 27 de Abril de 2026 — Sprint 5 completado (todas las HUs finalizadas)
 
 ### Progreso por Sprint
 
@@ -36,8 +36,8 @@
 | Sprint 1 — Infraestructura y entidades base | ✅ **Completado** | HU-01, HU-02, HU-03 | Mar 16 → Mar 29 |
 | Sprint 2 — Entidades académicas | ✅ **Completado** | HU-04, HU-05, HU-06 | Mar 30 → Abr 10 |
 | Sprint 3 — Matrícula, Calificaciones y Frontend base | ✅ **Completado** | HU-07 a HU-11 | Abr 13 → Abr 17 |
-| Sprint 4 — Frontend avanzado e integración | 🔄 **En progreso (adelantado)** | HU-12, HU-13 | Abr 20 → May 8 |
-| Sprint 5 — Reportes, promedio y cierre | ⏳ Pendiente | HU-14, HU-15, HU-16 | May 11 → May 22 |
+| Sprint 4 — Frontend avanzado e integración | ✅ **Completado** | HU-12, HU-13 | Abr 20 → May 8 |
+| Sprint 5 — Reportes, promedio y cierre | ✅ **Completado (adelantado)** | HU-14, HU-15, HU-16 | May 11 → May 22 |
 
 ### Hitos Completados ✅
 
@@ -68,6 +68,9 @@
 - [x] Selects dinámicos encadenados (Programa → Estudiante, Docente/Asignatura/Período → Asignación, etc.)
 - [x] Integración frontend ↔ backend con datos reales
 - [x] Manejo de estados: loading, error, formularios con validación
+- [x] Página de Historial Académico del Estudiante agrupado por período (HU-14)
+- [x] Página de Reporte de Matriculados por Asignatura con estadísticas (HU-15)
+- [x] Cálculo y visualización de Promedio Acumulado ponderado por créditos (HU-16)
 
 #### Infraestructura
 - [x] `.dockerignore` en backend y frontend para builds eficientes
@@ -89,7 +92,6 @@
 
 ### Pendiente 🔄
 
-- [ ] Historial académico, reportes y promedio acumulado (Sprint 5)
 - [ ] Pruebas E2E
 - [ ] Diseño responsivo avanzado (tablet)
 
@@ -323,22 +325,23 @@ Matricula           1 ──── 1  Calificacion
 
 ---
 
-### Sprint 5 — Reportes, promedio y cierre
+### Sprint 5 — Reportes, promedio y cierre ✅
 
 > 📅 **May 11 → May 22** · 🚫 Festivo: May 18 (Día de la Ascensión) · 📝 Cierre Tercer Corte: May 22 · [Ver Milestone](https://github.com/jaquimbayoc7/gestion-academica-sistema/milestone/5)
 
-| # | Historia de Usuario | Labels | Issue |
-|---|---|---|---|
-| HU-14 | Historial Académico del Estudiante | `user-story` `backend` `frontend` `reporte` | [#14](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/14) |
-| HU-15 | Reporte de Matriculados por Asignatura | `user-story` `backend` `frontend` `reporte` | [#15](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/15) |
-| HU-16 | Cálculo de Promedio Acumulado | `user-story` `backend` `frontend` `reporte` | [#16](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/16) |
+| # | Historia de Usuario | Labels | Issue | Estado |
+|---|---|---|---|---|
+| HU-14 | Historial Académico del Estudiante | `user-story` `backend` `frontend` `reporte` | [#14](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/14) | ✅ **Done** — Backend + Frontend |
+| HU-15 | Reporte de Matriculados por Asignatura | `user-story` `backend` `frontend` `reporte` | [#15](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/15) | ✅ **Done** — Backend + Frontend |
+| HU-16 | Cálculo de Promedio Acumulado | `user-story` `backend` `frontend` `reporte` | [#16](https://github.com/jaquimbayoc7/gestion-academica-sistema/issues/16) | ✅ **Done** — Backend + Frontend |
 
 **Entregables:**
-- Endpoint y vista de historial académico agrupado por período
-- Reporte de matriculados con estadísticas (aprobados/reprobados)
-- Cálculo de promedio acumulado ponderado: `Σ(nota_definitiva × créditos) / Σ(créditos)`
-- Pruebas de integración E2E
-- Docker Compose validación final
+- ✅ Endpoint `GET /api/v1/estudiantes/:id/historial` — matrículas agrupadas por período con calificaciones
+- ✅ Endpoint `GET /api/v1/estudiantes/:id/promedio` — promedio acumulado ponderado `Σ(nota × créditos) / Σ(créditos)`
+- ✅ Endpoint `GET /api/v1/asignaciones-docente/:id/reporte` — matriculados con estadísticas (aprobados/reprobados/sin calificar)
+- ✅ Página `/historial` con selector de estudiante, historial por período y tarjetas de promedio acumulado
+- ✅ Página `/reportes` con selector de asignación, tabla de estudiantes, barra de tasa de aprobación y estadísticas
+- ✅ Sidebar actualizado con rutas a Historial Académico y Reportes
 
 ---
 

@@ -14,4 +14,6 @@ export const asignacionesDocenteService = {
   update: (id: number, data: Partial<{ docenteId: number; asignaturaId: number; periodoAcademicoId: number }>) =>
     apiPut<AsignacionDocente>(`/asignaciones-docente/${id}`, data),
   remove: (id: number) => apiDelete<AsignacionDocente>(`/asignaciones-docente/${id}`),
+  /** HU-15: Reporte de matriculados por asignación con estadísticas */
+  reporte: (id: number) => apiGet<any>(`/asignaciones-docente/${id}/reporte`),
 };

@@ -81,4 +81,77 @@ export class EstudiantesService {
     await this.findOne(id);
     return this.estudiantesRepository.remove(id);
   }
+
+  /** HU-14: Historial académico agrupado por período */
+  async historial(id: number) {
+    const estudiante = await this.findOne(id);
+    const matriculas = await this.estudiantesRepository.historial(id);
+
+    // Agrupar matrículas por período académico
+    const periodosMap = new Map<number, any>();
+    for (const m of matriculas) {
+      const periodo = m.asignacionDocente.periodoAcademico;
+      if (!periodosMap.has(periodo.id)) {
+        periodosMap.set(periodo.id, { periodoId: periodo.id, periodoNombre: periodo.nombre, materias: [] });
+      }
+      const cal = m.calificacion;
+      periodosMap.get(periodo.id).materias.push({
+        matriculaId: m.id,
+        asignatura: m.asignacionDocente.asignatura.nombre,
+        codigo: m.asignacionDocente.asignatura.codigo,
+        creditos: m.asignacionDocente.asignatura.creditos,
+        docente: `${m.asignacionDocente.docente.nombres} ${m.asignacionDocente.docente.apellidos}`,
+        nota1: cal?.nota1 ?? null,
+        nota2: cal?.nota2 ?? null,
+        nota3: cal?.nota3 ?? null,
+        notaDefinitiva: cal?.notaDefinitiva ?? null,
+        estado: cal?.notaDefinitiva != null ? (cal.notaDefinitiva >= 3 ? 'Aprobado' : 'Reprobado') : 'Sin calificar',
+      });
+    }
+
+    return {
+      estudianteId: estudiante.id,
+      nombres: estudiante.nombres,
+      apellidos: estudiante.apellidos,
+      codigoEstudiantil: estudiante.codigoEstudiantil,
+      programa: estudiante.programaAcademico?.nombre,
+      periodos: Array.from(periodosMap.values()),
+    };
+  }
+
+  /** HU-16: Promedio acumulado ponderado por créditos */
+  async promedioAcumulado(id: number) {
+    const estudiante = await this.findOne(id);
+    const matriculas = await this.estudiantesRepository.historial(id);
+
+    let sumaPonderada = 0;
+    let sumaCreditos = 0;
+    let aprobadas = 0;
+    let reprobadas = 0;
+    let sinCalificar = 0;
+
+    for (const m of matriculas) {
+      const creditos = m.asignacionDocente.asignatura.creditos;
+      const nota = m.calificacion?.notaDefinitiva;
+      if (nota != null) {
+        sumaPonderada += nota * creditos;
+        sumaCreditos += creditos;
+        if (nota >= 3) aprobadas++;
+        else reprobadas++;
+      } else {
+        sinCalificar++;
+      }
+    }
+
+    return {
+      estudianteId: estudiante.id,
+      nombres: estudiante.nombres,
+      apellidos: estudiante.apellidos,
+      promedioAcumulado: sumaCreditos > 0 ? Math.round((sumaPonderada / sumaCreditos) * 100) / 100 : null,
+      totalCreditosAprobados: sumaCreditos,
+      asignaturasAprobadas: aprobadas,
+      asignaturasReprobadas: reprobadas,
+      asignaturasSinCalificar: sinCalificar,
+    };
+  }
 }
