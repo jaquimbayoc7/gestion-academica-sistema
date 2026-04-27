@@ -955,7 +955,9 @@ HTTP/1.1 <span class="hl-num">201</span> Created
         <button class="tab-btn active" onclick="openTab(event, 'tab-apilib')">🌐 lib/api.ts</button>
         <button class="tab-btn" onclick="openTab(event, 'tab-service-fe')">🔗 services/</button>
         <button class="tab-btn" onclick="openTab(event, 'tab-page')">📄 page.tsx</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-hooks')">🎣 useState & useEffect</button>
         <button class="tab-btn" onclick="openTab(event, 'tab-controller-be')">🎯 Controller</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-entity')">📦 Entity & DTO</button>
         <button class="tab-btn" onclick="openTab(event, 'tab-service-be')">🧠 Service</button>
         <button class="tab-btn" onclick="openTab(event, 'tab-repo-be')">💾 Repository</button>
     </div>
@@ -1095,6 +1097,202 @@ HTTP/1.1 <span class="hl-num">201</span> Created
         </div>
     </div>
 
+    <!-- TAB: useState & useEffect -->
+    <div id="tab-hooks" class="tab-content">
+        <div class="info-box fun">
+            <h4>🎣 Los «anzuelos» de React</h4>
+            <p>En React, los <strong>Hooks</strong> son funciones especiales que le dan «superpoderes» a los componentes. Los dos más importantes para manejar peticiones HTTP son <code>useState</code> (memoria) y <code>useEffect</code> (efectos secundarios). Sin ellos, la pantalla no se actualizaría cuando llegan los datos del backend.</p>
+        </div>
+
+        <h3 class="subsection-title">📦 useState — Las cajas de memoria</h3>
+        <div class="story-box">
+            <h4>Imagínalo así:</h4>
+            <p><code>useState</code> es como tener cajitas en tu cuarto. Cada cajita guarda algo: <em>¿estoy cargando?</em>, <em>¿tengo datos?</em>, <em>¿hubo un error?</em>. Cuando cambias algo dentro de la cajita, React <strong>redibuja la pantalla automáticamente</strong>. ¡Como magia! 🪄</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">useState — cómo funciona</span>
+            <code><span class="hl-comment">// 📦 Sintaxis: const [valor, setValor] = useState(valorInicial)</span>
+
+<span class="hl-comment">// Cajita 1: la lista de estudiantes (empieza vacía)</span>
+<span class="hl-kw">const</span> [estudiantes, setEstudiantes] = <span class="hl-fn">useState</span>&lt;<span class="hl-type">Estudiante</span>[]&gt;([]);
+<span class="hl-comment">//        ↑ leer valor    ↑ cambiar valor    ↑ valor inicial</span>
+
+<span class="hl-comment">// Cajita 2: ¿estamos esperando respuesta del backend?</span>
+<span class="hl-kw">const</span> [loading, setLoading] = <span class="hl-fn">useState</span>(<span class="hl-kw">false</span>);
+<span class="hl-comment">//     → true  mientras el fetch() está volando</span>
+<span class="hl-comment">//     → false cuando llega la respuesta</span>
+
+<span class="hl-comment">// Cajita 3: mensaje de error (null = sin error)</span>
+<span class="hl-kw">const</span> [error, setError] = <span class="hl-fn">useState</span>&lt;<span class="hl-type">string</span> | <span class="hl-kw">null</span>&gt;(<span class="hl-kw">null</span>);
+
+<span class="hl-comment">// Cajita 4: mostrar/ocultar el formulario</span>
+<span class="hl-kw">const</span> [showForm, setShowForm] = <span class="hl-fn">useState</span>(<span class="hl-kw">false</span>);
+
+<span class="hl-comment">// Cajita 5: el estudiante que estamos editando</span>
+<span class="hl-kw">const</span> [editing, setEditing] = <span class="hl-fn">useState</span>&lt;<span class="hl-type">Estudiante</span> | <span class="hl-kw">null</span>&gt;(<span class="hl-kw">null</span>);
+
+<span class="hl-comment">// ──────────────────────────────────────</span>
+<span class="hl-comment">// ⚠️ REGLA DE ORO: Nunca modifiques el valor directamente</span>
+<span class="hl-comment">// ❌ MAL:  estudiantes.push(nuevo)  ← React no se entera</span>
+<span class="hl-comment">// ✅ BIEN: setEstudiantes([...estudiantes, nuevo])  ← React redibuja</span></code>
+        </div>
+
+        <h3 class="subsection-title">🔄 useEffect — «Cuando pase X, haz Y»</h3>
+        <div class="story-box">
+            <h4>Imagínalo así:</h4>
+            <p><code>useEffect</code> es como poner un aviso en la puerta: <em>«cuando abras esta página, ve a buscar los datos al servidor»</em>. El arreglo <code>[]</code> del final significa <strong>«hazlo solo una vez, al cargar»</strong>. Si pones algo dentro del arreglo (ej: <code>[id]</code>), se ejecuta cada vez que ese valor cambia.</p>
+        </div>
+        <div class="code-block">
+            <span class="file-label">useEffect — patrones con peticiones HTTP</span>
+            <code><span class="hl-comment">// ════ PATRÓN 1: Cargar datos al montar el componente ════</span>
+<span class="hl-fn">useEffect</span>(() =&gt; {
+  <span class="hl-fn">load</span>();         <span class="hl-comment">// ← llama a nuestra función async</span>
+}, []);            <span class="hl-comment">// ← [] = solo al abrir la página (una vez)</span>
+
+<span class="hl-kw">async function</span> <span class="hl-fn">load</span>() {
+  <span class="hl-fn">setLoading</span>(<span class="hl-kw">true</span>);   <span class="hl-comment">// 🔄 Mostrar spinner</span>
+  <span class="hl-fn">setError</span>(<span class="hl-kw">null</span>);     <span class="hl-comment">// 🧹 Limpiar errores anteriores</span>
+  <span class="hl-kw">try</span> {
+    <span class="hl-kw">const</span> data = <span class="hl-kw">await</span> estudiantesService.<span class="hl-fn">findAll</span>();
+    <span class="hl-fn">setEstudiantes</span>(data);   <span class="hl-comment">// ✅ Guardar datos → React redibuja</span>
+  } <span class="hl-kw">catch</span> {
+    <span class="hl-fn">setError</span>(<span class="hl-str">'No se pudieron cargar los estudiantes'</span>);
+  } <span class="hl-kw">finally</span> {
+    <span class="hl-fn">setLoading</span>(<span class="hl-kw">false</span>); <span class="hl-comment">// 🏁 Siempre ocultar spinner al terminar</span>
+  }
+}
+
+<span class="hl-comment">// ════ PATRÓN 2: Reaccionar cuando cambia el ID ════</span>
+<span class="hl-fn">useEffect</span>(() =&gt; {
+  <span class="hl-kw">if</span> (selectedId) estudiantesService.<span class="hl-fn">findOne</span>(selectedId).<span class="hl-fn">then</span>(setDetail);
+}, [selectedId]);  <span class="hl-comment">// ← se ejecuta cada vez que selectedId cambie</span>
+
+<span class="hl-comment">// ════ PATRÓN 3: Limpiar al desmontar (evitar memory leaks) ════</span>
+<span class="hl-fn">useEffect</span>(() =&gt; {
+  <span class="hl-kw">const</span> controller = <span class="hl-kw">new</span> <span class="hl-type">AbortController</span>();
+  <span class="hl-fn">fetch</span>(url, { signal: controller.signal });
+  <span class="hl-kw">return</span> () =&gt; controller.<span class="hl-fn">abort</span>(); <span class="hl-comment">// ← cancela si el usuario navega</span>
+}, [url]);</code>
+        </div>
+
+        <h3 class="subsection-title">🗺️ El ciclo completo: abrir página → ver datos</h3>
+        <div class="svg-diagram">
+            <svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="860" height="300" rx="16" fill="#f8f0ff" stroke="#d8b4fe" stroke-width="2"/>
+                <text x="430" y="28" font-size="14" font-weight="900" fill="#6b21a8" text-anchor="middle">🗺️ Ciclo de vida de una petición en React</text>
+
+                <!-- Paso 1: Montaje -->
+                <rect x="20" y="50" width="140" height="70" rx="12" fill="#fff" stroke="#9b5de5" stroke-width="2"/>
+                <text x="90" y="78" font-size="22" text-anchor="middle">🚀</text>
+                <text x="90" y="98" font-size="11" font-weight="800" fill="#6b21a8" text-anchor="middle">Componente</text>
+                <text x="90" y="112" font-size="11" fill="#888" text-anchor="middle">se monta</text>
+
+                <!-- Flecha 1→2 -->
+                <line x1="160" y1="85" x2="200" y2="85" stroke="#9b5de5" stroke-width="2" marker-end="url(#arrowV)"/>
+                <text x="180" y="76" font-size="9" fill="#9b5de5" text-anchor="middle" font-weight="700">useEffect([])</text>
+
+                <!-- Paso 2: setLoading -->
+                <rect x="200" y="50" width="140" height="70" rx="12" fill="#fff" stroke="#ffc107" stroke-width="2"/>
+                <text x="270" y="78" font-size="22" text-anchor="middle">⏳</text>
+                <text x="270" y="98" font-size="11" font-weight="800" fill="#e65100" text-anchor="middle">setLoading(true)</text>
+                <text x="270" y="112" font-size="11" fill="#888" text-anchor="middle">spinner visible</text>
+
+                <!-- Flecha 2→3 -->
+                <line x1="340" y1="85" x2="380" y2="85" stroke="#ffc107" stroke-width="2" marker-end="url(#arrowV2)"/>
+                <text x="360" y="76" font-size="9" fill="#e65100" text-anchor="middle" font-weight="700">fetch()</text>
+
+                <!-- Paso 3: Fetch en vuelo -->
+                <rect x="380" y="50" width="140" height="70" rx="12" fill="#fff" stroke="#4d96ff" stroke-width="2"/>
+                <text x="450" y="78" font-size="22" text-anchor="middle">📡</text>
+                <text x="450" y="98" font-size="11" font-weight="800" fill="#1565c0" text-anchor="middle">HTTP request</text>
+                <text x="450" y="112" font-size="11" fill="#888" text-anchor="middle">→ backend</text>
+
+                <!-- Flecha 3→4a (éxito) -->
+                <line x1="520" y1="70" x2="560" y2="55" stroke="#6bcb77" stroke-width="2" marker-end="url(#arrowV3)"/>
+                <text x="542" y="54" font-size="9" fill="#27ae60" font-weight="700">200 ✅</text>
+
+                <!-- Paso 4a: Éxito -->
+                <rect x="560" y="30" width="140" height="60" rx="12" fill="#dcfce7" stroke="#6bcb77" stroke-width="2"/>
+                <text x="630" y="55" font-size="20" text-anchor="middle">✅</text>
+                <text x="630" y="74" font-size="11" font-weight="800" fill="#166534" text-anchor="middle">setData(result)</text>
+
+                <!-- Flecha 3→4b (error) -->
+                <line x1="520" y1="100" x2="560" y2="115" stroke="#ff6eb4" stroke-width="2" marker-end="url(#arrowV4)"/>
+                <text x="542" y="130" font-size="9" fill="#c2185b" font-weight="700">4xx/5xx ❌</text>
+
+                <!-- Paso 4b: Error -->
+                <rect x="560" y="120" width="140" height="60" rx="12" fill="#fef2f2" stroke="#ff6eb4" stroke-width="2"/>
+                <text x="630" y="145" font-size="20" text-anchor="middle">❌</text>
+                <text x="630" y="164" font-size="11" font-weight="800" fill="#991b1b" text-anchor="middle">setError(msg)</text>
+
+                <!-- Flecha 4a/4b → 5 -->
+                <line x1="700" y1="60" x2="740" y2="85" stroke="#6bcb77" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <line x1="700" y1="150" x2="740" y2="120" stroke="#ff6eb4" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+                <!-- Paso 5: setLoading false -->
+                <rect x="740" y="65" width="100" height="60" rx="12" fill="#fff" stroke="#888" stroke-width="2"/>
+                <text x="790" y="91" font-size="20" text-anchor="middle">🏁</text>
+                <text x="790" y="108" font-size="10" font-weight="800" fill="#555" text-anchor="middle">setLoading(false)</text>
+                <text x="790" y="119" font-size="9" fill="#888" text-anchor="middle">finally{}</text>
+
+                <!-- Línea de tiempo (bottom) -->
+                <text x="430" y="235" font-size="12" fill="#6b21a8" text-anchor="middle" font-weight="800">El componente React según el estado:</text>
+                <rect x="20" y="250" width="200" height="36" rx="8" fill="#fce4ec"/>
+                <text x="120" y="264" font-size="11" font-weight="800" fill="#ad1457" text-anchor="middle">loading=true</text>
+                <text x="120" y="278" font-size="10" fill="#888" text-anchor="middle">→ muestra &lt;Spinner /&gt;</text>
+
+                <rect x="230" y="250" width="200" height="36" rx="8" fill="#dcfce7"/>
+                <text x="330" y="264" font-size="11" font-weight="800" fill="#166534" text-anchor="middle">data=[...] loading=false</text>
+                <text x="330" y="278" font-size="10" fill="#888" text-anchor="middle">→ muestra la tabla de datos</text>
+
+                <rect x="440" y="250" width="200" height="36" rx="8" fill="#fef2f2"/>
+                <text x="540" y="264" font-size="11" font-weight="800" fill="#991b1b" text-anchor="middle">error=&quot;...&quot; loading=false</text>
+                <text x="540" y="278" font-size="10" fill="#888" text-anchor="middle">→ muestra mensaje de error</text>
+
+                <rect x="650" y="250" width="190" height="36" rx="8" fill="#fff9c4"/>
+                <text x="745" y="264" font-size="11" font-weight="800" fill="#854d0e" text-anchor="middle">data=[] loading=false</text>
+                <text x="745" y="278" font-size="10" fill="#888" text-anchor="middle">→ muestra &quot;Sin registros&quot;</text>
+
+                <defs>
+                    <marker id="arrowV" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9b5de5"/></marker>
+                    <marker id="arrowV2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffc107"/></marker>
+                    <marker id="arrowV3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6bcb77"/></marker>
+                    <marker id="arrowV4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ff6eb4"/></marker>
+                </defs>
+            </svg>
+        </div>
+
+        <div class="code-block">
+            <span class="file-label">El return de un componente según el estado</span>
+            <code><span class="hl-kw">return</span> (
+  &lt;<span class="hl-type">div</span>&gt;
+    <span class="hl-comment">{/* 1️⃣ Mostrar spinner mientras carga */}</span>
+    {loading &amp;&amp; (
+      &lt;<span class="hl-type">div</span> className=<span class="hl-str">"flex justify-center p-8"</span>&gt;
+        &lt;<span class="hl-type">div</span> className=<span class="hl-str">"animate-spin h-8 w-8 border-4 border-blue-500 rounded-full"</span>/&gt;
+      &lt;/<span class="hl-type">div</span>&gt;
+    )}
+
+    <span class="hl-comment">{/* 2️⃣ Mostrar error si lo hay */}</span>
+    {error &amp;&amp; (
+      &lt;<span class="hl-type">div</span> className=<span class="hl-str">"bg-red-100 border border-red-400 text-red-700 p-4 rounded"</span>&gt;
+        ❌ {error}
+      &lt;/<span class="hl-type">div</span>&gt;
+    )}
+
+    <span class="hl-comment">{/* 3️⃣ Mostrar datos si llegaron */}</span>
+    {!loading &amp;&amp; !error &amp;&amp; estudiantes.<span class="hl-fn">length</span> === <span class="hl-num">0</span> &amp;&amp; (
+      &lt;<span class="hl-type">p</span>&gt;No hay estudiantes registrados aún.&lt;/<span class="hl-type">p</span>&gt;
+    )}
+
+    {!loading &amp;&amp; estudiantes.<span class="hl-fn">map</span>(est =&gt; (
+      &lt;<span class="hl-type">div</span> key={est.id}&gt;{est.nombres} {est.apellidos}&lt;/<span class="hl-type">div</span>&gt;
+    ))}
+  &lt;/<span class="hl-type">div</span>&gt;
+);</code>
+        </div>
+    </div>
+
     <!-- TAB: Controller BE -->
     <div id="tab-controller-be" class="tab-content">
         <div class="info-box fun">
@@ -1134,6 +1332,100 @@ HTTP/1.1 <span class="hl-num">201</span> Created
     <span class="hl-kw">return</span> <span class="hl-kw">this</span>.svc.<span class="hl-fn">historial</span>(id);
   }
 }</code>
+        </div>
+    </div>
+
+    <!-- TAB: Entity & DTO -->
+    <div id="tab-entity" class="tab-content">
+        <div class="info-box fun">
+            <h4>📦 Los «moldes» de los datos</h4>
+            <p>En el backend hay dos tipos de clases que describen la forma de los datos. Son como fichas técnicas: una describe <em>cómo luce un objeto en la base de datos</em> (Entity) y otra describe <em>qué datos debe traer el cliente al crear o actualizar algo</em> (DTO). Son distintas a propósito.</p>
+        </div>
+
+        <div class="compare-panels">
+            <div class="compare-panel">
+                <div class="compare-panel-header" style="background: linear-gradient(135deg, #7b1fa2, #9b5de5);">📦 Entity — el «carné» del objeto</div>
+                <div class="compare-panel-body">
+                    <p>La <strong>Entity</strong> es la clase TypeScript que representa <em>exactamente</em> cómo está el dato guardado en la base de datos. Tiene <strong>todos</strong> los campos, incluidos los que genera la BD automáticamente (<code>id</code>, <code>createdAt</code>, <code>updatedAt</code>). Es solo una descripción — no tiene decoradores de validación.</p>
+                    <div class="code-block" style="margin-top:12px;">
+                        <span class="file-label">estudiante.entity.ts</span>
+                        <code><span class="hl-kw">export class</span> <span class="hl-type">EstudianteEntity</span> {
+  <span class="hl-comment">// ← generado por la BD</span>
+  id: <span class="hl-type">number</span>;
+  nombres: <span class="hl-type">string</span>;
+  apellidos: <span class="hl-type">string</span>;
+  codigoEstudiantil: <span class="hl-type">string</span>;
+  documentoIdentidad: <span class="hl-type">string</span>;
+  correoInstitucional: <span class="hl-type">string</span>;
+  fechaNacimiento: <span class="hl-type">Date</span>;
+  programaAcademicoId: <span class="hl-type">number</span>;
+  <span class="hl-comment">// ← gestionados por Prisma</span>
+  createdAt: <span class="hl-type">Date</span>;
+  updatedAt: <span class="hl-type">Date</span>;
+}</code>
+                    </div>
+                </div>
+            </div>
+            <div class="compare-panel">
+                <div class="compare-panel-header" style="background: linear-gradient(135deg, #e65100, #ff8c42);">📝 DTO — el «formulario» de entrada</div>
+                <div class="compare-panel-body">
+                    <p>El <strong>DTO</strong> (Data Transfer Object) describe <em>solo los campos que el cliente debe enviar</em>. No tiene <code>id</code> ni <code>createdAt</code> porque eso lo pone el servidor. Cada campo lleva <strong>decoradores de validación</strong> (<code>@IsString</code>, <code>@IsEmail</code>…) que el <code>ValidationPipe</code> usa para revisar la petición.</p>
+                    <div class="code-block" style="margin-top:12px;">
+                        <span class="file-label">create-estudiante.dto.ts</span>
+                        <code><span class="hl-kw">export class</span> <span class="hl-type">CreateEstudianteDto</span> {
+  <span class="hl-deco">@IsString</span>()
+  nombres: <span class="hl-type">string</span>;
+
+  <span class="hl-deco">@IsString</span>()
+  apellidos: <span class="hl-type">string</span>;
+
+  <span class="hl-deco">@IsString</span>()
+  codigoEstudiantil: <span class="hl-type">string</span>;
+
+  <span class="hl-deco">@IsEmail</span>()
+  correoInstitucional: <span class="hl-type">string</span>;
+
+  <span class="hl-deco">@IsDateString</span>()
+  fechaNacimiento: <span class="hl-type">string</span>;
+
+  <span class="hl-deco">@IsInt</span>()
+  programaAcademicoId: <span class="hl-type">number</span>;
+  <span class="hl-comment">// ← sin id, createdAt, updatedAt</span>
+}</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box info">
+            <h4>🔄 ¿Cómo fluyen Entity y DTO?</h4>
+            <p>El <strong>DTO</strong> entra por el Controller (validado por el <code>ValidationPipe</code>), el Service lo procesa y el Repository lo usa para crear el registro. La base de datos devuelve el objeto completo, que Prisma mapea a un objeto que <em>coincide</em> con la <strong>Entity</strong>. Ese es el dato que viaja de vuelta al frontend.</p>
+        </div>
+
+        <h3 class="subsection-title">🖼️ La analogía del pedido de pizza</h3>
+        <div class="analogy-row">
+            <div class="analogy-cell" style="background:#fff0f8;">
+                <span class="big-emoji">📝</span>
+                <strong>DTO</strong><br>
+                <small style="color:#888">Lo que escribes en la comanda: «pizza mediana, queso extra»</small>
+            </div>
+            <div class="analogy-arrow">→</div>
+            <div class="analogy-cell" style="background:#f0fff4;">
+                <span class="big-emoji">👨‍🍳</span>
+                <strong>Service / Repo</strong><br>
+                <small style="color:#888">El chef la prepara y la registra en el sistema</small>
+            </div>
+            <div class="analogy-arrow">→</div>
+            <div class="analogy-cell" style="background:#f0f4ff;">
+                <span class="big-emoji">🧾</span>
+                <strong>Entity</strong><br>
+                <small style="color:#888">El ticket completo: número de orden, hora, ingredientes, precio</small>
+            </div>
+        </div>
+
+        <div class="story-box">
+            <h4>¿Por qué no usar la misma clase para todo?</h4>
+            <p>Si usaras la <strong>Entity</strong> como DTO, el cliente podría enviarte <code>id: 99</code> o <code>createdAt: "1900-01-01"</code> y sobreescribir datos de la base de datos. Con el <strong>DTO</strong> controlamos exactamente qué puede entrar. ¡Es una capa de seguridad!</p>
         </div>
     </div>
 
@@ -1412,12 +1704,32 @@ HTTP/1.1 <span class="hl-num">201</span> Created
         <div id="fb-q5" class="quiz-feedback"></div>
     </div>
 
+    <!-- Pregunta 6 -->
+    <div class="quiz-box" style="background: linear-gradient(135deg, #fdf4ff, #f5e0ff); border-color: #9b5de5;">
+        <h4 style="color:#6b21a8;">📦 Pregunta 6: ¿Cuál es la diferencia principal entre Entity y DTO?</h4>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q6')">Son exactamente lo mismo, solo tienen distinto nombre</button>
+        <button class="quiz-option" onclick="checkAnswer(this, true, 'q6')">Entity tiene todos los campos (incluido id y fechas), el DTO solo los que envía el cliente</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q6')">El DTO se usa en el Repository y la Entity en el Controller</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q6')">La Entity tiene decoradores @IsString y el DTO no</button>
+        <div id="fb-q6" class="quiz-feedback"></div>
+    </div>
+
+    <!-- Pregunta 7 -->
+    <div class="quiz-box" style="background: linear-gradient(135deg, #fff8f0, #ffe8d0); border-color: #ff8c42;">
+        <h4 style="color:#c2410c;">🎣 Pregunta 7: ¿Qué hace el arreglo <code>[]</code> al final de useEffect?</h4>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q7')">Indica que el efecto puede recibir múltiples parámetros</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q7')">Borra los datos del estado cada vez que se ejecuta</button>
+        <button class="quiz-option" onclick="checkAnswer(this, true, 'q7')">Hace que el efecto se ejecute solo una vez, al montar el componente</button>
+        <button class="quiz-option" onclick="checkAnswer(this, false, 'q7')">Es un error de sintaxis, useEffect no necesita segundo parámetro</button>
+        <div id="fb-q7" class="quiz-feedback"></div>
+    </div>
+
     <!-- Resultados -->
     <div id="quiz-result" style="display:none; text-align:center; margin-top:30px;">
         <div style="background: linear-gradient(135deg, #1e3c72, #2a5298); color:white; border-radius:20px; padding:30px;">
             <div style="font-size:60px; margin-bottom:10px;" id="result-emoji">🏆</div>
             <h3 style="font-size:24px; margin-bottom:8px;" id="result-title">¡Excelente!</h3>
-            <p style="font-size:16px; opacity:0.9;" id="result-text">Sacaste 5/5</p>
+            <p style="font-size:16px; opacity:0.9;" id="result-text">Sacaste 7/7</p>
             <div style="margin-top:16px;">
                 <div class="progress-bar-wrap" style="max-width:300px; margin:0 auto;">
                     <div class="progress-bar" id="result-bar" style="background: linear-gradient(135deg, #6bcb77, #00bbf9); width:0%;">0%</div>
@@ -1556,6 +1868,8 @@ const correct = {
     q3: '¡Correcto! 🎉 201 Created es el código estándar para cuando algo se creó exitosamente. 200 es para consultas.',
     q4: '¡Correcto! 🎉 El Repository es el único que habla con la base de datos usando Prisma. El Service no sabe SQL.',
     q5: '¡Correcto! 🎉 El ResponseInterceptor envuelve todo en { statusCode, message, data }. Por eso extraemos .data para obtener los datos reales.',
+    q6: '¡Correcto! 🎉 La Entity describe el objeto completo (con id, createdAt…). El DTO solo tiene los campos que envía el cliente. ¡Es una capa de seguridad!',
+    q7: '¡Correcto! 🎉 El [] vacío como segundo parámetro de useEffect significa «hazlo solo al montar el componente», equivalente al clAsico componentDidMount.',
 };
 const wrong = {
     q1: '❌ Incorrecto. El Controller no toca la base de datos. Solo recibe la petición y llama al Service.',
@@ -1563,6 +1877,8 @@ const wrong = {
     q3: '❌ Incorrecto. 201 Created es el código correcto para creación. 200 OK es para consultas exitosas.',
     q4: '❌ Incorrecto. El Repository es el encargado de las consultas SQL con Prisma. El Service aplica las reglas de negocio.',
     q5: '❌ Incorrecto. Es por el ResponseInterceptor que envuelve todos los datos en { statusCode, message, data }.',
+    q6: '❌ Incorrecto. Son clases distintas con propósitos diferentes. La Entity tiene todos los campos del modelo DB; el DTO solo lo que el cliente puede enviar.',
+    q7: '❌ Incorrecto. El [] vacío como dependencias le dice a React «ejecútame solo una vez cuando el componente aparezca en pantalla».',
 };
 
 function checkAnswer(btn, isCorrect, questionId) {
@@ -1591,7 +1907,7 @@ function checkAnswer(btn, isCorrect, questionId) {
     btn.closest('.quiz-box').querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
 
     // Mostrar resultado si terminó todas
-    if (Object.keys(answers).length === 5) showResult();
+    if (Object.keys(answers).length === 7) showResult();
 }
 
 function showResult() {
@@ -1601,11 +1917,11 @@ function showResult() {
     result.style.display = 'block';
     result.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    const emojis = ['😢', '😐', '🙂', '😊', '🥳', '🏆'];
-    const titles = ['Sigue intentando...', 'Vas bien', 'Buen trabajo', '¡Muy bien!', '¡Excelente!', '¡Maestro!'];
-    document.getElementById('result-emoji').textContent = emojis[score];
-    document.getElementById('result-title').textContent = titles[score];
-    document.getElementById('result-text').textContent = `Sacaste ${score}/5 respuestas correctas`;
+    const emojis = ['😢', '😐', '🙂', '😊', '🥳', '🤩', '🏆', '🚀'];
+    const titles = ['Sigue intentándolo', 'Vas por buen camino', 'Bien hecho', '¡Muy bien!', '¡Excelente!', '¡Casi perfecto!', '¡Maestro!', '¡Absoluto!'];
+    document.getElementById('result-emoji').textContent = emojis[score] || '🏆';
+    document.getElementById('result-title').textContent = titles[score] || '¡Maestro!';
+    document.getElementById('result-text').textContent = `Sacaste ${score}/7 respuestas correctas`;
 
     setTimeout(() => {
         const bar = document.getElementById('result-bar');
